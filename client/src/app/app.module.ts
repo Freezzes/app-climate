@@ -8,11 +8,13 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 import { TasksComponent } from './task/tasks.component'
+import { TempComponent } from './temp/temp.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    TasksComponent
+    TasksComponent,
+    TempComponent
   ],
   imports: [
     BrowserModule,

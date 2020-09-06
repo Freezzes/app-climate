@@ -1,0 +1,15 @@
+<table class="table">
+    <tr *ngFor="let temp of temps">
+        <td class="text-left">
+            {{temp.timeC}}
+            {{temp.lat}}
+            {{temp.lon}}
+            {{temp.temp}}
+
+        </td>
+        <!-- <td class="text-right">
+            <button class="btn btn-danger" title="delete" (click)="delete(task)">SHOW</button>
+        </td> -->
+    </tr>
+</table>
+
