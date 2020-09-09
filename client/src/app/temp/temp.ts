@@ -1,7 +1,6 @@
 export interface Temp {
-    timeC: string
-    lat : string
-    lon : string
-    temp : string
+    s300201: any
+    s432301: any
+    date: any
 }
 

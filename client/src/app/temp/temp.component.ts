@@ -11,7 +11,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http'
 
 export class TempComponent implements OnInit {
     temps: Temp[]
-
+    dates = [];
     constructor(private tempService: TempsService, private http: HttpClient) { }
 
     ngOnInit () {
@@ -22,5 +22,9 @@ export class TempComponent implements OnInit {
         this.tempService.getTemp().subscribe(temps => (this.temps = temps))
     
     }
+
+    // getdate(){
+    //     this.tempService.getTemp().subscribe(res => {res.map(u=>{this.dates.push(u.date)})})
+    // }
 
 }

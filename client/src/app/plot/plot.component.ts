@@ -19,8 +19,9 @@ export class PlotComponent implements OnInit {
 
   ngOnInit() {
 	let getTemp = [];
-	this.tempsService.getTemp().subscribe(res => res.map(value => {getTemp.push(value.temp)}));
-	console.log("GET TEMP",getTemp);
+	// this.tempsService.getTemp().subscribe(res => res.map(value => {getTemp.push(value.s300201)}));
+	this.tempsService.getTemp().subscribe(data => console.log(data))
+	// console.log("GET TEMP",getTemp);
 	let dataPoints = []
 	let y = 0;		
 	for ( var i = 0; i < 10000; i++ ) {		  
