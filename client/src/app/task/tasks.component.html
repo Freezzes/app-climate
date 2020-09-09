@@ -13,9 +13,9 @@
                 <input *ngIf="task==editTask" [(ngModel)]="task.title" (blur)="update()" (keyup.enter)="update()">
             </a>
         </td>
-        <td class="text-right">
+        <!-- <td class="text-right">
             <button class="btn btn-danger" title="delete" (click)="delete(task)">SHOW</button>
-        </td>
+        </td> -->
     </tr>
 </table>
 

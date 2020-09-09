@@ -9,12 +9,15 @@ import { AppComponent } from './app.component';
 
 import { TasksComponent } from './task/tasks.component'
 import { TempComponent } from './temp/temp.component';
+import { PlotComponent } from './plot/plot.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    TempComponent,
     TasksComponent,
-    TempComponent
+    PlotComponent,
+    
   ],
   imports: [
     BrowserModule,

@@ -21,7 +21,6 @@ export class TempComponent implements OnInit {
     getTemp () {
         this.tempService.getTemp().subscribe(temps => (this.temps = temps))
     
-        //console.log("tasks",this.tasks)
     }
 
 }

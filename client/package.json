@@ -20,6 +20,9 @@
     "@angular/platform-browser": "~10.0.11",
     "@angular/platform-browser-dynamic": "~10.0.11",
     "@angular/router": "~10.0.11",
+    "@types/canvasjs": "^1.9.6",
+    "angular2-chartjs": "^0.5.1",
+    "canvasjs": "^1.8.3",
     "rxjs": "~6.5.5",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.3"
