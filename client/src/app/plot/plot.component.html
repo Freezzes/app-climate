@@ -1,3 +1,23 @@
-<p>plot works!</p>
-<button (click)="plot()"> CLICK!!! </button>
+<h3>Station Base</h3>
+
+<div class="selectzone">
+    <div class="pad">
+    <select id="file">
+        <option value="tmean" selected>Average temperature </option>
+        <option value="tmin">Minimum temperature</option>
+        <option value="tmax">Maximum temperature</option>
+        <option value="rain">Rain</option>
+    </select>
+    </div>
+    <div class="pad">
+    <select id="Station">
+        <option value="s300201" selected>แม่ฮ่องสอน</option>
+        <option value="s432301">สุรินทร์ สกษ.</option>
+        <option value="s583201">นราธิวาส</option>
+    </select>
+    </div>
+    <button (click)="plot()"> SHOW </button>
+</div>
+
+
 <div id="chartContainer" style="height: 370px; width: 100%;"></div>

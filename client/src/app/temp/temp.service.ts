@@ -3,6 +3,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http'
 
 import { Observable } from 'rxjs'
 import { Temp, Plot } from './temp'
+import { Router } from '@angular/router'
 
 @Injectable()
 export class TempsService {

@@ -10,6 +10,7 @@ import { AppComponent } from './app.component';
 import { TasksComponent } from './task/tasks.component'
 import { TempComponent } from './temp/temp.component';
 import { PlotComponent } from './plot/plot.component';
+import { LeafletModule} from '@asymmetrik/ngx-leaflet';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { PlotComponent } from './plot/plot.component';
     HttpModule,
     FormsModule,
     HttpClientModule,    
-    AppRoutingModule
+    AppRoutingModule,
+    LeafletModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -11,13 +11,11 @@ from bson.objectid import ObjectId
 from flask_cors import CORS 
 
 app = Flask(__name__)
-# mongo = PyMongo(app)
 CORS(app)
-
 
 @app.route('/api/plot', methods=['GET'])
 def plot():
-    df = pd.read_csv('C:/Mew/Project/tmp_2012-2016/tmean_2012-2015_d.csv', index_col=-1, parse_dates=True)
+    df = pd.read_csv('C:/Users/ice/Documents/climate/TMD_DATA-20200902T042020Z-001/TMD_DATA/clean_data/tmean_2012-2015_d.csv', index_col=-1, parse_dates=True)
     new_df = df.iloc[:, 0:7]
         # print(new_df)
     pt = pd.pivot_table(new_df, index=new_df.index.month, columns=new_df.index.year, aggfunc='mean')
@@ -30,6 +28,3 @@ def plot():
 
 if __name__ == '__main__':
     app.run(debug=True, port= 5500)
-
-
- 

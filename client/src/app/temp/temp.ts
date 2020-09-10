@@ -1,6 +1,7 @@
 export interface Temp {
     s300201: any
     s432301: any
+    s583201: any
     day : any
     month : any
     date: any
