@@ -48,6 +48,7 @@ def plot():
     new_df = df.iloc[:, 0:7]
         # print(new_df)
     pt = pd.pivot_table(new_df, index=new_df.index.month, columns=new_df.index.year, aggfunc='mean')
+    
     pt.columns = pt.columns.droplevel() # remove the double header (0) as pivot creates a multiindex.
     a = pt.iloc[:,0:4]
 

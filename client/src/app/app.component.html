@@ -7,8 +7,30 @@
     </div>
   </div>
 </div> -->
-
-<app-plot></app-plot>
 <!-- <app-plotly></app-plotly> -->
 
+<!DOCTYPE html>
+<router-outlet></router-outlet>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  </head>
+  <body data-spy="scroll" data-target=".navbar" data-offset="60">
 
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand">Climate Change</a>
+        </div>
+        <div class="collapse navbar-collapse " id="myNavbar">
+          <ul class="nav navbar-nav ">
+            <li><a routerLink="/temp">Region Base</a></li>
+            <li><a  routerLink="/plot">Station Base</a></li>
+
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </body>
+  </html>

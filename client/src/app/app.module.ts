@@ -7,19 +7,14 @@ import { HttpClientModule } from '@angular/common/http'
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-import { TasksComponent } from './task/tasks.component'
-import { TempComponent } from './temp/temp.component';
-import { PlotComponent } from './plot/plot.component';
-import { PlotlyComponent } from './plotly/plotly.component';
+import { GraphComponent } from '../app/components/graph.component';
+import { MapComponent } from '../app/components/map.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    TempComponent,
-    TasksComponent,
-    PlotComponent,
-    PlotlyComponent,
-    
+    MapComponent,
+    GraphComponent
   ],
   imports: [
     BrowserModule,
