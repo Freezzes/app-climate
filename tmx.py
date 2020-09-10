@@ -13,7 +13,7 @@ import  netCDF4
 app = Flask(__name__)
 
 app.config['MONGO_DBNAME'] = 'test'
-app.config['MONGO_URI'] = 'mongodb://localhost:27017/cli'
+app.config['MONGO_URI'] = 'mongodb://localhost:27017/climateDB'
 
 mongo = PyMongo(app)
 CORS(app)
