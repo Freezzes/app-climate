@@ -1,9 +1,6 @@
-<!-- <p>eieieieieii</p> -->
+<!-- 
 <br><br><br><br>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<title>Map Station</title>
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
@@ -51,28 +48,23 @@ body {
   background-color: #f1f1f1;
   padding: 10px;
 }
-</style>
-</head>
-<body>
+</style> -->
 
 
 <div class="map-container">
-    <div>
+    <!-- <div>
         <p>station id: </p> 
         <p>station :<input type="text" [(ngModel)]="namesta"></p>
-    </div>
+    </div> -->
     <div class="map-frame">
         <div  id="map"
-        leaflet
-        (leafletMapReady)="onMapReady($event)"
-        [leafletOptions]="mapOptions">
-    </div>
+          leaflet
+          (leafletMapReady)="onMapReady($event)"
+          [leafletOptions]="mapOptions">
+        </div>
      
     </div>
   </div>
-
-</body>
-</html>
 
 
 

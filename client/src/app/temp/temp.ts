@@ -14,3 +14,9 @@ export interface Plot{
     y2015 : number
 
 }
+
+export interface Position{
+    code : number
+    lat : number
+    lon : number
+}

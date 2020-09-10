@@ -135,6 +135,10 @@ body {
     -webkit-animation-duration: 1s;
     visibility: visible;
   }
+  .map {
+    height: 100%;
+    padding: 0;
+  }
   @keyframes slide {
     0% {
       opacity: 0;

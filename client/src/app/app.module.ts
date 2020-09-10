@@ -12,12 +12,17 @@ import { TempComponent } from './temp/temp.component';
 import { PlotComponent } from './plot/plot.component';
 import { LeafletModule} from '@asymmetrik/ngx-leaflet';
 
+import { MarkerService } from './services/markers.service';
+import { MapComponent } from './map/map.component';
+
+
 @NgModule({
   declarations: [
     AppComponent,
     TempComponent,
     TasksComponent,
     PlotComponent,
+    MapComponent,
     
   ],
   imports: [
@@ -28,7 +33,7 @@ import { LeafletModule} from '@asymmetrik/ngx-leaflet';
     AppRoutingModule,
     LeafletModule
   ],
-  providers: [],
+  providers: [MarkerService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -26,6 +26,7 @@
     "angular2-chartjs": "^0.5.1",
     "canvasjs": "^1.8.3",
     "leaflet": "^1.7.1",
+    "ngx-extended-pdf-viewer": "^4.1.2",
     "rxjs": "~6.5.5",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.3"
