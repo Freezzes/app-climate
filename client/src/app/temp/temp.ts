@@ -6,3 +6,10 @@ export interface Temp {
     date: any
 }
 
+export interface Plot{
+    y2012 : number
+    y2013 : number
+    y2014 : number
+    y2015 : number
+
+}
