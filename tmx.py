@@ -25,15 +25,9 @@ result = []
 def get_value():
     tmp = mongo.db.test 
     
-    for field in tmp.find():
+    for field in tmp.find().limit(366):
         date = field['date']
-        result.append({"s300201": field['300201'],"s432301": field['432301'],"date": date.strftime("%Y-%m-%d") })
-
-    a = np.mean(field['300201'])
-    print(a)
-
-
-
+        result.append({"s300201": field['300201'],"s432301": field['432301'],"day":field['day'],"month":field['month'],"date": date.strftime("%Y-%m-%d") })
 
     return jsonify(result)
 

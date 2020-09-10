@@ -15,12 +15,11 @@ export class TempComponent implements OnInit {
     constructor(private tempService: TempsService, private http: HttpClient) { }
 
     ngOnInit () {
-        this.getTemp()
+        //this.getTemp()
     }
 
     getTemp () {
         this.tempService.getTemp().subscribe(temps => (this.temps = temps))
-    
     }
 
     // getdate(){
