@@ -10,6 +10,7 @@ import { AppComponent } from './app.component';
 import { TasksComponent } from './task/tasks.component'
 import { TempComponent } from './temp/temp.component';
 import { PlotComponent } from './plot/plot.component';
+import { PlotlyComponent } from './plotly/plotly.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { PlotComponent } from './plot/plot.component';
     TempComponent,
     TasksComponent,
     PlotComponent,
+    PlotlyComponent,
     
   ],
   imports: [

@@ -23,6 +23,7 @@
     "@types/canvasjs": "^1.9.6",
     "angular2-chartjs": "^0.5.1",
     "canvasjs": "^1.8.3",
+    "plotly.js-dist": "^1.55.2",
     "rxjs": "~6.5.5",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.3"

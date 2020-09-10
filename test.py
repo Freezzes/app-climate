@@ -23,10 +23,14 @@ def plot():
     pt = pd.pivot_table(new_df, index=new_df.index.month, columns=new_df.index.year, aggfunc='mean')
     pt.columns = pt.columns.droplevel() # remove the double header (0) as pivot creates a multiindex.
     a = pt.iloc[:,0:4]
+
     list1 = []
     for i in range(len(a)):
         list1.append({'y2012': a.values[i][0], 'y2013': a.values[i][1], 'y2014': a.values[i][2], 'y2015': a.values[i][3]})
+    
     return jsonify(list1)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, port= 5500)
