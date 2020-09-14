@@ -9,6 +9,9 @@ import { AppComponent } from './app.component';
 
 import { GraphComponent } from '../app/components/graph.component';
 import { MapComponent } from '../app/components/map.component';
+// import { LeafletModule} from '@asymmetrik/ngx-leaflet';
+
+import { MarkerService } from './services/markers.service';
 
 @NgModule({
   declarations: [
@@ -21,9 +24,10 @@ import { MapComponent } from '../app/components/map.component';
     HttpModule,
     FormsModule,
     HttpClientModule,    
-    AppRoutingModule
+    AppRoutingModule,
+    // LeafletModule
   ],
-  providers: [],
+  providers: [MarkerService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

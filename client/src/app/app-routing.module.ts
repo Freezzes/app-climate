@@ -4,8 +4,8 @@ import { GraphComponent } from '../app/components/graph.component';
 import { MapComponent } from '../app/components/map.component';
 
 const routes: Routes = [
-  { path: 'plot', component: GraphComponent },
-  { path: 'temp', component: MapComponent }
+  { path: 'graph', component: GraphComponent },
+  { path: 'map', component: MapComponent }
 ];
 
 @NgModule({
