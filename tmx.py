@@ -59,7 +59,15 @@ def plot():
     return jsonify(list1)
 
 #----------------------------------------------------------------------------------------------------------------------
-
+result = []
+@app.route('/api/testcode', methods=['GET'])
+def get_latlon():
+    tmp = mongo.db.station 
+    for field in tmp.find().limit(10):
+        result.append({"code": field['code'], "lat": field['lat'], "lon": field['lon'] })
+        print(field)
+    return jsonify(result)
+    
 if __name__ == '__main__':
     app.run(debug=True, port= 5500)
 
