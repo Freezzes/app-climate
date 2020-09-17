@@ -5,7 +5,7 @@ body {
 }
 .navbar {
     margin-bottom: 0;
-    background-color: #839eeb;
+    background-color: #B3E5FC ;
     z-index: 9999;
     border: 0;
     font-size: 20px !important;
@@ -15,14 +15,14 @@ body {
     font-family: Montserrat, sans-serif;
   }
   .navbar li a, .navbar .navbar-brand {
-    color: #fff !important;
+    color: rgb(116, 165, 240) !important;
     text-align: left ;
   }
   .navbar-nav li a:hover, .navbar-nav li.active a {
-    color: #839eeb !important;
-    background-color: #fff !important;
+    color: #B3E5FC !important;
+    background-color: rgb(116, 165, 240) !important;
   }
   .navbar-default .navbar-toggle {
     border-color: transparent;
-    color: #fff !important;
+    color: rgb(116, 165, 240) !important;
   }

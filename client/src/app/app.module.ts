@@ -9,19 +9,25 @@ import { AppComponent } from './app.component';
 
 import { GraphComponent } from '../app/components/graph.component';
 import { MapComponent } from '../app/components/map.component';
+import { SelectplotComponent } from './components/selectplot.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
     AppComponent,
     MapComponent,
-    GraphComponent
+    GraphComponent,
+    SelectplotComponent
   ],
   imports: [
     BrowserModule,
     HttpModule,
     FormsModule,
     HttpClientModule,    
-    AppRoutingModule
+    AppRoutingModule,
+    FormsModule,
+    ReactiveFormsModule
+
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,0 +1,25 @@
+<br><br><br><br>
+<div class="container">
+    <div >
+      <h1>Select Station</h1>
+      <form [formGroup]="getstation" (ngSubmit)="submit()">
+        <div class="form-group">
+          <label for="station">STATION</label>
+          <select formControlName="station" class="form-control">
+            <option *ngFor="let st of station">{{st.id}}-{{st.name}}</option>
+          </select>
+        </div>
+
+        <button class="btn-outline-own" type="submit" [disabled]="!getstation.valid">Submit</button>
+      </form>
+    </div>
+</div>
+  
+    <div>
+      <div class="row">
+        <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+        <canvas id="lineChart" style="width: 25%; height: 100px;padding-left: 20px;padding-right: 20px; display: inline-block;"></canvas>
+    </div>
+  </div>
+
+
