@@ -8,15 +8,5 @@ import { latLng, tileLayer } from 'leaflet';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'client';
-  option = {
-    layers: [
-      tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-      })
-    ],
-    zoom: 7,
-    center: latLng([ 46.879966, -121.726909 ])
-  }
+ 
 }
-export const INIT_COORDS = new InjectionToken<{lat: number, long: number}>('INIT_COORDS');

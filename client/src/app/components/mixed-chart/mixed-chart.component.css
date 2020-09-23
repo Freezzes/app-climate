@@ -16,8 +16,8 @@
   }
   .map-container {
     position: left;
-    height: 500px;
-    width: 1150px;
+    height: 600px;
+    width: 600px;
     top: 0;
     left: 0;
     right: 0;
@@ -34,3 +34,10 @@
   #map {
     height: 100%;
   }
+/* Optional: Makes the sample page fill the window. */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}

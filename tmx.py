@@ -9,27 +9,89 @@ import time
 from matplotlib import cm
 import matplotlib.dates as mdates
 import  netCDF4
+from pymongo import MongoClient
+from flask import request
 
 app = Flask(__name__)
 
 app.config['MONGO_DBNAME'] = 'test'
 app.config['MONGO_URI'] = 'mongodb://localhost:27017/climateDB'
 
+# client = MongoClient('mongodb://root:example@localhost:27017')
+# db = client['climateDB'] 
+
 mongo = PyMongo(app)
 CORS(app)
+tmp_test = mongo.db.test 
 
-
-result = []
 @app.route('/api/tmean', methods=['GET'])
-
 def get_value():
+    result = []
     tmp = mongo.db.test 
-    
-    for field in tmp.find().limit(366):
+    for field in tmp.find():
         date = field['date']
-        result.append({"s300201": field['300201'],"s432301": field['432301'],"day":field['day'],"month":field['month'],"date": date.strftime("%Y-%m-%d") })
-
+        result.append({"s300201": field['300201'],"s432301": field['432301'],"day":field['day'],"month":field['month'],"year":field['year'],"date": date.strftime("%Y-%m-%d") })
+    c = list (result)
+    c = pd.DataFrame(c)
+    print (c)
     return jsonify(result)
+
+@app.route('/api/month', methods=['GET']) 
+def get_varmonth():
+    result = []
+    result1 = []
+    result2 = []
+    result3 = []
+    result4 = []
+
+    tmp = mongo.db.test 
+    for field in tmp.find():
+        if field['year'] == 2012:
+            if field['month'] == 12:
+                result1.append({'Dec': field['300201']})
+            elif field['month'] == 1:
+                result1.append({'Jan': field['300201']})
+            elif field['month'] == 2:
+                result1.append({'Feb': field['300201']})
+            else:
+                pass
+        elif field['year'] == 2013:
+            if field['month'] == 12:
+                result2.append({'Dec': field['300201']})
+            elif field['month'] == 1:
+                result2.append({'Jan': field['300201']})
+            elif field['month'] == 2:
+                result2.append({'Feb': field['300201']})
+            else:
+                pass
+        elif field['year'] == 2014:
+            if field['month'] == 12:
+                result3.append({'Dec': field['300201']})
+            elif field['month'] == 1:
+                result3.append({'Jan': field['300201']})
+            elif field['month'] == 2:
+                result3.append({'Feb': field['300201']})
+            else:
+                pass
+        elif field['year'] == 2015:
+            if field['month'] == 12:
+                result4.append({'Dec': field['300201']})
+            elif field['month'] == 1:
+                result4.append({'Jan': field['300201']})
+            elif field['month'] == 2:
+                result4.append({'Feb': field['300201']})
+            else:
+                pass
+        else:
+                pass
+    result.append({2012: result1,2013: result2,2014:result3,2015:result4})
+    c = list (result)
+    c = pd.DataFrame(c)
+    print (c)
+    return jsonify(result)
+    # groups2 = groups.to_json()
+    # print(type(groups2))
+    # print(groups2)
 
 @app.route('/api/meantem', methods=['GET'])
 def meantem():
@@ -40,6 +102,7 @@ def meantem():
     groups = df.groupby('month').mean()
     groups2 = groups.to_json()
     print(type(groups2))
+    print(groups2)
     return groups2
 
 @app.route('/api/plot', methods=['GET'])
@@ -58,17 +121,43 @@ def plot():
     
     return jsonify(list1)
 
+@app.route('/api/values', methods=['POST']) 
+def foo():
+    data = request.json
+    data_m = data["month"]
+    if data_m == "Mar":
+        collect = tmp_test["300201"]
+        print(collect)
+        return {"data":True}
+    else:
+        return {"data":False}
+
+# ----------------------------------------------------------------------------------------------------------------------
+@app.route("/filterData", methods=["POST"])
+def query_data():
+    station = request.args.get('station')
+    month = request.args.get('month')
+    year = request.args.get('year') 
+    result = getmonth(station, month, year)
+    return {"data":result}
+
+def getmonth(station, month, year):
+    l = []
+    query = mongo.db.test.find({ "$and" : [{ "month" : int(month) }, { "year" : int(year) } ] } ,{station:1})
+    for data in query:
+        l.append(data[station])
+    return l
+
 #----------------------------------------------------------------------------------------------------------------------
-result = []
-@app.route('/api/testcode', methods=['GET'])
-def get_latlon():
-    tmp = mongo.db.station 
-    for field in tmp.find().limit(10):
-        result.append({"code": field['code'], "lat": field['lat'], "lon": field['lon'] })
-        print(field)
-    return jsonify(result)
+# result = []
+# @app.route('/api/testcode', methods=['GET'])
+# def get_latlon():
+#     tmp = mongo.db.station 
+#     for field in tmp.find().limit(10):
+#         result.append({"code": field['code'], "lat": field['lat'], "lon": field['lon'] })
+#         print(field)
+#     return jsonify(result)
     
 if __name__ == '__main__':
     app.run(debug=True, port= 5500)
-
 

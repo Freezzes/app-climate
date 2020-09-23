@@ -1,21 +1,18 @@
 import { Component, OnInit } from '@angular/core';
-import { MapService } from '../services/map.service';
-import { TempService } from '../services/temp.service'
+import { TempService } from '../services/temp.service';
 import { HttpClient, HttpClientModule } from '@angular/common/http'
 import * as L from 'leaflet';
 import { latLng, MapOptions, tileLayer, Map, Marker, icon } from 'leaflet';
 import { MarkerService } from '../services/markers.service';
 
-
-
-const iconRetinaUrl = 'assets/marker-icon-2x.png';
+// const iconRetinaUrl = 'assets/marker-icon-2x.png';
 const iconUrl = 'assets/marker-icon.png';
 const shadowUrl = 'assets/marker-shadow.png';
 const iconDefault = L.icon({
-  iconRetinaUrl,
+  // iconRetinaUrl,
   iconUrl,
   // shadowUrl,
-  iconSize: [18, 22],
+  iconSize: [18, 25],
   // iconAnchor: [12, 41],
   // popupAnchor: [1, -34],
   // tooltipAnchor: [16, -28],
@@ -65,6 +62,7 @@ export class MapComponent implements OnInit {
     };
   }
 
+
   private addSampleMarker() {
     this.http.get(this.capitals).subscribe((res: any) => {
       for (const c of res.features) {
@@ -75,4 +73,5 @@ export class MapComponent implements OnInit {
       }
     });
   }
+
 }

@@ -9,15 +9,28 @@ import { AppComponent } from './app.component';
 
 import { GraphComponent } from '../app/components/graph.component';
 import { MapComponent } from '../app/components/map.component';
-// import { LeafletModule} from '@asymmetrik/ngx-leaflet';
+import { LeafletModule} from '@asymmetrik/ngx-leaflet';
 
 import { MarkerService } from './services/markers.service';
+import { BoxplotComponent } from './components/boxplot/boxplot.component';
+// import { MapAreaComponent } from './components/map-area.component';
+import * as PlotlyJS from 'plotly.js/dist/plotly.js';
+import { PlotlyModule } from 'angular-plotly.js';
+import { MixedChartComponent } from './components/mixed-chart/mixed-chart.component';
+import { ChartsModule } from 'ng2-charts';
+import { from } from 'rxjs';
+import { MapAreaComponent } from '../app/components/map-area.component';
+
+PlotlyModule.plotlyjs = PlotlyJS;
 
 @NgModule({
   declarations: [
     AppComponent,
     MapComponent,
-    GraphComponent
+    GraphComponent,
+    BoxplotComponent,
+    MixedChartComponent,
+    MapAreaComponent
   ],
   imports: [
     BrowserModule,
@@ -25,7 +38,9 @@ import { MarkerService } from './services/markers.service';
     FormsModule,
     HttpClientModule,    
     AppRoutingModule,
-    // LeafletModule
+    LeafletModule,
+    PlotlyModule,
+    ChartsModule
   ],
   providers: [MarkerService],
   bootstrap: [AppComponent]

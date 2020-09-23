@@ -3,6 +3,7 @@ export interface Temp {
     s432301: any
     day : any
     month : any
+    year : any
     date: any
     
 }
@@ -20,4 +21,10 @@ export interface meanplot{
     300201 : any
     432301 : any
     583201 : any
+}
+
+export interface varmonth{
+    Dec : any
+    Jan : any
+    Feb : any
 }
