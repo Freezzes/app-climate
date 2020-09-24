@@ -29,6 +29,8 @@ export class GraphComponent implements OnInit {
     this.dataMeanDB = await this.tempService.getMeanDB();
   }
 
+  //---------------------------------------------------------------------------------------------------
+
   async plotMean() {
     let dataPoints1 = []
     let dataPoints2 = []
