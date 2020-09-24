@@ -1,1 +1,29 @@
 /* You can add global styles to this file, and also import other style files */
+body {
+    font: 400 15px Lato, sans-serif;
+    line-height: 1.8;
+    color: #818181;
+  }
+  .navbar {
+      margin-bottom: 0;
+      background-color: #B3E5FC ;
+      z-index: 9999;
+      border: 0;
+      font-size: 20px !important;
+      line-height: 1.42857143 !important;
+      letter-spacing: 4px;
+      border-radius: 0;
+      font-family: Montserrat, sans-serif;
+    }
+    .navbar li a, .navbar .navbar-brand {
+      color: rgb(206, 215, 228) !important;
+      text-align: left ;
+    }
+    .navbar-nav li a:hover, .navbar-nav li.active a {
+      color: #B3E5FC !important;
+      background-color: rgb(207, 211, 218) !important;
+    }
+    .navbar-default .navbar-toggle {
+      border-color: transparent;
+      color: rgb(116, 165, 240) !important;
+    }

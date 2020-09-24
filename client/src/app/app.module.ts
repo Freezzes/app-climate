@@ -11,13 +11,17 @@ import { GraphComponent } from '../app/components/graph.component';
 import { MapComponent } from '../app/components/map.component';
 import { SelectplotComponent } from './components/selectplot.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { TestfunctionComponent } from './components/testfunction.component';
+import { NgbModule} from '@ng-bootstrap/ng-bootstrap';
+
 
 @NgModule({
   declarations: [
     AppComponent,
     MapComponent,
     GraphComponent,
-    SelectplotComponent
+    SelectplotComponent,
+    TestfunctionComponent
   ],
   imports: [
     BrowserModule,
@@ -26,7 +30,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     HttpClientModule,    
     AppRoutingModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgbModule
 
   ],
   providers: [],

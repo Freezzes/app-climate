@@ -52,6 +52,17 @@ export class TempService {
         return result;
     }
 
+    async getrangeyear(station:string,startyear:string,endyear:string,startmonth:string,endmonth:string,startday:string,endday:string):Promise<Observable<any>> {   
+        return this.http.get('http://127.0.0.1:5500/api' +
+                         `/rangeyear?station=${station}&startyear=${startyear}&endyear=${endyear}&startmonth=${startmonth}&endmonth=${endmonth}&startday=${startday}&endday=${endday}`)
+                         
+    }
+
+    async getrangecsv(station:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string):Promise<Observable<any>> {   
+        return this.http.get('http://127.0.0.1:5500/api' +
+                         `/rangecsv?station=${station}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`)
+                         
+    }
 
 
 }

@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <title>Climate</title>
@@ -7,7 +8,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
+
 <body>
+  <nav class="navbar navbar-default navbar-fixed-top" style="background-color: rgb(67, 134, 223);">
+    <div class="container">
+      <div class="navbar-header">
+        <a class="navbar-brand">Climate Change</a>
+      </div>
+      <div class="collapse navbar-collapse " id="myNavbar">
+        <ul class="nav navbar-nav ">
+          <li><a routerLink="/temp">Region Base</a></li>
+          <li><a routerLink="/plot">Station Base</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
   <app-root></app-root>
 </body>
+
 </html>

@@ -8,6 +8,9 @@ import { from, range } from 'rxjs';
 import { Router } from '@angular/router';
 import { Hero } from '../interfaces/temp.interface';
 import { FormControl, FormGroup, Validators} from '@angular/forms';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import {NgbDate, NgbCalendar, NgbDateParserFormatter} from '@ng-bootstrap/ng-bootstrap';
+
 
 
 @Component({
@@ -18,10 +21,29 @@ import { FormControl, FormGroup, Validators} from '@angular/forms';
 })
 
 export class SelectplotComponent implements OnInit {
+  hoveredDate: NgbDate | null = null;
 
-  constructor(
-    private tempService: TempService
-  ) { }  
+  fromDate: NgbDate;
+  toDate: NgbDate | null = null;
+  public dataplot = [];
+  public dataplotcsv = [];
+  public stationyear;
+  public startyear;
+  public endyear;
+  public startmonth;
+  public endmonth;
+  public startday;
+  public endday;
+  public stopyear;
+  public stopmonth;
+  public stationselected;
+
+  constructor(private calendar: NgbCalendar, public formatter:NgbDateParserFormatter, private tempService: TempService) {
+    this.fromDate = calendar.getToday();
+    this.toDate = calendar.getNext(calendar.getToday(), 'd', 10);
+    
+  }
+ 
     public dataTemp;
     public dataMean;
     public dataMeanDB;
@@ -56,9 +78,62 @@ export class SelectplotComponent implements OnInit {
       this.dataMeanDB = await this.tempService.getMeanDB();
     }
 
+    async showcsv(){
+      this.startyear = String(this.fromDate.year)
+      this.startmonth = String(this.fromDate.month)
+      this.stationyear = this.stationselected
+      this.stopyear = String(this.toDate.year)
+      this.stopmonth = String(this.toDate.month)
+      await this.tempService.getrangecsv(this.stationyear,this.startyear,this.stopyear,this.startmonth,this.stopmonth).then(data => data.subscribe(
+        res => { 
+        this.dataplotcsv = [];
+          this.dataplotcsv.push(res)
+        }
+      ))
+      console.log("start: ",this.dataplotcsv,this.stationyear)
+    }
+  
+    onDateSelection(date: NgbDate) {
+      if (!this.fromDate && !this.toDate) {
+        this.fromDate = date;
+      } else if (this.fromDate && !this.toDate && date.after(this.fromDate)) {
+        this.toDate = date;
+      } else {
+        this.toDate = null;
+        this.fromDate = date;
+      }
+    }
+  
+    isHovered(date: NgbDate) {
+      return this.fromDate && !this.toDate && this.hoveredDate && date.after(this.fromDate) && date.before(this.hoveredDate);
+    }
+  
+    isInside(date: NgbDate) {
+      return this.toDate && date.after(this.fromDate) && date.before(this.toDate);
+    }
+  
+    isRange(date: NgbDate) {
+      return date.equals(this.fromDate) || (this.toDate && date.equals(this.toDate)) || this.isInside(date) || this.isHovered(date);
+    }
+    validateInput(currentValue: NgbDate | null, input: string): NgbDate | null {
+      const parsed = this.formatter.parse(input);
+      return parsed && this.calendar.isValid(NgbDate.from(parsed)) ? NgbDate.from(parsed) : currentValue;
+    }
+
   getstation = new FormGroup({
     station: new FormControl('', Validators.required)
   });
+  async getstationcode(){
+    let s = this.getstation.value
+    let select
+
+    // GET STATION CODE
+    for (let value of Object.values(s)) {
+      select = value
+      var splitted = select.split("-"); 
+      this.stationselected = splitted[0];
+    }
+  }
 
   async submit(){
     let s = this.getstation.value
@@ -83,7 +158,6 @@ export class SelectplotComponent implements OnInit {
           }
         }
       }
-
     })
     const lineChart = new Chart('lineChart', { 
       type: 'line', 
@@ -115,6 +189,4 @@ export class SelectplotComponent implements OnInit {
       }
     }
   )}
-  
-
 }
