@@ -31,6 +31,7 @@ export class NetcdfComponent implements OnInit {
 
     ngOnInit(): void {
         this.map.draw_map('map');
+        // this.map.draw_graticule('map');
         
         
         // var gridSize = 100,  

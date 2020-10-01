@@ -33,6 +33,8 @@
     "angular-plotly.js": "^3.0.0",
     "angular2-chartjs": "^0.5.1",
     "canvasjs": "^1.8.3",
+    "d3": "^6.2.0",
+    "d3-scale": "^3.2.3",
     "highcharts": "^8.2.0",
     "highcharts-angular": "^2.8.0",
     "leaflet-map": "^0.2.1",
