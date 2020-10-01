@@ -20,6 +20,8 @@ import { MixedChartComponent } from './components/mixed-chart/mixed-chart.compon
 import { ChartsModule } from 'ng2-charts';
 import { from } from 'rxjs';
 import { MapAreaComponent } from '../app/components/map-area.component';
+import { HighchartsChartModule } from 'highcharts-angular';
+import { NetcdfComponent } from './components/netcdf/netcdf.component';
 
 PlotlyModule.plotlyjs = PlotlyJS;
 
@@ -30,7 +32,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     GraphComponent,
     BoxplotComponent,
     MixedChartComponent,
-    MapAreaComponent
+    MapAreaComponent,
+    NetcdfComponent
   ],
   imports: [
     BrowserModule,
@@ -40,7 +43,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     AppRoutingModule,
     LeafletModule,
     PlotlyModule,
-    ChartsModule
+    ChartsModule,
+    HighchartsChartModule
   ],
   providers: [MarkerService],
   bootstrap: [AppComponent]

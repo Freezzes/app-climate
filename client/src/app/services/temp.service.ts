@@ -57,4 +57,11 @@ export class TempService {
         console.log("!!!!!!!!!!!!!!",result)
         return result;
     }
+
+    async getrangecsv(startyear:string,stopyear:string,startmonth:string,stopmonth:string):Promise<Observable<any>> {   
+        return this.http.get('http://127.0.0.1:5500/api' +
+                         `/rangecsv?startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`)
+                         
+    }
+
 }

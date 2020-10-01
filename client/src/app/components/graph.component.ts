@@ -38,7 +38,6 @@ export class GraphComponent implements OnInit {
   }
 
   async Boxplot() {
-    console.log(this.march)
     let result = [];
     let result1 = [];
     let result2 = [];

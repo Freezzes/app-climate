@@ -1,7 +1,7 @@
 .pad{
     font-family: Montserrat, sans-serif;
     margin-right: 10px;
-    padding-right: 10px;
+    padding-right: 50px;
     display: inline-block;
   }
   select{
@@ -11,8 +11,14 @@
 
   .selectzone {
     margin-top: 80px;
-    margin-left: 10px;
-    margin-bottom: 10px;
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-bottom: 30px;
+    padding-left: 40px;
+    padding-right: 40px;
+    height: 500px;
+    width: 1150px;
+
   }
   canvas {
     -moz-user-select: none;

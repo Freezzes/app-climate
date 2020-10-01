@@ -1,13 +1,23 @@
-<p>boxplot works!</p>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Attributions</title>
+    <!-- Pointer events polyfill for old browsers, see https://caniuse.com/#feat=pointer -->
+    <script src="https://unpkg.com/elm-pep"></script>
+    <style>
+      .map {
+        width: 100%;
+        height:400px;
+      }
+    </style>
+  </head>
+  <body>
+    <highcharts-chart
+      [Highcharts] = "highcharts" 
+      [options] = "chartOptions" 
+      style = "width: 80%; height: 400px; display: block;">
+    </highcharts-chart>
 
-
-<div class="selectzone">
-    <div class="pad">
-        <div class="map-container">
-            <div id="chartContainer" style="height: 300px; width: 100%;"></div>
-            <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-
-        </div>
-    </div>
-</div>
-  
+<button (click)= "showcsv(); "> PLOT </button>
+  </body>
+</html>

@@ -28,3 +28,7 @@ export interface varmonth{
     Jan : any
     Feb : any
 }
+
+export interface Map{
+    map:any
+}

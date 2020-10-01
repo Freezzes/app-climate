@@ -53,7 +53,7 @@ export class MapComponent implements OnInit {
   private initializeMapOptions() {
     this.mapOptions = {
       center: latLng(20, 100),
-      zoom: 5,
+      zoom: 4,
       layers: [
         L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=XpLRMwelrHFF0ZLB1h8m',{
             attribution:'<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
