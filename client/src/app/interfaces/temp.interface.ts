@@ -1,3 +1,5 @@
+import { LatLng } from 'leaflet';
+
 export interface Temp {
     s300201: any
     s432301: any
@@ -31,4 +33,12 @@ export interface varmonth{
 
 export interface Map{
     map:any
+}
+
+
+export interface NC{
+    type : any
+    geometry : any
+    coordinates : any
+    properties : any
 }

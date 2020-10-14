@@ -11,6 +11,7 @@ import matplotlib.dates as mdates
 import  netCDF4
 from pymongo import MongoClient
 from flask import request
+from netCDF4 import Dataset
 
 app = Flask(__name__)
 
@@ -87,7 +88,7 @@ def get_varmonth():
     result.append({2012: result1,2013: result2,2014:result3,2015:result4})
     c = list (result)
     c = pd.DataFrame(c)
-    print (c)
+    print (type(field['300201']))
     return jsonify(result)
     # groups2 = groups.to_json()
     # print(type(groups2))
@@ -148,6 +149,63 @@ def getmonth(station, month, year):
         l.append(data[station])
     return l
 
+#----------------------------------------------------------------------------------------------------------------------
+@app.route("/netcdf",methods=["POST"])
+def get_varlatlon():
+    ds = Dataset("C:/Mew/Project/cru_ts4.04.2011.2019.tmp.dat.nc")
+    temp = ds.variables['tmp'][:].filled()
+    lati = ds.variables['lat'][:]
+    lont = ds.variables['lon'][:]
+    times = ds.variables['time'][5:6]
+    temp = np.where(temp == 9.96921e+36, np.NaN, temp)
+    data = []
+    for i in range(len(times)) :
+        time = times[i]
+        for row in range(len(lati)) :
+            lat = lati[row]
+            for col in range(len(lont)) :
+                lon = lont[col]
+                x = temp[i, row, col]
+                times = np.float64(time)   
+                lats = np.float64(lat) 
+                lons = np.float64(lon)
+                Xs = np.float64(x) 
+                data.append({"time":times, "lat":lats, "lon":lons,"X": Xs})
+    print(type(lon))
+    # print("d")
+    return jsonify(data)
+##----------------------------------------------------------------------------------------------------------------------------------
+def get_latlon():
+    ds = Dataset("C:/Mew/Project/cru_ts4.04.2011.2019.tmp.dat.nc")
+    temp = ds.variables['tmp'][1:2,:,:].filled()
+    lati = ds.variables['lat'][:]
+    lont = ds.variables['lon'][:]
+    times = ds.variables['time'][1:2]
+    # temp = np.where(temp == 9.96921e+36, np.nan, temp)
+
+    data = []
+    for i in range(len(times)) :
+        time = times[i]
+        for row in range(len(lati)) :
+            lat = lati[row]
+            for col in range(len(lont)) :
+                lon = lont[col]
+                
+                x = temp[i, row, col]
+                times = np.float64(time)   
+                lats = np.float64(lat) 
+                lons = np.float64(lon)
+                Xs = np.float64(x) 
+                data.append({'time':times,'lat':lats,'lon': lons,'value': Xs})
+
+    return data
+
+datanc = get_latlon()
+print(datanc)
+@app.route("/test",methods=["GET"])
+def get_varnc():
+    print("read")
+    return jsonify(datanc)
 #----------------------------------------------------------------------------------------------------------------------
 # result = []
 # @app.route('/api/testcode', methods=['GET'])

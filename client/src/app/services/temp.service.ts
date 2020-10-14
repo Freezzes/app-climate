@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { HttpClient, HttpClientModule } from '@angular/common/http'
 import { Observable } from 'rxjs'
-import { Temp, Plot, meanplot,varmonth } from '../interfaces/temp.interface'
+import { Temp, Plot, meanplot,varmonth, NC } from '../interfaces/temp.interface'
 
 interface resp{
     data: []
@@ -64,4 +64,18 @@ export class TempService {
                          
     }
 
+    async get_nc(): Promise<Plot[]> {
+        let result = [];
+        this.http.get<NC[]>('http://127.0.0.1:5500/netcdf')
+            .subscribe(res => {
+                result.push(res);
+            })
+        console.log('result in get_nc',result)
+        return result;
+
+    }
+
+    getnc():Observable<NC[]> {
+        return this.http.get<NC[]>('http://127.0.0.1:5500/test');
+    }
 }
