@@ -170,20 +170,15 @@ export interface station5 {
     year : number
 }
 
-
-export class Hero {
-
-    constructor(
-      public id: number,
-      public name: string,
-      public power: string,
-      public alterEgo?: string
-    ) {  }
-  
-  }
-
   export interface st{
     300201 : any
     432301 : any
     583201 : any
+}
+
+export interface Missing{
+    x : any,
+    y : any,
+    value : any,
+    station : any
 }

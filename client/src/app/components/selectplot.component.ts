@@ -6,7 +6,6 @@ import { map } from 'rxjs/operators';
 import { Chart } from 'chart.js';
 import { from, range } from 'rxjs';
 import { Router } from '@angular/router';
-import { Hero } from '../interfaces/temp.interface';
 import { FormControl, FormGroup, Validators} from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import {NgbDate, NgbCalendar, NgbDateParserFormatter} from '@ng-bootstrap/ng-bootstrap';

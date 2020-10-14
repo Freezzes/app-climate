@@ -14,11 +14,8 @@ body {
     border-radius: 0;
     font-family: Montserrat, sans-serif;
   }
-  .navbar li a, .navbar .navbar-brand {
-    color: rgb(116, 165, 240) !important;
-    text-align: left ;
-  }
-  .navbar-nav li a:hover, .navbar-nav li.active a {
+
+  .li a:hover, .navbar-nav li.active a {
     color: #B3E5FC !important;
     background-color: rgb(116, 165, 240) !important;
   }
@@ -26,3 +23,19 @@ body {
     border-color: transparent;
     color: rgb(116, 165, 240) !important;
   }
+
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+  }
+  li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+  }
+  

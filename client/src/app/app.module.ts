@@ -13,7 +13,14 @@ import { SelectplotComponent } from './components/selectplot.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TestfunctionComponent } from './components/testfunction.component';
 import { NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { MissingvalueComponent } from './missingvalue/missingvalue.component';
+import * as PlotlyJS from 'plotly.js/dist/plotly.js';
+import { PlotlyModule } from 'angular-plotly.js';
+import { from } from 'rxjs';
+import { HighchartsChartModule } from 'highcharts-angular';
+import { HIGHCHARTS_MODULES, ChartModule } from 'angular-highcharts';
 
+PlotlyModule.plotlyjs = PlotlyJS;
 
 @NgModule({
   declarations: [
@@ -21,7 +28,8 @@ import { NgbModule} from '@ng-bootstrap/ng-bootstrap';
     MapComponent,
     GraphComponent,
     SelectplotComponent,
-    TestfunctionComponent
+    TestfunctionComponent,
+    MissingvalueComponent
   ],
   imports: [
     BrowserModule,
@@ -31,7 +39,10 @@ import { NgbModule} from '@ng-bootstrap/ng-bootstrap';
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    NgbModule
+    NgbModule,
+    PlotlyModule,
+    HighchartsChartModule,
+    ChartModule
 
   ],
   providers: [],

@@ -67,7 +67,7 @@ def getmonthdata():
     year = request.args.get("year")
     station = request.args.get("station")
     l = []
-    data = mongo.db.tmean.find({ "$and" : [{ "month" : int(month) }, { "year" : int(year) } ] } ,
+    data = mongo.db.test.find({ "$and" : [{ "month" : int(month) }, { "year" : int(year) } ] } ,
                                 {station:1})
     for d in data:
         l.append(d[station])
@@ -84,7 +84,6 @@ def getmonthrange():
     for post in mongo.db.tmean.find({"year": {"$gte": from_date, "$lt": to_date}  } ):
         print(post)
         l.append(post[station])
-    print(len(l))
     return jsonify(l)  
 
 #-----------------------------------------------------------------------
@@ -104,15 +103,6 @@ def getvalueselect():
                                               '$lt': datetime.datetime(endyear,endmonth,endday, 0, 0) }},
                                     {station:1}):
         print(data)
-        # ({"date":{'$gte': { "$and" : [{ "month" : int(startmonth) }, { "year" : int(startyear) }]},
-        #            '$lt': { "$and" : [{ "month" : int(endmonth) }, { "year" : int(endyear) } ] },
-        #                             {station:1}):
-   
-    
-    # ({ "$and" : [{"month": {"$gte": startmonth, "$lt": endmonth}  }, 
-    #                                             {"date": {"$gte": startyear, "$lt": endyear}  } ] } ,
-                                    # ):      
-        # l.append({"value":data[station],"month":data["month"],"year":data["year"]})
         l.append(data[station])
 
     for i in range(len(l)):
@@ -236,6 +226,55 @@ def st():
     return jsonify(result)
 
 #-----------------------------------------------------------------------------------------------------
+datameantemp = pd.read_csv("C:/Users/ice/Documents/climate/TMD_DATA/TMD_DATA/clean_data/tmean1951-2015.csv")
+ds = pd.read_csv("C:/Users/ice/Documents/climate/TMD_DATA/TMD_DATA/clean_data/tmean_station_startyear.csv")
+ind = []
+for i in range(len(ds['code'])):
+    ind.append(ds['code'][i])
+def getpercent(year,st):
+    station = str(st)
+    df1 = datameantemp.query('year == {}'.format(year))
+    select = df1[[station,"year"]].to_json(orient='records')
+    missing = df1[[station]].isna().sum()
+    all_row = len(df1[station])
+    percent = (missing[0]/all_row)*100
+    return percent
+def getmissing():
+    d = {}
+    j = 0
+    list_dict = []
+    for c in datameantemp.columns[:-4]:
+        if int(c) in ind:
+            ye = ds.loc[(ds["code"] == int(c)) ]["year"]
+            year_m = int(ye)
+            for y in range(1951,2021):
+                if j == 1000:
+                    break
+                va = getpercent(y,c)
+                if str(va) != str(np.nan) :
+                    if y < year_m:
+                        d['station'] = c
+                        d['y'] = y
+                        d['value'] = "-"
+                        d['x'] = int(ind.index(int(c)))  
+                    else:
+                        va = int(va)
+                        d['station'] = c
+                        d['x'] = ind.index(int(c)) 
+                        d['y'] = y
+                        d['value'] = va
+                    list_dict.append(d)
+                    d = {}
+                    j +=1
+    return list_dict
+data = getmissing()
+
+@app.route('/api/missing', methods=['GET'])
+def getmissingvalue():
+    # data = { "station": "300201","value": "-","x": 0,"y": 1952},{ "station": "300201", "value": "-", "x": 0, "y": 1953 },{ "station": "300201", "value": 44,"x": 0,"y": 1954 },{ "station": "300201", "value": 0, "x": 0,"y": 1955}
+    return jsonify(data)
+
+#----------------------------------------------------------------------
 if __name__ == '__main__':
     app.run(debug=True, port= 5500)
 

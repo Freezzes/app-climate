@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { HttpClient, HttpClientModule } from '@angular/common/http'
 import { Observable } from 'rxjs'
-import { Temp, Plot, meanplot, station5, st } from '../interfaces/temp.interface'
+import { Temp, Plot, meanplot, station5, st, Missing } from '../interfaces/temp.interface'
 
 @Injectable()
 export class TempService {
@@ -62,6 +62,20 @@ export class TempService {
         return this.http.get('http://127.0.0.1:5500/api' +
                          `/rangecsv?station=${station}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`)
                          
+    }
+
+
+    async getMissed(): Promise<Missing[]> {
+        let result = [];
+        this.http.get<Missing[]>('http://127.0.0.1:5500/api/missing')
+            .subscribe(res => {
+                result.push(res);
+            })
+        return result;
+    }
+
+    getData(){
+        return this.http.get('http://127.0.0.1:5500/api/missing')
     }
 
 
