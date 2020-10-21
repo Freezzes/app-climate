@@ -64,6 +64,13 @@ export class TempService {
                          
     }
 
+    async getboxvalue(station:string,start_date:string,end_date:string):Promise<Observable<any>>{
+        // let datalist = [];
+        //     res => datalist.push(res)
+        // )
+        return this.http.get('http://127.0.0.1:5500/api'+
+                        `/boxplotvalue?station=${station}&start_date=${start_date}&end_date=${end_date}`)
+    }
 
     async getMissed(): Promise<Missing[]> {
         let result = [];
@@ -77,6 +84,7 @@ export class TempService {
     getData(){
         return this.http.get('http://127.0.0.1:5500/api/missing')
     }
+
 
 
 }

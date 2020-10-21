@@ -234,45 +234,83 @@ for i in range(len(ds['code'])):
 def getpercent(year,st):
     station = str(st)
     df1 = datameantemp.query('year == {}'.format(year))
-    select = df1[[station,"year"]].to_json(orient='records')
+    # select = df1[[station,"year"]].to_json(orient='records')
     missing = df1[[station]].isna().sum()
     all_row = len(df1[station])
     percent = (missing[0]/all_row)*100
     return percent
+ss = [300201,431401]
+startyear = 1951
+endyear = 1999
 def getmissing():
     d = {}
     j = 0
     list_dict = []
-    for c in datameantemp.columns[:-4]:
-        if int(c) in ind:
-            ye = ds.loc[(ds["code"] == int(c)) ]["year"]
-            year_m = int(ye)
-            for y in range(1951,2021):
-                if j == 1000:
-                    break
-                va = getpercent(y,c)
-                if str(va) != str(np.nan) :
-                    if y < year_m:
-                        d['station'] = c
-                        d['y'] = y
-                        d['value'] = "-"
-                        d['x'] = int(ind.index(int(c)))  
-                    else:
-                        va = int(va)
-                        d['station'] = c
-                        d['x'] = ind.index(int(c)) 
-                        d['y'] = y
-                        d['value'] = va
-                    list_dict.append(d)
-                    d = {}
-                    j +=1
+    for station in datameantemp.columns[:-4]:
+        for stationselect in ss:
+            if int(stationselect) in ind:
+                ye = ds.loc[(ds["code"] == int(stationselect)) ]["year"]
+                year_m = int(ye)
+                for y in range(startyear,(endyear+1)):
+    #                 if j == 1000:
+    #                     break
+                    va = getpercent(y,stationselect)
+                    if str(va) != str(np.nan) :
+                        if y < year_m:
+                            d['station'] = stationselect
+                            d['x'] = int(ind.index(int(stationselect)))  
+                            d['y'] = y
+                            d['value'] = "-"
+                        else:
+                            va = int(va)
+                            d['station'] = stationselect
+                            d['x'] = ind.index(int(stationselect)) 
+                            d['y'] = y
+                            d['value'] = va
+                        if d in list_dict:
+                            pass
+                        else:
+                            list_dict.append(d)
+                        d = {}
+                        j +=1
     return list_dict
 data = getmissing()
 
 @app.route('/api/missing', methods=['GET'])
 def getmissingvalue():
-    # data = { "station": "300201","value": "-","x": 0,"y": 1952},{ "station": "300201", "value": "-", "x": 0, "y": 1953 },{ "station": "300201", "value": 44,"x": 0,"y": 1954 },{ "station": "300201", "value": 0, "x": 0,"y": 1955}
     return jsonify(data)
+
+#--------------------------------------------------------------------------------------
+@app.route('/api/boxplotvalue', methods=['GET'])
+def byear():
+    all_data = []
+    station = request.args.get("station")
+    start_date = request.args.get("start_date")
+    end_date = request.args.get("end_date")
+    print("date : ", start_date,end_date,station)
+ 
+    mask = (df['date'] >= start_date) & (df['date'] <= end_date)
+    data = df.loc[mask]
+    data['date'] = pd.to_datetime(data['date'])
+    data['month'] = data['date'].dt.to_period("M")
+    minvalue = data.groupby(pd.Grouper(key='date', freq='M')).min() 
+    maxvalue = data.groupby(pd.Grouper(key='date', freq='M')).max() 
+    meanvalue = data.groupby(pd.Grouper(key='date', freq='M')).mean() 
+
+    Q1 = data.groupby('month').quantile(0.25)
+    Q3 = data.groupby('month').quantile(0.75)
+    list11 = minvalue[station], Q1[station], meanvalue[station], Q3[station], maxvalue[station]
+    all_data = []
+    for i in range(len(list11[0])):
+        temp = []
+        for j in range(len(list11)):
+            if str(list11[j][i]) == str(np.nan):
+                temp.append('-') 
+            else:
+                temp.append(list11[j][i])
+        all_data.append(temp)   
+    print(all_data)
+    return jsonify(all_data)
 
 #----------------------------------------------------------------------
 if __name__ == '__main__':

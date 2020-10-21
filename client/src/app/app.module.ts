@@ -19,6 +19,7 @@ import { PlotlyModule } from 'angular-plotly.js';
 import { from } from 'rxjs';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { HIGHCHARTS_MODULES, ChartModule } from 'angular-highcharts';
+import { BoxplotComponent } from './boxplot/boxplot.component';
 
 PlotlyModule.plotlyjs = PlotlyJS;
 
@@ -29,7 +30,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     GraphComponent,
     SelectplotComponent,
     TestfunctionComponent,
-    MissingvalueComponent
+    MissingvalueComponent,
+    BoxplotComponent
   ],
   imports: [
     BrowserModule,

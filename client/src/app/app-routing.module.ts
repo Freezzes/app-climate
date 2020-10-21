@@ -5,12 +5,14 @@ import { MapComponent } from '../app/components/map.component';
 import { SelectplotComponent } from '../app/components/selectplot.component';
 import { TestfunctionComponent } from '../app/components/testfunction.component';
 import { MissingvalueComponent } from './missingvalue/missingvalue.component';
+import { BoxplotComponent } from './boxplot/boxplot.component';
 const routes: Routes = [
   { path: 'plot', component: GraphComponent },
   { path: 'temp', component: MapComponent },
   { path: 'select', component: SelectplotComponent },
   { path: 'testfunction', component: TestfunctionComponent},
-  { path: 'missingvalue', component: MissingvalueComponent }
+  { path: 'missingvalue', component: MissingvalueComponent },
+  { path: 'boxplot', component:BoxplotComponent}
 ];
 
 @NgModule({
