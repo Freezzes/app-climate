@@ -1,4 +1,4 @@
-body {
+/* body {
   font: 400 15px Lato, sans-serif;
   line-height: 1.8;
   color: #818181;
@@ -25,4 +25,42 @@ body {
   .navbar-default .navbar-toggle {
     border-color: transparent;
     color: #fff !important;
+  } */
+
+
+  * {
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  
+  body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  
+  /* Style the top navigation bar */
+  .topnav {
+    overflow: hidden;
+    background-color: #5194fa;
+  }
+  
+  /* Style the topnav links */
+  .topnav a {
+    float: left;
+    display: block;
+    color: #B3E5FC;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+  }
+  
+  /* Change color on hover */
+  .topnav a:hover {
+    background-color: #79ace6 ;
+  }
+  
+  /* Style the content */
+  .content {
+    padding: 10px;
+    
   }

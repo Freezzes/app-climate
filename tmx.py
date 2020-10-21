@@ -12,6 +12,9 @@ import  netCDF4
 from pymongo import MongoClient
 from flask import request
 from netCDF4 import Dataset
+from dateutil.relativedelta import relativedelta
+import datetime
+import json
 
 app = Flask(__name__)
 
@@ -34,7 +37,7 @@ def get_value():
         result.append({"s300201": field['300201'],"s432301": field['432301'],"day":field['day'],"month":field['month'],"year":field['year'],"date": date.strftime("%Y-%m-%d") })
     c = list (result)
     c = pd.DataFrame(c)
-    print (c)
+    # print (c)
     return jsonify(result)
 
 @app.route('/api/month', methods=['GET']) 
@@ -88,7 +91,7 @@ def get_varmonth():
     result.append({2012: result1,2013: result2,2014:result3,2015:result4})
     c = list (result)
     c = pd.DataFrame(c)
-    print (type(field['300201']))
+    # print (type(field['300201']))
     return jsonify(result)
     # groups2 = groups.to_json()
     # print(type(groups2))
@@ -102,8 +105,8 @@ def meantem():
     df = pd.DataFrame(t)    
     groups = df.groupby('month').mean()
     groups2 = groups.to_json()
-    print(type(groups2))
-    print(groups2)
+    # print(type(groups2))
+    # print(groups2)
     return groups2
 
 @app.route('/api/plot', methods=['GET'])
@@ -149,63 +152,66 @@ def getmonth(station, month, year):
         l.append(data[station])
     return l
 
-#----------------------------------------------------------------------------------------------------------------------
-@app.route("/netcdf",methods=["POST"])
-def get_varlatlon():
-    ds = Dataset("C:/Mew/Project/cru_ts4.04.2011.2019.tmp.dat.nc")
-    temp = ds.variables['tmp'][:].filled()
-    lati = ds.variables['lat'][:]
-    lont = ds.variables['lon'][:]
-    times = ds.variables['time'][5:6]
-    temp = np.where(temp == 9.96921e+36, np.NaN, temp)
-    data = []
-    for i in range(len(times)) :
-        time = times[i]
-        for row in range(len(lati)) :
-            lat = lati[row]
-            for col in range(len(lont)) :
-                lon = lont[col]
-                x = temp[i, row, col]
-                times = np.float64(time)   
-                lats = np.float64(lat) 
-                lons = np.float64(lon)
-                Xs = np.float64(x) 
-                data.append({"time":times, "lat":lats, "lon":lons,"X": Xs})
-    print(type(lon))
-    # print("d")
-    return jsonify(data)
 ##----------------------------------------------------------------------------------------------------------------------------------
 def get_latlon():
-    ds = Dataset("C:/Mew/Project/cru_ts4.04.2011.2019.tmp.dat.nc")
+    ds = Dataset("C:/Mew/Project/cru_ts4.04.1901.2019.tmp.dat.nc")
     temp = ds.variables['tmp'][1:2,:,:].filled()
     lati = ds.variables['lat'][:]
     lont = ds.variables['lon'][:]
     times = ds.variables['time'][1:2]
-    # temp = np.where(temp == 9.96921e+36, np.nan, temp)
+    
+    list1 = []
+    for i in times.data:
+        dtest = datetime.datetime.fromordinal(int(i)) + relativedelta(years=1899)
+        dtime = dtest.strftime("%Y-%m-%d")
+        ddtime = pd.to_datetime(dtime)
+        list1.append(ddtime)
 
+    list1 = pd.to_datetime(list1)
+    # print(list1)
     data = []
     for i in range(len(times)) :
         time = times[i]
+        t = list1[i]
         for row in range(len(lati)) :
             lat = lati[row]
             for col in range(len(lont)) :
                 lon = lont[col]
-                
                 x = temp[i, row, col]
-                times = np.float64(time)   
+    #             timess = pd.to_datetime(t)   
                 lats = np.float64(lat) 
                 lons = np.float64(lon)
                 Xs = np.float64(x) 
-                data.append({'time':times,'lat':lats,'lon': lons,'value': Xs})
+                data.append({'time':t,'lat':lats,'lon': lons,'value': Xs})
 
     return data
 
 datanc = get_latlon()
-print(datanc)
+# print(datanc)
 @app.route("/test",methods=["GET"])
 def get_varnc():
-    print("read")
+    # print("read")
     return jsonify(datanc)
+#----------------------------------------------------------------------------------------------------------------------
+@app.route("/nc_csv",methods=["GET"])
+def get_tomap():
+    startyear = int(request.args.get("startyear"))
+    stopyear = int(request.args.get("stopyear"))
+    startmonth = int(request.args.get("startmonth"))
+    stopmonth = int(request.args.get("stopmonth"))
+    print("year",startyear)
+    ds = pd.read_csv("C:/Mew/Project/tmp_2012-2016/tmp8_1907.csv")
+    df1 = ds.query('{} <= year <= {} &  {} <=month<= {}'.format(startyear,stopyear,startmonth,stopmonth))
+    select = df1[['lat','lon','values']].to_json(orient='records')
+    select = json.loads(select)
+    return jsonify(select)
+
+# datamap = get_tomap()
+# print(datamap)
+# @app.route("/nc_csv",methods=["GET"])
+# def get_mapnc():
+    # print("read")
+    # return jsonify(datamap)
 #----------------------------------------------------------------------------------------------------------------------
 # result = []
 # @app.route('/api/testcode', methods=['GET'])

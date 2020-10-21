@@ -9,7 +9,8 @@ var colorScale = d3.scaleThreshold()
     .domain([-20,-15, -10,-5, 0,5, 10,15, 20,25,30])
     .range(['#15288a', '#3a54a4', '#a3d3e6','#a5f6fa','#fff7b3','#ffd633','#f7b64e','#f7a04e','#f7844e','#fc3b05', '#bd1726' ]);
 
-export function draw_map(target,geojsonObject) {
+export function draw_map(target) {
+  // clearLayers(map)
 //---------------------map-------------------------------------------------
   var style = new ol.style.Style({
     fill: new ol.style.Fill({
@@ -26,7 +27,7 @@ export function draw_map(target,geojsonObject) {
       url: './assets/map/geo-medium.json',
       format: new ol.format.GeoJSON(),
       wrapX: false,
-      // zoom:2,
+      zoom:1,
       minZoom: 1,
       maxZoom: 6  
     }),
@@ -71,8 +72,10 @@ export function draw_map(target,geojsonObject) {
     })
   });
 
-    var datalayer = genGridData(geojsonObject);
-    map.addLayer(datalayer);
+    // var datalayer = genGridData(geojsonObject);
+    // console.log('data',datalayer)
+    // map.removeLayer(datalayer);
+    // map.addLayer(datalayer);
 
 //-------------------------grid-----------------------------------------------------------------------
   const minor_gratucule = new ol.Graticule({
@@ -110,7 +113,12 @@ export function draw_map(target,geojsonObject) {
       $("#selectedCountryName").text("None");
     }
   });  
-
+  const a = map.getLayers().getArray()
+  console.log("layer",map.getLayers())
+  console.log("array",a)
+  // console.log("array0",a[0])
+  // console.log("array1",a[1])
+  // console.log("array2",a[2])
   return map
 }
 
@@ -185,8 +193,8 @@ export function convert_to_geojson(data){
   };
 
   for (var i =0; i< data.length ;i++) {
-    let value = data[i].value;
-    if (String(value) == String("9.969209968386869e+36") ){
+    let value = data[i].values;
+    if (String(value) == String("9.969209968e+36") ){
       value = null
    }
   
@@ -205,7 +213,20 @@ export function convert_to_geojson(data){
   
 export function clearLayers(map){
   const layers = map.getLayers().getArray()
-  for(var i=layers.length; i>=1; i--) {
+  console.log("Clayer",layers)
+  console.log(layers.length)
+  for(var i=layers.length; i>=2; i--) {
     map.removeLayer(layers[i]);
+    console.log(i,layers[i])
+    // console.log("g")
   }
+  console.log("c",map.getLayers().getArray());
+  // layers.length = ;
+  // console.log("clear work")
 }
+
+
+
+
+
+

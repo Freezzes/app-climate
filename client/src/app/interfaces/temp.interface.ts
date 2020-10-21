@@ -42,3 +42,10 @@ export interface NC{
     coordinates : any
     properties : any
 }
+export interface NC_csv{
+    lat : any
+    lon : any
+    temp : any
+    year : any
+    month : any
+}

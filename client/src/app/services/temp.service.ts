@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { HttpClient, HttpClientModule } from '@angular/common/http'
 import { Observable } from 'rxjs'
-import { Temp, Plot, meanplot,varmonth, NC } from '../interfaces/temp.interface'
+import { Temp, Plot, meanplot,varmonth, NC ,NC_csv} from '../interfaces/temp.interface'
 
 interface resp{
     data: []
@@ -78,4 +78,10 @@ export class TempService {
     getnc():Observable<NC[]> {
         return this.http.get<NC[]>('http://127.0.0.1:5500/test');
     }
+
+    async get_testnc_csv(startyear:string,stopyear:string,startmonth:string,stopmonth:string):Promise<Observable<any>> {
+        return this.http.get('http://127.0.0.1:5500' +
+        `/nc_csv?startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`);
+    }
+
 }

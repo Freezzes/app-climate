@@ -13,7 +13,7 @@ const routes: Routes = [
   { path: 'test', component:MixedChartComponent },
   { path: 'boxplot', component:BoxplotComponent },
   { path: 'maparea', component:MapAreaComponent },
-  { path: 'nc', component:NetcdfComponent}
+  { path: '', component:NetcdfComponent}
 ];
 
 @NgModule({
