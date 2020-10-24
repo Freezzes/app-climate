@@ -3,18 +3,17 @@
   <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
 </head>
 <body>
-<div class="container">
+<div>
     <div >
-      <h1>Select Station</h1>
+      <h5>Select Station</h5>
       <form [formGroup]="getstation"> 
         <div class="form-group">
           <label for="station">STATION</label>
-          <select formControlName="station" class="form-control">
+          <select formControlName="station" class="form-control"  >
             <option *ngFor="let st of station">{{st.id}}-{{st.name}}</option>
           </select>
         </div>
       </form>
-
     </div>
 </div>
 

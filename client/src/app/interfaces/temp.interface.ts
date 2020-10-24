@@ -182,3 +182,10 @@ export interface Missing{
     value : any,
     station : any
 }
+export interface NC_csv{
+    lat : any
+    lon : any
+    temp : any
+    year : any
+    month : any
+}

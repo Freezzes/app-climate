@@ -1,5 +1,3 @@
-<br><br><br><p>missingvalue works!</p>
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -13,10 +11,46 @@
       }
     </style>
   </head>
-  <body>  
+  <body>
+    <form [formGroup]="choosefile"> 
+      <div class="form-group">
+        <label for="file">Select dataset : </label>
+        <select formControlName="file" class="form-control">
+          <option *ngFor="let f of filename">{{f.name}}</option>
+        </select>
+      </div>
+    </form>
 
-  <!-- <button (click)= "showcsv();"> PLOT </button> -->
-  <button (click)= "selectdata();"> get data </button>
+    <form [formGroup]="myForm">
+      <ng-multiselect-dropdown
+          name="city"
+          [placeholder]="'Select Station'"
+          [settings]="dropdownSettings"
+          [data]="StationList"
+          formControlName="city"
+          [disabled]="disabled"
+          (onSelect)="onItemSelect($event)"
+          (onSelectAll)="onSelectAll($event)">
+      </ng-multiselect-dropdown>
+  </form>
+  <form [formGroup]="sstartyear"> 
+    <div class="form-group">
+      <label for="syear">Start year : </label>
+      <select formControlName="syear" class="form-control">
+        <option *ngFor="let y of yearList">{{y}}</option>
+      </select>
+    </div>
+  </form>
+  <form [formGroup]="eendyear"> 
+    <div class="form-group">
+      <label for="eyear">Stop year : </label>
+      <select formControlName="eyear" class="form-control">
+        <option *ngFor="let y of yearList">{{y}}</option>
+      </select>
+    </div>
+  </form>
+  <button (click)= "selectmiss();"> PLOT </button>
+  <!-- <button (click)= "selectdata();"> Plot </button> -->
     <div *ngIf="check=='check'">
       <highcharts-chart
         [Highcharts]="highcharts" 

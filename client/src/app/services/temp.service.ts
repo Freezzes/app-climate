@@ -65,9 +65,6 @@ export class TempService {
     }
 
     async getboxvalue(station:string,start_date:string,end_date:string):Promise<Observable<any>>{
-        // let datalist = [];
-        //     res => datalist.push(res)
-        // )
         return this.http.get('http://127.0.0.1:5500/api'+
                         `/boxplotvalue?station=${station}&start_date=${start_date}&end_date=${end_date}`)
     }
@@ -80,9 +77,18 @@ export class TempService {
             })
         return result;
     }
+    async getmissing(sta:string,startyear:string,stopyear:string,dff:string):Promise<Observable<any>>{
+        return this.http.get('http://127.0.0.1:5500/api'+
+                        `/selectmissing?sta=${sta}&startyear=${startyear}&stopyear=${stopyear}&dff=${dff}`
+        )}
 
     getData(){
         return this.http.get('http://127.0.0.1:5500/api/missing')
+    }
+
+    async get_testnc_csv(startyear:string,stopyear:string,startmonth:string,stopmonth:string):Promise<Observable<any>> {
+        return this.http.get('http://127.0.0.1:5500' +
+        `/nc_csv?startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`);
     }
 
 

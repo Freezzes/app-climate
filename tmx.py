@@ -150,6 +150,7 @@ def get_rain5():
 
     return jsonify(rain5)
 
+rain = pd.read_csv("C:/Users/ice/Documents/climate/TMD_DATA/TMD_DATA/clean_data/rain1951-2018.csv")
 @app.route('/api/rain', methods=['GET'])
 def get_rain():
     k = []
@@ -239,50 +240,88 @@ def getpercent(year,st):
     all_row = len(df1[station])
     percent = (missing[0]/all_row)*100
     return percent
-ss = [300201,431401]
-startyear = 1951
-endyear = 1999
 def getmissing():
     d = {}
     j = 0
     list_dict = []
-    for station in datameantemp.columns[:-4]:
-        for stationselect in ss:
-            if int(stationselect) in ind:
-                ye = ds.loc[(ds["code"] == int(stationselect)) ]["year"]
-                year_m = int(ye)
-                for y in range(startyear,(endyear+1)):
-    #                 if j == 1000:
-    #                     break
-                    va = getpercent(y,stationselect)
-                    if str(va) != str(np.nan) :
-                        if y < year_m:
-                            d['station'] = stationselect
-                            d['x'] = int(ind.index(int(stationselect)))  
-                            d['y'] = y
-                            d['value'] = "-"
-                        else:
-                            va = int(va)
-                            d['station'] = stationselect
-                            d['x'] = ind.index(int(stationselect)) 
-                            d['y'] = y
-                            d['value'] = va
-                        if d in list_dict:
-                            pass
-                        else:
-                            list_dict.append(d)
-                        d = {}
-                        j +=1
+    for c in datameantemp.columns[:-4]:
+        if int(c) in ind:
+            ye = ds.loc[(ds["code"] == int(c)) ]["year"]
+            year_m = int(ye)
+            for y in range(1951,2021):
+                # if j == 1500:
+                #     break
+                va = getpercent(y,c)
+                if str(va) != str(np.nan) :
+                    if y < year_m:
+                        d['station'] = c
+                        d['x'] = int(ind.index(int(c)))  
+                        d['y'] = y
+                        d['value'] = "-"
+                    else:
+                        va = int(va)
+                        d['station'] = c
+                        d['x'] = ind.index(int(c)) 
+                        d['y'] = y
+                        d['value'] = va
+                    list_dict.append(d)
+                    d = {}
+                    j +=1
     return list_dict
-data = getmissing()
+# data = getmissing()
 
-@app.route('/api/missing', methods=['GET'])
-def getmissingvalue():
-    return jsonify(data)
+# @app.route('/api/missing', methods=['GET'])
+# def getmissingvalue():
+#     return jsonify(data)
 
+#--------------------------------------------------------------------------------------
+mistmean = pd.read_csv('C:/Users/ice/Documents/climate/plot/climate/missingtmean.csv')
+mistmax = pd.read_csv('C:/Users/ice/Documents/climate/plot/climate/missingtmax.csv')
+mistmin = pd.read_csv('C:/Users/ice/Documents/climate/plot/climate/missingtmin.csv')
+misrain = pd.read_csv('C:/Users/ice/Documents/climate/plot/climate/missingrain.csv')
+
+def getm( startyear,stopyear,station,dff):
+    d = {}
+    list_dict = []
+    print("dff f",dff)
+    mask = (dff['y'] >= startyear) & (dff['y'] <= stopyear)
+    dat = dff.loc[mask]
+    for i in station:
+        a = (int(i))
+        b = dat.loc[dat['station'] == a]
+        for i in b.index:
+            d['station'] = str(b['station'][i])
+            d['x'] = int(b['x'][i])
+            d['y'] = int(b['y'][i])
+            if str(b['value'][i])== str('-') :
+                d['value'] = '-'
+            else :
+                d['value'] =int(b['value'][i])
+            list_dict.append(d)
+            d = {}
+    return list_dict
+@app.route('/api/selectmissing', methods=['GET'])
+def selectmissing():
+    dff = str(request.args.get("dff"))
+    startyear = int(request.args.get("startyear"))
+    stopyear = int(request.args.get("stopyear"))
+    sta = str(request.args.get("sta"))
+    res = sta.strip('][').split(',') 
+    if dff == 'mean':
+        dff = mistmean
+    elif dff == 'min':
+        dff = mistmin
+    elif dff == 'max':
+        dff = mistmax
+    elif dff == 'pre':
+        dff = misrain
+
+    v = getm( startyear,stopyear,res,dff)
+    return jsonify(v)
 #--------------------------------------------------------------------------------------
 @app.route('/api/boxplotvalue', methods=['GET'])
 def byear():
+    xname = []
     all_data = []
     station = request.args.get("station")
     start_date = request.args.get("start_date")
@@ -300,7 +339,6 @@ def byear():
     Q1 = data.groupby('month').quantile(0.25)
     Q3 = data.groupby('month').quantile(0.75)
     list11 = minvalue[station], Q1[station], meanvalue[station], Q3[station], maxvalue[station]
-    all_data = []
     for i in range(len(list11[0])):
         temp = []
         for j in range(len(list11)):
@@ -309,8 +347,24 @@ def byear():
             else:
                 temp.append(list11[j][i])
         all_data.append(temp)   
-    print(all_data)
-    return jsonify(all_data)
+    a = Q1.index
+    for i in a :
+        xname.append(str(i))
+    return jsonify(all_data,xname)
+
+#----------------------------map-------------------------------------
+@app.route("/nc_csv",methods=["GET"])
+def get_tomap():
+    startyear = int(request.args.get("startyear"))
+    stopyear = int(request.args.get("stopyear"))
+    startmonth = int(request.args.get("startmonth"))
+    stopmonth = int(request.args.get("stopmonth"))
+    print("year",startyear)
+    ds = pd.read_csv("C:/Users/ice/Documents/climate/data/tmp8_1907.csv")
+    df1 = ds.query('{} <= year <= {} &  {} <=month<= {}'.format(startyear,stopyear,startmonth,stopmonth))
+    select = df1[['lat','lon','values']].to_json(orient='records')
+    select = json.loads(select)
+    return jsonify(select)
 
 #----------------------------------------------------------------------
 if __name__ == '__main__':

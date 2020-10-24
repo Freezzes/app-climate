@@ -20,7 +20,8 @@ import { from } from 'rxjs';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { HIGHCHARTS_MODULES, ChartModule } from 'angular-highcharts';
 import { BoxplotComponent } from './boxplot/boxplot.component';
-
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import { NetcdfComponent } from './netcdf/netcdf.component';
 PlotlyModule.plotlyjs = PlotlyJS;
 
 @NgModule({
@@ -31,7 +32,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     SelectplotComponent,
     TestfunctionComponent,
     MissingvalueComponent,
-    BoxplotComponent
+    BoxplotComponent,
+    NetcdfComponent
   ],
   imports: [
     BrowserModule,
@@ -44,7 +46,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     NgbModule,
     PlotlyModule,
     HighchartsChartModule,
-    ChartModule
+    ChartModule,
+    NgMultiSelectDropDownModule.forRoot()
 
   ],
   providers: [],

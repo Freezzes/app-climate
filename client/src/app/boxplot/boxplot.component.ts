@@ -29,7 +29,7 @@ export class BoxplotComponent implements OnInit {
   public testget = [];
   public test=[];
   public stationyear;
-  public plotdate;
+  public plotdate = [];
   public start_date;
   public end_date;
   public stationselected;
@@ -103,9 +103,8 @@ export class BoxplotComponent implements OnInit {
       var splitted = select.split("-"); 
       this.stationselected = splitted[0];
     }
-    console.log(this.stationselected)
+    // console.log(this.stationselected)
     this.dat = this.testdata1(this.stationselected)
-    console.log("dat : ",this.dat)
     return this.dat
   }
 
@@ -124,7 +123,7 @@ export class BoxplotComponent implements OnInit {
       startmonth = '0'+startmonth
     }
     this.start_date = String(startyear+'-'+startmonth+'-'+startday)
-    this.plotdate = String(startmonth+'-'+startyear)
+    // this.plotdate = String(startmonth+'-'+startyear)
     if(stopday.length == 1){
       stopday = '0'+stopday
     }
@@ -133,14 +132,17 @@ export class BoxplotComponent implements OnInit {
     }
     this.end_date = String(stopyear+'-'+stopmonth+'-'+stopday)
     this.stationyear = st
-    // console.log("selectstation", this.stationyear)
-    // console.log("start date : ",this.start_date)
-    // console.log("end date : ", this.end_date)
     this.calldata = []
+    this.plotdata = []
     this.testget.length = 0;
+    this.plotdate.length = 0;
     await this.tempService.getboxvalue(this.stationyear,this.start_date,this.end_date).then(data => data.subscribe(
       res => { 
-        this.calldata.push(res)
+        console.log("res0 : ",res[0])
+        console.log("res1 : ",res[1])
+        this.calldata.push(res[0])
+        this.plotdata.push(res)
+        console.log("plot data : ",this.plotdata)
       this.calldata.map(v=>{
         for (let i in v){
           for (let j in v[i]){
@@ -150,27 +152,15 @@ export class BoxplotComponent implements OnInit {
           }
           this.testget.push(v[i])
        }
-
-      //  for(let inum in this.testget){
-      //    if( Number(inum) == 0){
-      //      this.xname.push(this.plotdate)
-      //    }else{
-      //     for (let i of this.plotdate) {
-      //       var d = i
-      //       var splitted = d.split("-"); 
-      //       var mm = splitted[1];
-      //       const m = Number(mm)
-      //       console.log("month",m)
-      //     }
-
-      //    }
-      //  console.log("lenght", inum)
-
-      //  }
-        
-        // console.log("test get : ", this.testget)
-        // console.log("i",this.xname)
         this.check = 'check';
+      })
+      
+      this.plotdata.map(v=>{
+        for(let i of v[1]){
+          this.plotdate.push(i)
+        }
+        this.check = 'check';
+        console.log("v month : ",this.plotdate)
       })
     }))
     console.log(this.testget)  
@@ -201,7 +191,7 @@ export class BoxplotComponent implements OnInit {
       },
   
       xAxis: {
-          categories: this.xname,
+          categories: this.plotdate,
           title: {
               text: 'Month No.'
           }

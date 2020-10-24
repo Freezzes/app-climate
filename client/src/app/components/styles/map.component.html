@@ -1,1 +1,14 @@
-<p>map works!</p>
+<div class="selectzone">
+    <div class="pad">
+      <div class="map-container">
+        <div class="map-frame">
+          <div  id="map"
+            leaflet
+            (leafletMapReady)="onMapReady($event)"
+            [leafletOptions]="mapOptions">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
