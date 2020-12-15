@@ -12,7 +12,7 @@ import Plotly from 'plotly.js-dist'
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { FormControl, Validators} from '@angular/forms';
 
-highheat(Highcharts);
+// highheat(Highcharts);
 
 @Component({
   selector: 'app-missingvalue',
