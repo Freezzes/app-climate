@@ -16,7 +16,8 @@ import { FormControl, Validators} from '@angular/forms';
 
 @Component({
     selector: 'app-testfunction',
-    templateUrl: './styles/testfunction.component.html',
+    templateUrl: './testfunction.component.html',
+    styleUrls: ['./testfunction.component.css'],
     providers:[TempService]
 })
 export class TestfunctionComponent implements OnInit {

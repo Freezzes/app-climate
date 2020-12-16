@@ -191,16 +191,17 @@ export function convert_to_geojson(data){
         type: 'FeatureCollection',
         features: []
   };
-
+  // console.log("data",data[0])
   for (var i =0; i< data.length ;i++) {
-    let value = data[i].values;
-    if (String(value) == String("9.969209968e+36") ){
-      value = null
-   }
+  //   let value = data[i].values;
+    
+  //   if (String(value) == String("9.969") ){
+  //     value = null
+  //  }
   
     geojsondata.features.push({
           type: 'Feature',
-          properties: { "value": value},
+          properties: { "value": data[i].values},
           geometry: {
               type: 'Point',
               coordinates: [data[i].lon, data[i].lat]

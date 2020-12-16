@@ -8,8 +8,8 @@ import { from, range } from 'rxjs';
 
 @Component({
   selector: 'app-graph',
-  templateUrl: './styles/graph.component.html',
-  styleUrls: ['./styles/graph.component.css'],
+  templateUrl: './graph.component.html',
+  styleUrls: ['./graph.component.css'],
   providers: [TempService]
 })
 export class GraphComponent implements OnInit {

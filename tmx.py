@@ -360,10 +360,11 @@ def get_tomap():
     startmonth = int(request.args.get("startmonth"))
     stopmonth = int(request.args.get("stopmonth"))
     print("year",startyear)
-    ds = pd.read_csv("C:/Users/ice/Documents/climate/data/tmp8_1907.csv")
+    ds = pd.read_csv("C:/Users/ice/Documents/climate/data/temp1901.csv")
     df1 = ds.query('{} <= year <= {} &  {} <=month<= {}'.format(startyear,stopyear,startmonth,stopmonth))
     select = df1[['lat','lon','values']].to_json(orient='records')
     select = json.loads(select)
+    print (select[0])
     return jsonify(select)
 
 #----------------------------------------------------------------------

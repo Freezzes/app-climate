@@ -7,11 +7,11 @@ import { HttpClientModule } from '@angular/common/http'
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-import { GraphComponent } from '../app/components/graph.component';
-import { MapComponent } from '../app/components/map.component';
+import { GraphComponent } from './graph/graph.component';
+import { MapComponent } from './map/map.component';
 import { SelectplotComponent } from './components/selectplot.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { TestfunctionComponent } from './components/testfunction.component';
+import { TestfunctionComponent } from './testfunction/testfunction.component';
 import { NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { MissingvalueComponent } from './missingvalue/missingvalue.component';
 import * as PlotlyJS from 'plotly.js/dist/plotly.js';

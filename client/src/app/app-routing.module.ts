@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { GraphComponent } from '../app/components/graph.component';
-import { MapComponent } from '../app/components/map.component';
+import { GraphComponent } from './graph/graph.component';
+import { MapComponent } from './map/map.component';
 import { SelectplotComponent } from '../app/components/selectplot.component';
-import { TestfunctionComponent } from '../app/components/testfunction.component';
+import { TestfunctionComponent } from './testfunction/testfunction.component';
 import { MissingvalueComponent } from './missingvalue/missingvalue.component';
 import { BoxplotComponent } from './boxplot/boxplot.component';
 import { NetcdfComponent } from './netcdf/netcdf.component';

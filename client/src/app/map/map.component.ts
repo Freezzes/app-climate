@@ -22,8 +22,8 @@ L.Marker.prototype.options.icon = iconDefault;
 
 @Component({
   selector: 'app-map',
-  templateUrl: './styles/map.component.html',
-  styleUrls: ['./styles/map.component.css'],
+  templateUrl: './map.component.html',
+  styleUrls: ['./map.component.css'],
   providers: [TempService, MarkerService]
 })
 
