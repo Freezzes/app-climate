@@ -4,6 +4,7 @@ export interface Temp {
     day : any
     month : any
     date: any
+    
 }
 
 export interface Plot{
