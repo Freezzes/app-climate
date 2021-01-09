@@ -1,21 +1,22 @@
 <head>
     <title>Box Selection</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
-    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" /> -->
-    <!-- <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css"> -->
-    <!-- <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script> -->
-    <!-- <script src="https://openlayers.org/en/v4.6.5/build/ol.js"></script> -->
-    <!-- <style>
-      .ol-dragbox {
-        background-color: rgba(255,255,255,0.4);
-        border-color: rgba(100,150,0,1);
-      }
-    </style> -->
   </head>
   
   <div class="selectzone">
     <h3> World map </h3>
   <div class="form-group hidden">
+
+      
+    <form [formGroup]="choosefile"> 
+        <div class="form-group">
+          <label for="file">Select dataset : </label>
+          <select formControlName="file" class="form-control">
+            <option >None</option>
+            <option *ngFor="let f of filename">{{f.name}}</option>
+          </select>
+        </div>
+    </form>
     <div class="input-group" style="margin-top: 1em;">
         <label >Select Date : </label>
         <input name="datepicker" id="datepicker" class="form-control1" ngbDatepicker #datepicker="ngbDatepicker"
@@ -52,11 +53,16 @@
     </div>
   </form>
   
-    <button type="button" (click)="plotmap() ">plot</button>
+    <button (click)="plotmap(); ">plot</button>
    
   </div>
   
   
   <div id="map" class="map" ></div>
+  
+  <!-- <div class="info"> -->
+    <svg class="legend" width="600" height="30"></svg>
+  <!-- </div> -->
+  
   
   

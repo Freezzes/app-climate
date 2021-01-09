@@ -22,6 +22,8 @@ import { HIGHCHARTS_MODULES, ChartModule } from 'angular-highcharts';
 import { BoxplotComponent } from './boxplot/boxplot.component';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { NetcdfComponent } from './netcdf/netcdf.component';
+
+
 PlotlyModule.plotlyjs = PlotlyJS;
 
 @NgModule({

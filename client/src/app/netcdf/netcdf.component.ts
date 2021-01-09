@@ -4,7 +4,7 @@ import * as MapLib from './lib/map.js';
 import { NC_csv } from '../interfaces/temp.interface'
 import { TempService } from 'src/app/services/temp.service';
 // import { timestamp } from 'rxjs/operators';
-import {FormGroup, FormControl} from '@angular/forms';
+import {FormGroup, FormControl,Validators} from '@angular/forms';
 import {NgbDate, NgbCalendar, NgbDateParserFormatter} from '@ng-bootstrap/ng-bootstrap';
 
 
@@ -34,49 +34,74 @@ export class NetcdfComponent implements OnInit {
     public endday;
     public stopyear;
     public stopmonth;
+    public dataset;
+
+    filename = [{id:'mean',name:'Temperature mean'},
+               {id:'min',name:'Temperature min'},
+               {id:'max',name:'Temperature max'},
+               {id:'pre',name:'Preciptipation'}]
     
     constructor(private calendar: NgbCalendar, public formatter:NgbDateParserFormatter,private tempService: TempService) {
         this.fromDate = calendar.getToday();
         this.toDate = calendar.getNext(calendar.getToday(), 'd', 10);
     }
 
-    async ngOnInit() {}
+    choosefile = new FormGroup({
+      file: new FormControl('', Validators.required)
+    });
+
+    async ngOnInit() {this.map = MapLib.draw_map('map')}
 
     async plotmap(){
+      console.time()
         // console.log(new Date())
+      let fi = this.choosefile.value
+      console.log(fi)
+      let dataset = ''
+      for (let v of Object.values(fi)){
+          if(String(v) == String('Temperature mean')){
+            dataset = 'mean'
+          }
+          if(String(v) == String('Temperature min')){
+            dataset = 'min'
+          }
+          if(String(v) == String('Temperature max')){
+            dataset = 'max'
+          }
+          if(String(v) == String('Preciptipation')){
+            dataset = 'pre'
+          }
+          console.log("key",dataset)
+      }
+        this.dataset = dataset
         this.startyear = String(this.fromDate.year)
         this.startmonth = String(this.fromDate.month)
         this.stopyear = String(this.toDate.year)
         this.stopmonth = String(this.toDate.month)
-        // console.log("stopyear",this.stopyear)
-        // await this.tempService.getnc().subscribe(
-        //     (res: NC[]) => {
-        //         const geojson = MapLib.convert_to_geojson(res);
-        //         console.log("geo",geojson)
-        //         MapLib.draw_map('map',geojson);
-        //         console.log("finish",new Date())
-        //     } 
-        // )
-        this.map = MapLib.draw_map('map')
-    
+
+        // this.map = MapLib.draw_map('map')
+        console.timeLog()
         // MapLib.clearLayers(this.map);
-        await this.tempService.get_testnc_csv(this.startyear,this.stopyear,this.startmonth,this.stopmonth).then(data => data.subscribe(
+        await this.tempService.get_testnc_csv(this.dataset,this.startyear,this.stopyear,this.startmonth,this.stopmonth).then(data => data.subscribe(
           (res=> {
-            // console.log(res)
+            // this.map = MapLib.draw_map('map')
             const geojson = MapLib.convert_to_geojson(res);
             // console.log("geo",geojson)
             // MapLib.draw_map('map',geojson);
             this.datalayer = MapLib.genGridData(geojson);
-            // MapLib.clearLayers(this.map);
-            // this.map.removeOverlay(this.datalayer)
             MapLib.clearLayers(this.map);
             this.map.addLayer(this.datalayer)
+            // MapLib.clearLayers(this.map);
             
-              // console.log("finish",new Date())
+            console.log("finish")
+            console.timeEnd()
+           
           } 
       )))
-
+      
     }
+
+    
     onDateSelection(date: NgbDate) {
         if (!this.fromDate && !this.toDate) {
           this.fromDate = date;
@@ -104,4 +129,5 @@ export class NetcdfComponent implements OnInit {
         const parsed = this.formatter.parse(input);
         return parsed && this.calendar.isValid(NgbDate.from(parsed)) ? NgbDate.from(parsed) : currentValue;
       }
+ 
 }

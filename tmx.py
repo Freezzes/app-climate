@@ -20,7 +20,7 @@ app.config['MONGO_URI'] = 'mongodb://localhost:27017/Project'
 mongo = PyMongo(app)
 CORS(app)
 
-df = pd.read_csv("C:/Users/ice/Documents/climate/TMD_DATA/TMD_DATA/clean_data/tmean1951-2015.csv")
+df = pd.read_csv("C:/Mew/Project/data/tmean1951-2015.csv")
 
 result = []
 @app.route('/api/tmean', methods=['GET'])
@@ -46,7 +46,7 @@ def meantem():
 
 @app.route('/api/plot', methods=['GET'])
 def plot():
-    df = pd.read_csv('C:/Users/ice/Documents/climate/TMD_DATA/TMD_DATA/clean_data/tmean_2012-2015_d.csv', index_col=-1, parse_dates=True)
+    df = pd.read_csv('C:/Mew/Project/datat/tmean_2012-2015_d.csv', index_col=-1, parse_dates=True)
     new_df = df.iloc[:, 0:7]
         # print(new_df)
     pt = pd.pivot_table(new_df, index=new_df.index.month, columns=new_df.index.year, aggfunc='mean')
@@ -150,7 +150,7 @@ def get_rain5():
 
     return jsonify(rain5)
 
-rain = pd.read_csv("C:/Users/ice/Documents/climate/TMD_DATA/TMD_DATA/clean_data/rain1951-2018.csv")
+rain = pd.read_csv("C:/Mew/Project/data/rain1951-2018.csv")
 @app.route('/api/rain', methods=['GET'])
 def get_rain():
     k = []
@@ -227,8 +227,8 @@ def st():
     return jsonify(result)
 
 #-----------------------------------------------------------------------------------------------------
-datameantemp = pd.read_csv("C:/Users/ice/Documents/climate/TMD_DATA/TMD_DATA/clean_data/tmean1951-2015.csv")
-ds = pd.read_csv("C:/Users/ice/Documents/climate/TMD_DATA/TMD_DATA/clean_data/tmean_station_startyear.csv")
+datameantemp = pd.read_csv("C:/Mew/Project/data/tmean1951-2015.csv")
+ds = pd.read_csv("C:/Mew/Project/data/tmean_station_startyear.csv")
 ind = []
 for i in range(len(ds['code'])):
     ind.append(ds['code'][i])
@@ -275,10 +275,10 @@ def getmissing():
 #     return jsonify(data)
 
 #--------------------------------------------------------------------------------------
-mistmean = pd.read_csv('C:/Users/ice/Documents/climate/plot/climate/missingtmean.csv')
-mistmax = pd.read_csv('C:/Users/ice/Documents/climate/plot/climate/missingtmax.csv')
-mistmin = pd.read_csv('C:/Users/ice/Documents/climate/plot/climate/missingtmin.csv')
-misrain = pd.read_csv('C:/Users/ice/Documents/climate/plot/climate/missingrain.csv')
+mistmean = pd.read_csv('C:/Mew/Project/data/missingtmean.csv')
+mistmax = pd.read_csv('C:/Mew/Project/data/missingtmax.csv')
+mistmin = pd.read_csv('C:/Mew/Project/data/missingtmin.csv')
+misrain = pd.read_csv('C:/Mew/Project/data/missingrain.csv')
 
 def getm( startyear,stopyear,station,dff):
     d = {}
@@ -353,17 +353,36 @@ def byear():
     return jsonify(all_data,xname)
 
 #----------------------------map-------------------------------------
+ds1 = pd.read_csv("C:/Mew/Project/tmp_01-19_resize.csv")
+ds2 = pd.read_csv("C:/Mew/Project/temp1911-20_resize.csv")
+ds3 = pd.read_csv("C:/Mew/Project/temp1921-30_resize.csv")
+ds_p = pd.read_csv("C:/Mew/Project/pre1901-10_resize.csv")
+
 @app.route("/nc_csv",methods=["GET"])
 def get_tomap():
+    start = time.time()
+    df_f = str(request.args.get("df_f"))
     startyear = int(request.args.get("startyear"))
     stopyear = int(request.args.get("stopyear"))
     startmonth = int(request.args.get("startmonth"))
     stopmonth = int(request.args.get("stopmonth"))
     print("year",startyear)
-    ds = pd.read_csv("C:/Users/ice/Documents/climate/data/temp1901.csv")
+    if df_f == 'mean':
+        if startyear <= 1910:
+            ds = ds1
+        elif startyear > 1910 and startyear <= 1920:
+            ds = ds2
+        elif startyear > 1920 and startyear <= 1930:
+            ds = ds3
+    elif df_f == 'pre':
+        ds = ds_p
+    
+    # ds = pd.read_csv("C:/Mew/Project/tmp_01-19_resize1.csv")
     df1 = ds.query('{} <= year <= {} &  {} <=month<= {}'.format(startyear,stopyear,startmonth,stopmonth))
     select = df1[['lat','lon','values']].to_json(orient='records')
     select = json.loads(select)
+    end = time.time()
+    print(end-start)
     print (select[0])
     return jsonify(select)
 

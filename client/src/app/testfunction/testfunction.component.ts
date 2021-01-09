@@ -2,7 +2,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import {Config, Data, Layout} from 'plotly.js';
 import { Chart,ChartData } from 'chart.js';
-import * as CanvasJS from 'C:/Users/ice/Downloads/canvasjs-3.0.5/canvasjs.min';
+// import * as CanvasJS from 'C:/Users/ice/Downloads/canvasjs-3.0.5/canvasjs.min';
 
 import * as Highcharts from 'highcharts';
 import * as highheat from 'highcharts/modules/heatmap';

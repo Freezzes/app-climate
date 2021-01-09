@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {Config, Data, Layout} from 'plotly.js';
 import { Chart,ChartData } from 'chart.js';
-import * as CanvasJS from 'C:/Users/ice/Downloads/canvasjs-3.0.5/canvasjs.min';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 import * as Highcharts from 'highcharts';
@@ -208,10 +207,10 @@ export class MissingvalueComponent implements OnInit {
    this.percentplot.length = 0
    await this.tempService.getmissing(this.station,this.startyear,this.stopyear,fil).then(data => data.subscribe(
      res => { 
-     this.missdata = [];
-       this.missdata.push(res)
+      this.missdata = [];
+      this.missdata.push(res)
       //  console.log("missdata : ",this.missdata)
-     this.missdata.map(u => { 
+      this.missdata.map(u => { 
       //   console.log("select u",u)
         let val = []
         const a = {}
