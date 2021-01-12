@@ -11,6 +11,7 @@ from matplotlib import cm
 import matplotlib.dates as mdates
 import  netCDF4
 import datetime
+from itertools import groupby
 
 app = Flask(__name__)
 
@@ -271,8 +272,6 @@ def getmissing():
 # data = getmissing()
 
 # @app.route('/api/missing', methods=['GET'])
-# def getmissingvalue():
-#     return jsonify(data)
 
 #--------------------------------------------------------------------------------------
 mistmean = pd.read_csv('C:/Users/ice/Documents/climate/plot/climate/missingtmean.csv')
@@ -351,7 +350,94 @@ def byear():
     for i in a :
         xname.append(str(i))
     return jsonify(all_data,xname)
+#--------------------------------------------------------------------
+@app.route('/api/boxplot', methods=["GET"])
+def boxplot():
+    xname = []
+    station = str(request.args.get("station"))
+    start_date = str(request.args.get("start_date"))
+    end_date = str(request.args.get("end_date"))
+    mask = (df['date'] >= start_date) & (df['date'] <= end_date)
+    data = df.loc[mask]
+    data['date'] = pd.to_datetime(data['date'])
+    m = data['date'].dt.month
+    data['month'] = data['date'].dt.to_period("M")
+    Q1 = data.groupby('month').quantile(0.25)
+    Q3 = data.groupby('month').quantile(0.75)
+    IQR = Q3 - Q1
+    Upper_Bound = Q3 + 1.5*IQR
+    Lower_Bound = Q1 - 1.5*IQR
+    minvalue = data.groupby(pd.Grouper(key='date', freq='M')).min() 
+    maxvalue = data.groupby(pd.Grouper(key='date', freq='M')).max() 
+    meanvalue = data.groupby(pd.Grouper(key='date', freq='M')).mean() 
+    lower = Lower_Bound.iloc[:,:-3]
+    lowest = minvalue.iloc[:,:-3]
+    Upper = Upper_Bound.iloc[:,:-3]
+    maxx = maxvalue.iloc[:,:-3]
+    for i in lower.columns:
+        for j in range(len(lower[i])):
+            if lower[i][j] > lowest[i][j]:
+                pass
+            else:
+                lower[i][j] = lowest[i][j]
+    for i in Upper.columns:
+        for j in range(len(Upper[i])):
+            if Upper[i][j] < maxx[i][j]:
+                pass
+            else:
+                Upper[i][j] = maxx[i][j]
+    list11 = lower[station], Q1[station], meanvalue[station], Q3[station], Upper[station]
+    all_data = []
+    for i in range(len(list11[0])):
+        temp = []
+        for j in range(len(list11)):
+            if str(list11[j][i]) == str(np.nan):
+                temp.append('-') 
+            else:
+                temp.append(list11[j][i])
+        all_data.append(temp)
+    Upper['month'] = Upper.index
+    lower['month'] = lower.index
+    data = data.reset_index(drop=True)  
+    d = {}
+    list_out = []
+    list_wrong = []
+    check_month = []
+    if station in Upper.columns :
+        for n in range(len(Upper[station])):
+            for m in range(len(data[station])):
+                if str(data['month'][m]) == str(Upper['month'][n]):
+                    if data[station][m] > Upper[station][n] or data[station][m]<lower[station][n]:
+                        d['month'] = str(data['month'][m])
+                        d['value'] = data[station][m]
+                        check_month.append(str(data['month'][m]))
+                        list_out.append(d)
+                        d = {}
+                    else: 
+                        d['month'] = str(data['month'][m])
+                        d['value'] = '-'
+                        list_wrong.append(d)
+                        d = {}
+                else: pass
+        for item in list_wrong:
+            if item["month"] in check_month or item in list_out:
+                pass
+            else:
+                list_out.append(item)
+    listsort = sorted(list_out, key = lambda i: i['month'])
+    name = Q1.index
+    for i in name :
+        xname.append(str(i))
+    
+    c = 0
+    o = []
+    for k,v in groupby(listsort,key=lambda x:x['month']):
+        for i in list(v):
+            o.append([c,i["value"]])
+        c+=1
 
+
+    return jsonify(all_data, xname, o)
 #----------------------------map-------------------------------------
 @app.route("/nc_csv",methods=["GET"])
 def get_tomap():
@@ -360,7 +446,7 @@ def get_tomap():
     startmonth = int(request.args.get("startmonth"))
     stopmonth = int(request.args.get("stopmonth"))
     print("year",startyear)
-    ds = pd.read_csv("C:/Users/ice/Documents/climate/data/temp1901.csv")
+    ds = pd.read_csv("C:/Users/ice/Documents/climate/data/tmp_01-19_resize.csv")
     df1 = ds.query('{} <= year <= {} &  {} <=month<= {}'.format(startyear,stopyear,startmonth,stopmonth))
     select = df1[['lat','lon','values']].to_json(orient='records')
     select = json.loads(select)

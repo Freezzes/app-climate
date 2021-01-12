@@ -163,7 +163,7 @@ export class BoxplotComponent implements OnInit {
         console.log("v month : ",this.plotdate)
       })
     }))
-    console.log(this.testget)  
+    console.log("test get : ",this.testget)  
     // this.test = this.testget
     return this.testget
     // console.log('test get',this.test)

@@ -43,7 +43,8 @@ export class NetcdfComponent implements OnInit {
     async ngOnInit() {}
 
     async plotmap(){
-        // console.log(new Date())
+        console.log(new Date())
+        console.time()
         this.startyear = String(this.fromDate.year)
         this.startmonth = String(this.fromDate.month)
         this.stopyear = String(this.toDate.year)
@@ -58,7 +59,7 @@ export class NetcdfComponent implements OnInit {
         //     } 
         // )
         this.map = MapLib.draw_map('map')
-    
+        console.timeLog()
         // MapLib.clearLayers(this.map);
         await this.tempService.get_testnc_csv(this.startyear,this.stopyear,this.startmonth,this.stopmonth).then(data => data.subscribe(
           (res=> {
@@ -72,7 +73,8 @@ export class NetcdfComponent implements OnInit {
             MapLib.clearLayers(this.map);
             this.map.addLayer(this.datalayer)
             
-              // console.log("finish",new Date())
+              console.log("finish",new Date())
+              console.timeEnd()
           } 
       )))
 

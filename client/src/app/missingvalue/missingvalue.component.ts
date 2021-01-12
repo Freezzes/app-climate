@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Config, Data, Layout} from 'plotly.js';
 import { Chart,ChartData } from 'chart.js';
-import * as CanvasJS from 'C:/Users/ice/Downloads/canvasjs-3.0.5/canvasjs.min';
+import * as CanvasJS from 'C:/Users/ice/Downloads//cli/canvasjs-3.0.5/canvasjs.min';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 import * as Highcharts from 'highcharts';
@@ -79,43 +79,43 @@ export class MissingvalueComponent implements OnInit {
   constructor(private tempService: TempService, private fb: FormBuilder ) { 
   }
 
-  selectdata(){
-   this.missingval.map(u => { 
-      // console.log("u",u)
-      let val = []
-      const a = {}
-      let count = 0
-      u.map(v =>{
-         // console.log("v",typeof(v))
-         for (let n in v.value){   
-            // console.log("value",v.value,v.x,v.y)
-            // console.log("type",typeof(v.value),typeof(v.x),typeof(v.y))
-            if (String(v.value[n]) ==String("-") ){
-               v.value = null
-            }else{
-               v.value = v.value
-         }
-      }    
-      // console.log("miss value",v.value,v.x,v.y)
-          val.push(v.x,v.y,v.value)
-          a[count] = val
-          count += 1
-          val = []
-         //  console.log("val",a)
-     })
+//   selectdata(){
+//    this.missingval.map(u => { 
+//       // console.log("u",u)
+//       let val = []
+//       const a = {}
+//       let count = 0
+//       u.map(v =>{
+//          // console.log("v",typeof(v))
+//          for (let n in v.value){   
+//             // console.log("value",v.value,v.x,v.y)
+//             // console.log("type",typeof(v.value),typeof(v.x),typeof(v.y))
+//             if (String(v.value[n]) ==String("-") ){
+//                v.value = null
+//             }else{
+//                v.value = v.value
+//          }
+//       }    
+//       // console.log("miss value",v.value,v.x,v.y)
+//           val.push(v.x,v.y,v.value)
+//           a[count] = val
+//           count += 1
+//           val = []
+//          //  console.log("val",a)
+//      })
    
-     for (let i in a){
-        this.percent.push(a[i])
-     }
-     console.log("per : ", this.percent)
-     console.log("p",typeof(this.percent))
-      val = []
-   })
+//      for (let i in a){
+//         this.percent.push(a[i])
+//      }
+//      console.log("per : ", this.percent)
+//      console.log("p",typeof(this.percent))
+//       val = []
+//    })
 
-   // console.log("dd",this.dd)
-   // console.log("percent",this.percent)
-   this.check = 'check';
-  }
+//    // console.log("dd",this.dd)
+//    // console.log("percent",this.percent)
+//    this.check = 'check';
+//   }
 
   async ngOnInit(){ 
    this.missingval = await this.tempService.getMissed();

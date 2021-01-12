@@ -122,7 +122,7 @@ export function draw_map(target) {
   return map
 }
 
-export function genGridData(geojson,  lat_step=0.5, lon_step=0.5) {
+export function genGridData(geojson,  lat_step=1, lon_step=1) {
   createLegend(colorScale);
   var gridStyle = function (feature) {
     var coordinate = feature.getGeometry().getCoordinates(),

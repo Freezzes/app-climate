@@ -69,6 +69,11 @@ export class TempService {
                         `/boxplotvalue?station=${station}&start_date=${start_date}&end_date=${end_date}`)
     }
 
+    async getboxplot(station:string,start_date:string,end_date:string):Promise<Observable<any>>{
+        return this.http.get('http://127.0.0.1:5500/api/'+
+                        `boxplot?station=${station}&start_date=${start_date}&end_date=${end_date}`)
+    }
+
     async getMissed(): Promise<Missing[]> {
         let result = [];
         this.http.get<Missing[]>('http://127.0.0.1:5500/api/missing')
@@ -90,6 +95,7 @@ export class TempService {
         return this.http.get('http://127.0.0.1:5500' +
         `/nc_csv?startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`);
     }
+
 
 
 
