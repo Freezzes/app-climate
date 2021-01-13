@@ -6,9 +6,16 @@ import * as Highcharts from 'highcharts';
 import * as highheat from 'highcharts/modules/heatmap';
 import { HighchartsChartComponent } from 'highcharts-angular';
 import HighchartsMore from 'highcharts/highcharts-more';
-import { FormControl, FormGroup, Validators} from '@angular/forms';
+import { FormControl, FormGroup, Validators, FormBuilder} from '@angular/forms';
+import {Config, Data, Layout} from 'plotly.js';
+import { Chart,ChartData } from 'chart.js';
+import * as CanvasJS from 'C:/Users/ice/Downloads//cli/canvasjs-3.0.5/canvasjs.min';
+import Plotly from 'plotly.js-dist'
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
 
+highheat(Highcharts);
 HighchartsMore(Highcharts);
+
 @Component({
   selector: 'app-testfunction',
   templateUrl: './testfunction.component.html',
@@ -22,13 +29,8 @@ export class TestfunctionComponent implements OnInit {
   fromDate: NgbDate;
   toDate: NgbDate | null = null;
 
-  public dataplot = [];
-  public calldata = [];
-  public plotdata = []
-  public testget = [];
   public test=[];
   public stationyear;
-  public plotdate = [];
   public start_date;
   public end_date;
   public stationselected;
@@ -38,7 +40,8 @@ export class TestfunctionComponent implements OnInit {
   public boxval = [];
   public outval = [];
   public nameval = [];
-  check = "";
+  checkbox = "";
+  checkmiss = "";
   dat:any;
   station:Array<Object> = [
     {id: 300201, name: "แม่ฮ่องสอน"},{id: 300202, name: "แม่สะเรียง"},{id: 303201, name: "เชียงราย"},{id: 303301, name: "เชียงราย สกษ."},{id:310201 , name: "พะเยา"}, {id: 327202, name: "ดอยอ่างขาง"},
@@ -63,9 +66,40 @@ export class TestfunctionComponent implements OnInit {
     {id: 567201, name: "ตรัง"},{id: 568301, name: "คอหงษ์ สกษ."},{id: 568401, name: "สะเดา"},{id: 568501, name: "สงขลา"},{id: 568502, name: "หาดใหญ่"},{id: 570201, name: "สตูล"},
     {id: 580201, name: "ปัตตานี"},{id: 581301, name: "ยะลา สกษ."},{id: 583201, name: "นราธิวาส"}
 ];
+  yearList = [1951,1952,1953,1954,1955,1956,1957,1958,1959,1960,1961,1962,1963,1964,1965,1966,1967,1968,1969,1970,1971,1972,1973,1974,
+    1975,1976,1977,1978,1979,1980,1981,1982,1983,1984,1985,1986,1987,1988,1989,1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,
+    2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018]
 
+  filename = [{id:'mean',name:'Temperature mean'},
+    {id:'min',name:'Temperature min'},
+    {id:'max',name:'Temperature max'},
+    {id:'pre',name:'Preciptipation'}]
 
-  constructor(private calendar: NgbCalendar, public formatter:NgbDateParserFormatter, private tempService: TempService) {
+  myForm:FormGroup;
+  disabled = false;
+  ShowFilter = false;
+  limitSelection = false;
+  cities = [];
+  selectedItems = [];
+  dropdownSettings: any = {};
+  public dataplotcsv = [];
+  public TempData;
+  public startyear;
+  public stopyear;
+  public startmonth;
+  public stopmonth;
+  public stationmiss;
+  public missdata = [];
+  public missingval = [];
+  public percent = [];
+  public percentplot = [];
+  public d = [];
+  public dfile = [];
+  public selectstation = [];
+  public selectstationid = [];
+ 
+
+  constructor(private calendar: NgbCalendar, public formatter:NgbDateParserFormatter, private tempService: TempService, private fb: FormBuilder) {
     // this.fromDate = calendar.getToday();
     // this.toDate = calendar.getNext(calendar.getToday(), 'd', 20);
   }
@@ -114,7 +148,7 @@ export class TestfunctionComponent implements OnInit {
   }
 
   async testdata1(st){
-    this.check = ''
+    this.checkbox = ''
     let startyear = String(this.fromDate.year)
     let startmonth = String(this.fromDate.month)
     let startday = String(this.fromDate.day)
@@ -149,7 +183,6 @@ export class TestfunctionComponent implements OnInit {
         this.plotbox.push(res[0])
         this.plotname.push(res[1])
         this.plotout.push(res[2])
-        // console.log("plot data : ",this.plotname)
       this.plotbox.map(v=>{
         for (let i in v){
           for (let j in v[i]){
@@ -159,15 +192,14 @@ export class TestfunctionComponent implements OnInit {
           }
           this.boxval.push(v[i])
        }
-        this.check = 'check';
+        this.checkbox = 'check';
       })
       
       this.plotname.map(v=>{
         for(let i of v){
           this.nameval.push(i)
         }
-        this.check = 'check';
-        // console.log("xname v month : ",this.nameval)
+        this.checkbox = 'check';
        })
        this.plotout.map(v=>{
          console.log("v : ",v)
@@ -182,16 +214,11 @@ export class TestfunctionComponent implements OnInit {
           }
           console.log("test get v : ",this.outval)
        }
-      //  console.log("outliers : ", this.outval)
-        this.check = 'check';
+        this.checkbox = 'check';
       })
     }))
-    // console.log("box : ",this.boxval)  
-    // console.log("name : ",this.nameval)
     console.log("out : ",this.outval)
-    return this.boxval, this.outval
-    // console.log('test get',this.test)
-
+    return this.boxval
   }
 
   async testlink(){
@@ -216,13 +243,13 @@ export class TestfunctionComponent implements OnInit {
             this.boxval.push(v[i])
          }
          console.log("plotbox : ", this.boxval)
-          this.check = 'check';
+          this.checkbox = 'check';
         })
         this.plotname.map(v=>{
          for(let i of v){
            this.nameval.push(i)
          }
-         this.check = 'check';
+         this.checkbox = 'check';
          console.log("xname v month : ",this.nameval)
         })
         this.plotout.map(v=>{
@@ -235,7 +262,7 @@ export class TestfunctionComponent implements OnInit {
            this.outval.push(v[i])
         }
         console.log("outliers : ", this.outval)
-         this.check = 'check';
+         this.checkbox = 'check';
        })
 
 
@@ -244,8 +271,133 @@ export class TestfunctionComponent implements OnInit {
     return this.boxval
 
   }
-  async ngOnInit() {      
+  async ngOnInit() {    
+    this.missingval = await this.tempService.getMissed();
+    this.selectedItems = [];
+    this.dropdownSettings = {
+        singleSelection: false,
+        idField: 'id',
+        textField: 'name',
+        selectAllText: 'Select All',
+        unSelectAllText: 'UnSelect All',
+        itemsShowLimit: 10,
+        allowSearchFilter: this.ShowFilter
+    };
+    this.myForm = this.fb.group({
+        city: [this.selectedItems]
+    });
+    
     }
+    onItemSelect(item: any) {
+      //  this.selectstationid = []
+      console.log('!!!onItemSelect', item);
+  }
+    onSelectAll(items: any) {
+      console.log('onSelectAll', items);
+  }
+    toogleShowFilter() {
+      this.ShowFilter = !this.ShowFilter;
+      this.dropdownSettings = Object.assign({}, this.dropdownSettings, { allowSearchFilter: this.ShowFilter });
+  }
+
+    handleLimitSelection() {
+      if (this.limitSelection) {
+          this.dropdownSettings = Object.assign({}, this.dropdownSettings, { limitSelection: 2 });
+      } else {
+          this.dropdownSettings = Object.assign({}, this.dropdownSettings, { limitSelection: null });
+      }
+  }
+    choosefile = new FormGroup({
+      file: new FormControl('', Validators.required)
+    });
+  
+      sstartyear = new FormGroup({
+      syear: new FormControl('', Validators.required)
+    });
+      eendyear = new FormGroup({
+      eyear: new FormControl('', Validators.required)
+    });
+    async selectmiss(){
+      this.checkmiss = ''
+      this.selectstationid = [];
+      const selectValueList = this.myForm.get("city").value;
+      selectValueList.map( item => {
+         this.selectstationid.push(item.id);
+      });
+      console.log("station id: ", this.selectstationid)
+      let fi = this.choosefile.value
+      let fil = ''
+      for (let v of Object.values(fi)){
+         if(String(v) == String('Temperature mean')){
+            fil = 'mean'
+         }
+         if(String(v) == String('Temperature min')){
+            fil = 'min'
+         }
+         if(String(v) == String('Temperature max')){
+            fil = 'max'
+         }
+         if(String(v) == String('Preciptipation')){
+            fil = 'pre'
+         }
+         console.log("key",fil)
+      }
+      let syy = this.sstartyear.value
+      let styear
+      this.stationmiss = this.selectstationid
+      for(let v of Object.values(syy)){
+         styear = v
+      }
+      this.startyear = Number(styear)
+      let eey = this.eendyear.value
+      let enyear 
+      for(let v of Object.values(eey)){
+         enyear = v
+      }
+      this.stopyear = Number(enyear)
+      console.log("start year : ", this.startyear)
+      let per=[];
+      this.percentplot.length = 0
+      await this.tempService.getmissing(this.stationmiss,this.startyear,this.stopyear,fil).then(data => data.subscribe(
+        res => { 
+        this.missdata = [];
+          this.missdata.push(res)
+         //  console.log("missdata : ",this.missdata)
+        this.missdata.map(u => { 
+         //   console.log("select u",u)
+           let val = []
+           const a = {}
+           let count = 0
+           u.map(v =>{
+              // console.log("select v",typeof(v))
+              for (let n in v.value){   
+               //   console.log("miss value",v.value,v.x,v.y)
+               //   console.log("miss type",typeof(v.value),typeof(v.x),typeof(v.y))
+                 if (String(v.value[n]) == String("-") ){
+                    v.value = null
+                 }else{
+                    v.value = v.value
+              }
+           }
+         //   console.log("miss value",v.value,v.x,v.y)
+              val.push(v.x,v.y,v.value)
+               a[count] = val
+               count += 1
+               val = []
+               // console.log("miss val",a)
+           })
+   
+           for (let i in a){
+             this.percentplot.push(a[i])
+          }
+          console.log("miss per : ",this.percentplot)
+          console.log("p",typeof(this.percentplot))
+           val = []
+        })
+       this.checkmiss = 'check';
+     }))
+    
+     }
 
     
     highcharts = Highcharts;
@@ -276,18 +428,6 @@ export class TestfunctionComponent implements OnInit {
           title: {
               text: 'Observations'
           },
-          // plotLines: [{
-          //     value: 932,
-          //     color: 'red',
-          //     width: 1,
-          //     label: {
-          //         text: 'Theoretical mean: 932',
-          //         align: 'center',
-          //         style: {
-          //             color: 'gray'
-          //         }
-          //     }
-          // }]
       },
       
       series: [{
@@ -304,7 +444,7 @@ export class TestfunctionComponent implements OnInit {
           this.outval
           ,
           marker: {
-              fillColor: 'white',
+              fillColor: 'blue',
               lineWidth: 1,
               lineColor: Highcharts.getOptions().colors[0]
           },
@@ -314,6 +454,79 @@ export class TestfunctionComponent implements OnInit {
       }]
       
   };
+
+  highcharts1 = Highcharts;
+  chartOptions1 = {   
+     chart : {
+        type: 'heatmap',
+        marginTop: 40,
+        marginBottom: 80,
+
+     },
+     title : {
+        text: 'Missing Value'   
+     },
+     xAxis : {
+        categories: [300201,300202,303201,303301,310201,327202,327301,327501,328201,328202, 328301, 329201, 
+         330201,331201, 331301, 331401, 331402, 351201,352201, 353201, 353301, 354201, 356201, 356301,357201, 
+         357301, 373201, 373301, 376201, 376202, 376203, 376301, 376401, 378201, 379201,379401, 379402, 380201, 
+         381201, 381301, 383201, 386301, 387401, 388401, 400201, 400301, 402301,403201, 405201,405301, 407301, 
+         407501, 409301,415301, 419301, 423301, 424301, 425201,425301,426201, 426401, 429201,429601, 430201,430401,
+         431201, 431301, 431401,432201, 432301, 432401, 436201, 436401, 440201, 440401, 450201,450401,451301, 
+         455201, 455203, 455301, 455302, 455601,459201, 459202, 459203, 459204, 459205, 465201,478201, 478301, 
+         480201, 480301, 500201, 500202,500301, 501201, 517201, 517301, 532201, 551203, 551301, 551401, 552201, 
+         552202, 552301, 552401,560301, 561201, 564201, 564202, 566201,566202,567201, 568301, 568401, 568501, 568502, 
+         570201, 580201, 581301, 583201],
+         labels: {
+           rotation: -90,
+          step:1,
+           style: {
+               fontSize:'7px'
+            }
+        }
+     },
+     yAxis : {
+        categories: [1951,1952,1953,1954,1955,1956,1957,1958,1959,1960,1961,1962,1963,1964,1965,1966,1967,1968,1969,1970,1971,1972,1973,1974,
+         1975,1976,1977,1978,1979,1980,1981,1982,1983,1984,1985,1986,1987,1988,1989,1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,
+         2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015],
+           title: null
+     },
+     colorAxis : {
+        min: 0,
+        max:100,
+        minColor: '#0661CC',
+        maxColor: '#FFFFFF'
+     },
+     legend : {
+        align: 'right',
+        layout: 'vertical',
+        margin: 0,
+        verticalAlign: 'top',
+        // color: '#ffffff',
+        y: 25,
+        symbolHeight: 280
+     },
+     tooltip : {
+        formatter: function () {
+           return '<b>' + '</b> missing <br><b>' +
+              this.point.value +'</b> % <br><b>' 
+
+        }
+     },
+     series : [{
+        name: 'missing',
+        borderWidth: 1,
+        turboThreshold:0,
+        borderColor:'#FFFFFF',
+        nullColor:'#000000',
+        data: this.percentplot,       
+        dataLabels: {
+           enabled: false,
+           color: '#000000'
+        }
+     }]
+    
+   };
   
 
 }

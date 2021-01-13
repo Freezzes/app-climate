@@ -3,19 +3,56 @@
   <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
 </head>
 <body>
-<div>
-    <div >
-      <h5>Select Station</h5>
-      <form [formGroup]="getstation"> 
-        <div class="form-group">
-          <label for="station">STATION</label>
-          <select formControlName="station" class="form-control"  >
-            <option *ngFor="let st of station">{{st.id}}-{{st.name}}</option>
-          </select>
-        </div>
-      </form>
+  <form [formGroup]="choosefile"> 
+    <div class="form-group">
+      <label for="file">Select dataset : </label>
+      <select formControlName="file" class="form-control">
+        <option *ngFor="let f of filename">{{f.name}}</option>
+      </select>
     </div>
-</div>
+  </form>
+  <form [formGroup]="myForm">
+    <ng-multiselect-dropdown
+        name="city"
+        [placeholder]="'Select Station'"
+        [settings]="dropdownSettings"
+        [data]="station"
+        formControlName="city"
+        [disabled]="disabled"
+        (onSelect)="onItemSelect($event)"
+        (onSelectAll)="onSelectAll($event)">
+    </ng-multiselect-dropdown>
+  </form>
+  <form [formGroup]="sstartyear"> 
+    <div class="form-group">
+      <label for="syear">Start year : </label>
+      <select formControlName="syear" class="form-control">
+        <option *ngFor="let y of yearList">{{y}}</option>
+      </select>
+    </div>
+  </form>
+  <form [formGroup]="eendyear"> 
+    <div class="form-group">
+      <label for="eyear">Stop year : </label>
+      <select formControlName="eyear" class="form-control">
+        <option *ngFor="let y of yearList">{{y}}</option>
+      </select>
+    </div>
+  </form>
+
+  <div>
+      <div >
+        <h5>Select Station</h5>
+        <form [formGroup]="getstation"> 
+          <div class="form-group">
+            <label for="station">STATION</label>
+            <select formControlName="station" class="form-control"  >
+              <option *ngFor="let st of station">{{st.id}}-{{st.name}}</option>
+            </select>
+          </div>
+        </form>
+      </div>
+  </div>
 
 <div class="form-group hidden">
   <div class="input-group" style="margin-top: 3em;">
@@ -61,11 +98,22 @@
     <button type="button" (click)="testlink();">TEST</button>
   </div>
 
-  <div *ngIf="check=='check'">
+  <div *ngIf="checkbox=='check'">
       <highcharts-chart
         [Highcharts]="highcharts" 
         [options] = "chartOptions" 
         style = "width: 90%; height: 550px; display: block;margin-left: 50px;">
       </highcharts-chart>
   </div>
+
+  <button (click)= "selectmiss();"> PLOTmiss </button>
+  <div *ngIf="checkmiss=='check'">
+    <highcharts-chart
+      [Highcharts]="highcharts1" 
+      [options] = "chartOptions1" 
+      style = "width: 70%; height: 550px; display: block;margin-left: 50px;">
+    </highcharts-chart>
+</div>
+
+
 </body>
