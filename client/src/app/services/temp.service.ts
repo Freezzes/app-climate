@@ -91,6 +91,11 @@ export class TempService {
         `/nc_csv?df_f=${df_f}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`);
     }
 
+    async get_Avgcsv(df_f:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string):Promise<Observable<any>> {
+        return this.http.get('http://127.0.0.1:5500' +
+        `/nc_Avg?df_f=${df_f}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`);
+    }
+
 
 
 }

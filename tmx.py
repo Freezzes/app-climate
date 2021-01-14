@@ -368,6 +368,7 @@ def get_tomap():
     stopmonth = int(request.args.get("stopmonth"))
     print("year",startyear)
     if df_f == 'mean':
+        color_map = 'cool_warm'
         if startyear <= 1910:
             ds = ds1
         elif startyear > 1910 and startyear <= 1920:
@@ -375,6 +376,7 @@ def get_tomap():
         elif startyear > 1920 and startyear <= 1930:
             ds = ds3
     elif df_f == 'pre':
+        color_map = 'dry_wet'
         ds = ds_p
     
     # ds = pd.read_csv("C:/Mew/Project/tmp_01-19_resize1.csv")
@@ -384,9 +386,46 @@ def get_tomap():
     end = time.time()
     print(end-start)
     print (select[0])
-    return jsonify(select)
-
+    return jsonify(color_map,select)
 #----------------------------------------------------------------------
+@app.route("/nc_Avg",methods=["GET"])
+def get_Avgmap():
+    start = time.time()
+    df_f = str(request.args.get("df_f"))
+    startyear = int(request.args.get("startyear"))
+    stopyear = int(request.args.get("stopyear"))
+    startmonth = int(request.args.get("startmonth"))
+    stopmonth = int(request.args.get("stopmonth"))
+    print("year",startyear)
+    if df_f == 'mean':
+        color_map = 'cool_warm'
+        if startyear <= 1910:
+            ds = ds1
+        elif startyear > 1910 and startyear <= 1920:
+            ds = ds2
+        elif startyear > 1920 and startyear <= 1930:
+            ds = ds3
+    elif df_f == 'pre':
+        color_map = 'dry_wet'
+        ds = ds_p
+    
+    ds['time'] = pd.to_datetime(ds['time'] , format='%Y-%m-%d')
+    df1 = ds.loc[(ds['time'].dt.year >= startyear) & (ds['time'].dt.year <= stopyear) & (ds['time'].dt.month >= startmonth) & (ds['time'].dt.month <= stopmonth)]
+    N_data = pd.DataFrame()
+    temp_lat = np.repeat(np.arange(-89.5, 89.6, 1),360)
+    temp_lon = np.tile(np.arange(-179.5, 179.6, 1),180)
+    n_val = df1.groupby(["lat", "lon"])['values'].mean()
+
+    N_data['lat'] = temp_lat
+    N_data['lon'] = temp_lon
+    N_data['values'] = list(n_val)
+    select = N_data[['lat','lon','values']].to_json(orient='records')
+    select = json.loads(select)
+    end = time.time()
+    print(end-start)
+    print (select[0])
+    return jsonify(color_map,select)
+
 if __name__ == '__main__':
     app.run(debug=True, port= 5500)
 

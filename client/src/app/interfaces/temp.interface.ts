@@ -189,3 +189,10 @@ export interface NC_csv{
     year : any
     month : any
 }
+export interface NC_Avg{
+    lat : any
+    lon : any
+    temp : any
+    year : any
+    month : any
+}

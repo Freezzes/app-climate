@@ -1,9 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,OnChanges } from '@angular/core';
 import 'ol/ol.css';
 import * as MapLib from './lib/map.js';
 import { NC_csv } from '../interfaces/temp.interface'
 import { TempService } from 'src/app/services/temp.service';
-// import { timestamp } from 'rxjs/operators';
 import {FormGroup, FormControl,Validators} from '@angular/forms';
 import {NgbDate, NgbCalendar, NgbDateParserFormatter} from '@ng-bootstrap/ng-bootstrap';
 
@@ -20,11 +19,12 @@ export class NetcdfComponent implements OnInit {
     fromDate: NgbDate;
     toDate: NgbDate | null = null;
     public geojsonObjects = [];
-    // public data:NC[];
     public features: []
     grid: any;
     map: any;
     datalayer : any;
+    dataObj: any = null;
+    selectgrid : any;
     public station;
     public startyear;
     public endyear;
@@ -35,6 +35,10 @@ export class NetcdfComponent implements OnInit {
     public stopyear;
     public stopmonth;
     public dataset;
+    public input_ds;
+    public lenght_y;
+    public verb;
+    select: any = null;
 
     filename = [{id:'mean',name:'Temperature mean'},
                {id:'min',name:'Temperature min'},
@@ -50,48 +54,73 @@ export class NetcdfComponent implements OnInit {
       file: new FormControl('', Validators.required)
     });
 
-    async ngOnInit() {this.map = MapLib.draw_map('map')}
+    async ngOnInit() {
+      this.map = MapLib.draw_map('map')
+      MapLib.add_graticule_layer(this.map)
+      MapLib.select_country(this.map)
+      // MapLib.gridselect(this.map)
+  }
 
     async plotmap(){
       console.time()
         // console.log(new Date())
       let fi = this.choosefile.value
-      console.log(fi)
       let dataset = ''
       for (let v of Object.values(fi)){
           if(String(v) == String('Temperature mean')){
+            this.input_ds = 'Temperature mean'
             dataset = 'mean'
           }
           if(String(v) == String('Temperature min')){
+            this.input_ds = 'Temperature min'
             dataset = 'min'
           }
           if(String(v) == String('Temperature max')){
             dataset = 'max'
+            this.input_ds = 'Temperature max'
           }
           if(String(v) == String('Preciptipation')){
+            this.input_ds = 'Preciptipation'
             dataset = 'pre'
           }
           console.log("key",dataset)
+      }
+      if(dataset != 'pre'){
+        this.verb = "Averang"
+      }
+      else{
+        this.verb = "sum"
       }
         this.dataset = dataset
         this.startyear = String(this.fromDate.year)
         this.startmonth = String(this.fromDate.month)
         this.stopyear = String(this.toDate.year)
         this.stopmonth = String(this.toDate.month)
+        let v
+        let L = []
+        this.lenght_y = (this.stopyear - this.startyear) 
 
-        // this.map = MapLib.draw_map('map')
         console.timeLog()
+
+        // MapLib.select_country(this.map)
         // MapLib.clearLayers(this.map);
-        await this.tempService.get_testnc_csv(this.dataset,this.startyear,this.stopyear,this.startmonth,this.stopmonth).then(data => data.subscribe(
-          (res=> {
-            // this.map = MapLib.draw_map('map')
-            const geojson = MapLib.convert_to_geojson(res);
-            // console.log("geo",geojson)
-            // MapLib.draw_map('map',geojson);
-            this.datalayer = MapLib.genGridData(geojson);
+        await this.tempService.get_Avgcsv(this.dataset,this.startyear,this.stopyear,
+                                              this.startmonth,this.stopmonth).then(data => data.subscribe(
+          (res=> {      
+            var val = res[1]
+              for (v in val){
+                data = val[v].values
+                L.push(data)
+              }
+            const Max = Math.max.apply(null, L);
+            const Min = Math.min.apply(null, L);
+            console.log("Max", Max ,"Min",Min)
+
+            const geojson = MapLib.convert_to_geojson(val);
+            this.datalayer = MapLib.genGridData(geojson,Min,Max,res[0]);
+            // this.selectgrid = MapLib.gridselect(geojson)
             MapLib.clearLayers(this.map);
-            this.map.addLayer(this.datalayer)
-            // MapLib.clearLayers(this.map);
+            this.map.addLayer(this.datalayer)    
             
             console.log("finish")
             console.timeEnd()
@@ -101,7 +130,6 @@ export class NetcdfComponent implements OnInit {
       
     }
 
-    
     onDateSelection(date: NgbDate) {
         if (!this.fromDate && !this.toDate) {
           this.fromDate = date;
@@ -129,5 +157,4 @@ export class NetcdfComponent implements OnInit {
         const parsed = this.formatter.parse(input);
         return parsed && this.calendar.isValid(NgbDate.from(parsed)) ? NgbDate.from(parsed) : currentValue;
       }
- 
 }
