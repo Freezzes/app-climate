@@ -4,17 +4,16 @@ import * as ol from 'openlayers';
 import * as d3 from 'C:/Users/Mewkk/app-climate/client/src/assets/d3/d3.js';
 import * as $ from 'jquery'
 import Polygon from 'ol/geom/Polygon';
-// var colors = {
-//   'temp': ['#bd1726', '#e34933', '#f16640', '#f7844e', '#fca55d', '#fdbf71',  '#fee99d', '#fff7b3','#e9f6e8', '#d6eef5', '#bde2ee', '#87bdd9', '#6ea6ce', '#588cc0', '#4471b2','#15288a'].reverse(),
-//   'pre' : ['#8c510a','#9e5c0b','#bf812d','#d49a4b','#dfc27d','#eedfba','#f6e8c3','#f5f5f5','#c7eae5','#80cdc1','#35978f','#2b7a74','#01665e','#005040','#003c30','#002820']
-// }
-
-// var population = 0,
-// numberFormat = function (n) { // Thousand seperator
-//   return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-// };
+import {platformModifierKeyOnly} from 'ol/events/condition';
+import GeoJSON from 'ol/format/GeoJSON';
+import Map from 'ol/Map';
+import View from 'ol/View';
+import {DragBox, Select} from 'ol/interaction';
+import {OSM, Vector as VectorSource} from 'ol/source';
+import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
 
 export function draw_map(target) {
+  
   var style = new ol.style.Style({
     fill: new ol.style.Fill({
       color: 'rgba(255, 255, 255, 0.6)'
@@ -24,8 +23,9 @@ export function draw_map(target) {
       width: 1
     }),
   });
-  
+
   var vectorLayer = new ol.layer.Vector({
+    name: "baseLayer",
     source: new ol.source.Vector({
       url: './assets/map/geo-medium.json',
       format: new ol.format.GeoJSON(),
@@ -39,17 +39,6 @@ export function draw_map(target) {
     }
   });
 
-  // var selectedStyle = new ol.style.Style({
-  //   stroke: new ol.style.Stroke({
-  //     color: '#2196f3',
-  //     width: 3
-  //   })
-  // });
-
-  // var select = new ol.interaction.Select({
-  //   style: selectedStyle
-  // });
-
   const  map = new ol.Map({
     target: target,
     layers: [
@@ -61,8 +50,8 @@ export function draw_map(target) {
     view: new ol.View({
       projection: 'EPSG:4326',
       center: [0, 0],
-      zoom: 2,
-      minZoom: 1.5,
+      zoom: 1.7,
+      minZoom: 1.7,
       maxZoom:12,
       extent: [-180, -90, 180, 90]
     })
@@ -74,39 +63,46 @@ export function draw_map(target) {
   return map
 }
 
-// export function draw_poly(targetMap){
-//   var draw = new ol.interaction.Draw({
-//     // source: source,
-//     type: Polygon
-//   });
-//   targetMap.addInteraction(draw)
-// }
+//-----------------------Select Country----------------------------------
 export function select_country(targetMap, mode) {
-  // var features, baselayer ;
-  // targetMap.getLayers().forEach(function(layers) {
-  //   if (layers.get('name') === 'dataLayer') {
-  //     features = layers.getSource().getFeatures()
-  //   } else if (layers.get('name') === 'baseLayer') {
-  //     baselayer = layers
-  //   }
-  // })
+  var features, baselayer ;
+  targetMap.getLayers().forEach(function(layers) {
+    if (layers.get('name') === 'dataLayer') {
+      features = layers.getSource().getFeatures()
+      console.log("fea",features)
+    } else if (layers.get('name') === 'baseLayer') {
+      baselayer = layers
+      console.log("base",baselayer)
+    }
+  })
 
   var selectedStyle = new ol.style.Style({
     stroke: new ol.style.Stroke({
       color: '#2196f3',
-      width: 3
+      width: 2
     })
   });
 
   var select = new ol.interaction.Select({
-    // layers:[baselayer],
+    layers:[baselayer],
     style: selectedStyle
   });
-  // console.log("select",select)
+  // var features ;
+  // targetMap.getLayers().forEach(function(layers) {
+  //   if (layers.get('name') === 'dataLayer') {
+  //     features = layers.getSource().getFeatures()
+  //     // console.log(layers.getSource().getFeatures());
+  //   }
+  // })
+
+
   targetMap.addInteraction(select);
 
   select.on('select', function(e) {
     var selectedCountry = e.selected[0];
+    var poly = e.selected[0].getGeometry()
+    var valueArr = [];
+
     if (selectedCountry != undefined){
       var name = selectedCountry.get('name');
       var value = selectedCountry.get('value')
@@ -117,20 +113,71 @@ export function select_country(targetMap, mode) {
       $("#selectedCountryName").text("None");
       $("#selectedCountryValue").text("-");
     }
-    // for (var i = 0; i < features.length; i++) {
-    //   if (poly.intersectsExtent(features[i].getGeometry().getExtent())) {
-    //     var obj = features[i].getProperties()
-    //     valueArr.push(obj.value)
-    //   }
-    // }
-    // console.log(valueArr)
-    // var min = Math.round(Math.min.apply(null, valueArr)*100)/100;
-    // var max = Math.round(Math.max.apply(null, valueArr)*100)/100;
+    for (var i = 0; i < features.length; i++) {
+      if (poly.intersectsExtent(features[i].getGeometry().getExtent())) {
+        var obj = features[i].getProperties()
+        valueArr.push(obj.value)
+      }
+    }
+    console.log(valueArr)
+    var min = Math.round(Math.min.apply(null, valueArr)*100)/100;
+    var max = Math.round(Math.max.apply(null, valueArr)*100)/100;
+    // var mean = Math.round(Math.mean.apply(null, valueArr));
 
-    // $("#selectedCountryMin").text(min);
-    // $("#selectedCountryMax").text(max);
+    $("#selectedCountryMin").text(min);
+    $("#selectedCountryMax").text(max);
     // $("#selectedCountryMean").text(mean);
   });
+
+  //---------Box-----------------------------------------
+  var dragBox = new DragBox({
+    condition: platformModifierKeyOnly,
+  });
+  
+  // targetMap.addInteraction(dragBox);
+  
+  // dragBox.on('boxend', function () {
+  //   var rotation = map.getView().getRotation();
+  //   var oblique = rotation % (Math.PI / 2) !== 0;
+  //   var candidateFeatures = oblique ? [] : selectedFeatures;
+  //   var extent = dragBox.getGeometry().getExtent();
+  //   vectorSource.forEachFeatureIntersectingExtent(extent, function (feature) {
+  //     candidateFeatures.push(feature);
+  //   });
+  
+  //   if (oblique) {
+  //     var anchor = [0, 0];
+  //     var geometry = dragBox.getGeometry().clone();
+  //     geometry.rotate(-rotation, anchor);
+  //     var extent$1 = geometry.getExtent();
+  //     candidateFeatures.forEach(function (feature) {
+  //       var geometry = feature.getGeometry().clone();
+  //       geometry.rotate(-rotation, anchor);
+  //       if (geometry.intersectsExtent(extent$1)) {
+  //         selectedFeatures.push(feature);
+  //       }
+  //     });
+  //   }
+  // });
+  
+  // // clear selection when drawing a new box and when clicking on the map
+  // dragBox.on('boxstart', function () {
+  //   selectedFeatures.clear();
+  // });
+  
+  // var infoBox = document.getElementById('info');
+
+  // var selectedFeatures = select.getFeatures();
+  // selectedFeatures.on(['add', 'remove'], function () {
+  //   var names = selectedFeatures.getArray().map(function (feature) {
+  //     return feature.get('name');
+  //   });
+  //   if (names.length > 0) {
+  //     infoBox.innerHTML = names.join(', ');
+  //   } else {
+  //     infoBox.innerHTML = 'No countries selected';
+  //   }
+  // });
   return select
 }
 
@@ -214,7 +261,7 @@ export function genGridData(geojson, min, max, color_map,  lat_step=1, lon_step=
             geometry: new ol.geom.Polygon([[
               [x,y], [x, y + lat_step], [x + lon_step, y + lat_step], [x + lon_step, y], [x,y]
             ]]),
-            // text: createTextStyle(feature)
+            text: createTextStyle(feature)
           })
         ];
     };
@@ -226,20 +273,16 @@ export function genGridData(geojson, min, max, color_map,  lat_step=1, lon_step=
   });
 
   var gridLayer = new ol.layer.Vector({
+    name: "dataLayer",
     source: grid,
     style: gridStyle
   });
-  gridLayer.set('name', 'data_layer')
   // map.addLayer(gridLayer);
   
   return gridLayer
 }
 
-
-// function showPopulation (population) {
-//   d3.select('.info span').text(numberFormat(population));
-// }
-
+//---------------------------Legend-----------------------------
 function createLegend (colorScale,min,max) {
   var x = d3.scaleLinear()
   .domain([min, max])
@@ -277,143 +320,8 @@ function createLegend (colorScale,min,max) {
     .call(xAxis);
 
 }
-  
-// export function gridselect (target, gridSize=1) {
 
-//    // Create grid selection style
-//   var gridSelectStyle = function (feature) {
-//     var coordinate = feature.getGeometry().getCoordinates(),
-//       x = coordinate[0]- gridSize / 2,
-//       y = coordinate[1]- gridSize / 2,
-//       pop = parseInt(feature.getProperties().value)
-//       rgb = d3.rgb(colorScale(pop));
-//       console.log("rgbselect",rgb)
-//     return [
-//       new ol.style.Style({
-//         // stroke: new ol.style.Stroke({
-//         //   color: '#333',
-//         //   width: 1
-//         // }),
-//         fill: new ol.style.Fill({
-//           color: [rgb.r, rgb.g, rgb.b, 0.6]
-//         }),
-//         geometry: new ol.geom.Polygon([[
-//           [x,y], [x, y + gridSize], [x + gridSize, y + gridSize], [x + gridSize, y], [x,y]
-//         ]])
-//       })
-//     ];
-//   };
-
-//   // Create grid select interaction
-//   var gridSelect = new ol.interaction.Select({
-//     style: gridSelectStyle
-//   });
-//   console.log("gridselect",gridSelect)
-//   target.addInteraction(gridSelect);
-
-//   var selectedGridCells = gridSelect.getFeatures();
-
-//   selectedGridCells.on('add', function (feature) {
-//     population += parseInt(feature.element.getProperties().sum);
-//     showPopulation(population);
-//   });
-
-//   selectedGridCells.on('remove', function (feature) {
-//     population -= parseInt(feature.element.getProperties().sum);
-//     showPopulation(population);
-//   });
-
-//   var draw = new ol.interaction.Draw({
-//     type: 'Polygon'
-//   });
-
-//   draw.on('drawstart', function (evt) {
-//       selectedGridCells.clear();
-//   });
-
-//   draw.on('drawend', function (evt) {
-//       var geometry = evt.feature.getGeometry(),
-//           extent = geometry.getExtent(),
-//           drawCoords = geometry.getCoordinates()[0];
-
-//       map.removeInteraction(draw);
-//       d3.select('.info .intro').style('display', 'block');
-//       d3.select('.info .select').style('display', 'none');
-
-//       grid.forEachFeatureIntersectingExtent(extent, function(feature) {
-//           if (pointInPolygon(feature.getGeometry().getCoordinates(), drawCoords)) {
-//               selectedGridCells.push(feature);
-//           }
-//       });
-
-//       setTimeout(function(){ // Add delay to avoid deselect
-//           gridSelect.setActive(true);
-//       }, 500);
-//   });
-
-//   d3.select('.info a').on('click', function(){
-//       d3.event.preventDefault();
-//       selectedGridCells.clear();
-//       gridSelect.setActive(false);
-//       map.addInteraction(draw);
-//       d3.select('.info .intro').style('display', 'none');
-//       d3.select('.info .select').style('display', 'block');
-//   });
-
-//   return selectedGridCells
-// }
-
-// function draw_legend(gridSelect){
-//   var selectedGridCells = gridSelect.getFeatures();
-
-//   selectedGridCells.on('add', function (feature) {
-//     population += parseInt(feature.element.getProperties().sum);
-//     showPopulation(population);
-//   });
-
-//   selectedGridCells.on('remove', function (feature) {
-//     population -= parseInt(feature.element.getProperties().sum);
-//     showPopulation(population);
-//   });
-//   var draw = new ol.interaction.Draw({
-//     type: 'Polygon'
-//   });
-
-//   draw.on('drawstart', function (evt) {
-//       selectedGridCells.clear();
-//   });
-
-//   draw.on('drawend', function (evt) {
-//       var geometry = evt.feature.getGeometry(),
-//           extent = geometry.getExtent(),
-//           drawCoords = geometry.getCoordinates()[0];
-
-//       map.removeInteraction(draw);
-//       d3.select('.info .intro').style('display', 'block');
-//       d3.select('.info .select').style('display', 'none');
-
-//       grid.forEachFeatureIntersectingExtent(extent, function(feature) {
-//           if (pointInPolygon(feature.getGeometry().getCoordinates(), drawCoords)) {
-//               selectedGridCells.push(feature);
-//           }
-//       });
-
-//       setTimeout(function(){ // Add delay to avoid deselect
-//           gridSelect.setActive(true);
-//       }, 500);
-//   });
-
-//   d3.select('.info a').on('click', function(){
-//       d3.event.preventDefault();
-//       selectedGridCells.clear();
-//       gridSelect.setActive(false);
-//       map.addInteraction(draw);
-//       d3.select('.info .intro').style('display', 'none');
-//       d3.select('.info .select').style('display', 'block');
-//   });
-//   return draw
-// }
-
+//--------------------------Convert Data------------------------------
 export function convert_to_geojson(data){
   var geojsondata = {
         type: 'FeatureCollection',
@@ -429,10 +337,12 @@ export function convert_to_geojson(data){
           }
         })
   }
+  console.log("geo",geojsondata)
   console.log('Create Geojson Done')
   return geojsondata
 }
   
+//-------------------------Clear Layers----------------------------
 export function clearLayers(map){
   // console.log("old layer",map.getLayers())
   const layers = map.getLayers().getArray()

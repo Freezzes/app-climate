@@ -4,19 +4,25 @@
     padding-right: 50px;
     display: inline-block;
   }
+
+  .back{
+    background-color: #a4e5ff;
+    /* background-size: 10cm; */
+  }
   .map{
-    width: 80vw;
-    height: 90vh;
+    width: 60vw;
+    height: 70vh;
     /* background-color: #eceff1; */
+    border-style: solid;
     background-color: #ffffff;
     margin-top: 10px;
-    margin-left: 80px;
-    margin-right: 50px;
+    margin-left: 60px;
+    /* margin-right: 50px; */
     margin-bottom: 30px;
   }
   .selectzone {
     margin-top: 20px;
-    margin-left: 90px;
+    margin-left: 60px;
     margin-right: 50px;
     margin-bottom: 30px;
     
@@ -37,6 +43,9 @@
     position: relative;
   }
 
+/* p{
+  padding-inline-end: 200px;
+} */
 
   select{
     font-size: 18px;

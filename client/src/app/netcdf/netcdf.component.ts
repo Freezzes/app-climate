@@ -38,6 +38,7 @@ export class NetcdfComponent implements OnInit {
     public input_ds;
     public lenght_y;
     public verb;
+    public years;
     select: any = null;
 
     filename = [{id:'mean',name:'Temperature mean'},
@@ -55,9 +56,10 @@ export class NetcdfComponent implements OnInit {
     });
 
     async ngOnInit() {
+      // this.map = MapLib.map_country('map')
       this.map = MapLib.draw_map('map')
       MapLib.add_graticule_layer(this.map)
-      MapLib.select_country(this.map)
+      // MapLib.select_country(this.map)
       // MapLib.gridselect(this.map)
   }
 
@@ -68,19 +70,19 @@ export class NetcdfComponent implements OnInit {
       let dataset = ''
       for (let v of Object.values(fi)){
           if(String(v) == String('Temperature mean')){
-            this.input_ds = 'Temperature mean'
+            this.input_ds = 'Average temperature '
             dataset = 'mean'
           }
           if(String(v) == String('Temperature min')){
-            this.input_ds = 'Temperature min'
+            this.input_ds = 'Average minimum temperature'
             dataset = 'min'
           }
           if(String(v) == String('Temperature max')){
             dataset = 'max'
-            this.input_ds = 'Temperature max'
+            this.input_ds = 'Average maximum temperature'
           }
           if(String(v) == String('Preciptipation')){
-            this.input_ds = 'Preciptipation'
+            this.input_ds = 'Average preciptipation'
             dataset = 'pre'
           }
           console.log("key",dataset)
@@ -98,8 +100,8 @@ export class NetcdfComponent implements OnInit {
         this.stopmonth = String(this.toDate.month)
         let v
         let L = []
-        this.lenght_y = (this.stopyear - this.startyear) 
-
+        this.lenght_y = ((this.stopyear - this.startyear)+1) + String("year")
+        this.years = String("(")+this.startyear+String("-")+this.stopyear+String(")")
         console.timeLog()
 
         // MapLib.select_country(this.map)
@@ -121,7 +123,8 @@ export class NetcdfComponent implements OnInit {
             // this.selectgrid = MapLib.gridselect(geojson)
             MapLib.clearLayers(this.map);
             this.map.addLayer(this.datalayer)    
-            
+            MapLib.select_country(this.map)
+            // MapLib.select_c(this.map)
             console.log("finish")
             console.timeEnd()
            
