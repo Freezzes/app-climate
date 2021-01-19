@@ -357,6 +357,7 @@ ds1 = pd.read_csv("C:/Mew/Project/tmp_01-19_resize.csv")
 ds2 = pd.read_csv("C:/Mew/Project/temp1911-20_resize.csv")
 ds3 = pd.read_csv("C:/Mew/Project/temp1921-30_resize.csv")
 ds_p = pd.read_csv("C:/Mew/Project/pre1901-10_resize.csv")
+# h = pd.read_csv("C:/Mew/Project/hadex2/hadex2_Jan.csv")
 
 @app.route("/nc_csv",methods=["GET"])
 def get_tomap():
@@ -378,6 +379,9 @@ def get_tomap():
     elif df_f == 'pre':
         color_map = 'dry_wet'
         ds = ds_p
+    elif df_f == 'hadex2':
+        ds = h
+        color_map = 'cool_warm'
     
     # ds = pd.read_csv("C:/Mew/Project/tmp_01-19_resize1.csv")
     df1 = ds.query('{} <= year <= {} &  {} <=month<= {}'.format(startyear,stopyear,startmonth,stopmonth))
@@ -408,12 +412,18 @@ def get_Avgmap():
     elif df_f == 'pre':
         color_map = 'dry_wet'
         ds = ds_p
+    # elif df_f == 'hadex2':
+    #     color_map = 'cool_warm'
+    #     ds = h
+        
     
     ds['time'] = pd.to_datetime(ds['time'] , format='%Y-%m-%d')
     df1 = ds.loc[(ds['time'].dt.year >= startyear) & (ds['time'].dt.year <= stopyear) & (ds['time'].dt.month >= startmonth) & (ds['time'].dt.month <= stopmonth)]
     N_data = pd.DataFrame()
     temp_lat = np.repeat(np.arange(-89.5, 89.6, 1),360)
     temp_lon = np.tile(np.arange(-179.5, 179.6, 1),180)
+    # temp_lat = np.repeat(np.arange(-90, 92.5, 2.5),96)
+    # temp_lon = np.tile(np.arange(-180, 180, 3.75),73)
     n_val = df1.groupby(["lat", "lon"])['values'].mean()
 
     N_data['lat'] = temp_lat
@@ -424,6 +434,10 @@ def get_Avgmap():
     end = time.time()
     print(end-start)
     print (select[0])
+    # df1 = ds.query('{} <= year <= {} &  {} <=month<= {}'.format(startyear,stopyear,startmonth,stopmonth))
+    # select = df1[['lat','lon','values']].to_json(orient='records')
+    # select = json.loads(select)
+
     return jsonify(color_map,select)
 
 if __name__ == '__main__':

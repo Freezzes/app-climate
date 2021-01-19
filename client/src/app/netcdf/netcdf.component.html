@@ -6,7 +6,7 @@
 
 </head>
  
-<!-- <div class="container-fluid back"> -->
+<!-- <div class="container-fluid back">
 <div class="selectzone">
   <h3> World map </h3>
   <form role="form" class="form-inline">
@@ -59,41 +59,33 @@
       </div>
     </form>
 </div>
-<!-- </div> -->
-  <div class="selectzone">
-    <p><B>{{input_ds}} {{lenght_y}} {{years}}</B></p>
-  </div>
-  
-  <!-- <p>{{input_ds}}{{verb}} {{lenght_y}} </p> -->
-<div class="row">
-  <div class="col-sm-8">
-  <div id="map" class="map" ></div>
-  <div class="selectzone">
-    <div class="info">
-      <svg class="legend" width="600" height="30"></svg>
-    </div>
-  </div>
-  </div>
-  <div class="col-sm-4">
-    <p><B> Selected Country: </B><span id="selectedCountryName" style="color:rgb(255, 168, 7);font-weight:bold"></span> </p> 
-    <p><B>Minimum {{input_ds}}: </B> <span id="selectedCountryMin" style="color:blue;font-weight:bold"></span> </p>
-    <p><B>Maximum {{input_ds}}: </B> <span id="selectedCountryMax" style="color:red;font-weight:bold"></span> </p>
-  </div>
-</div>
-  <!-- <div id="info">No countries selected</div> -->
-  <!-- <script src="main.js"></script> -->
-<!-- <div class="selectzone">
-  <form class="row">
-    <p><B> Selected Country: </B><span id="selectedCountryName" style="color:rgb(255, 168, 7);font-weight:bold"></span> </p> 
-    <p style="padding-inline-start: 80px;"><B>Minimum {{input_ds}}: </B> <span id="selectedCountryMin" style="color:blue;font-weight:bold"></span> </p>
-    <p style="padding-inline-start: 80px;"><B>Maximum {{input_ds}}: </B> <span id="selectedCountryMax" style="color:red;font-weight:bold"></span> </p>
-  </form>
 </div> -->
-
-  
-  <!-- <div class="info">
-    <svg class="legend" width="600" height="30"></svg>
+<!-- <app-home></app-home> -->
+  <!-- <div class="selectzone">
+    <p><B>{{input_ds}} {{lenght_y}} {{years}}</B></p>
   </div> -->
   
+  <!-- <p>{{input_ds}}{{verb}} {{lenght_y}} </p> -->
+<div class="form-group row">
+  <div class="col-sm-8">
+    <div id="map" class="map" ></div>
+    <div class="selectzone">
+      <div class="info">
+        <svg class="legend" width="600" height="30"></svg>
+      </div>
+    </div>
+  </div>
+    <div class="dat">
+      <p><B> Selected Country: </B><span id="selectedCountryName" style="color:rgb(255, 168, 7);font-weight:bold"></span> </p> 
+      <p><B>Minimum {{input_ds}}: </B> <span id="selectedCountryMin" style="color:blue;font-weight:bold"></span> </p>
+      <p><B>Maximum {{input_ds}}: </B> <span id="selectedCountryMax" style="color:red;font-weight:bold"></span> </p>
+    </div>
+  
+</div>
+
+<div>
+  {{file}}
+</div>
+
   
   
