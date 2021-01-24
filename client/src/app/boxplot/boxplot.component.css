@@ -1,5 +1,5 @@
 space {
-    margin-top: 20px;
+    margin-top: 2px;
 }
 select{
     font-size: 18px;
@@ -27,4 +27,8 @@ background-color: rgba(2, 117, 216, 0.5);
 .form-control1{
 display: none;
 }
+.mat-radio-button ~ .mat-radio-button {
+  margin-left: 16px;
+}
+
   

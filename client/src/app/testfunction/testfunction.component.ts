@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, resolveForwardRef } from '@angular/core';
 import { TempService } from '../services/temp.service';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import {NgbDate, NgbCalendar, NgbDateParserFormatter} from '@ng-bootstrap/ng-bootstrap';
@@ -12,8 +12,10 @@ import { Chart,ChartData } from 'chart.js';
 import * as CanvasJS from 'C:/Users/ice/Downloads//cli/canvasjs-3.0.5/canvasjs.min';
 import Plotly from 'plotly.js-dist'
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
+import * as BoxLib from './lib/box.js';
+import * as TestLib from './lib/testbox';
 
-highheat(Highcharts);
+// highheat(Highcharts);
 HighchartsMore(Highcharts);
 
 @Component({
@@ -97,7 +99,8 @@ export class TestfunctionComponent implements OnInit {
   public dfile = [];
   public selectstation = [];
   public selectstationid = [];
- 
+  public jsondata ;
+  public dt = [];
 
   constructor(private calendar: NgbCalendar, public formatter:NgbDateParserFormatter, private tempService: TempService, private fb: FormBuilder) {
     // this.fromDate = calendar.getToday();
@@ -133,21 +136,36 @@ export class TestfunctionComponent implements OnInit {
     station: new FormControl('', Validators.required)
   });
   async getstationcode(){
-    let s = this.getstation.value
-    let select
-
     // GET STATION CODE
-    for (let value of Object.values(s)) {
-      select = value
-      var splitted = select.split("-"); 
-      this.stationselected = splitted[0];
+    this.selectstationid = [];
+    const selectValueList = this.myForm.get("city").value;
+    selectValueList.map( item => {
+       this.selectstationid.push(item.id);
+    });
+
+    let fi = this.choosefile.value
+    let fil = ''
+    for (let v of Object.values(fi)){
+       if(String(v) == String('Temperature mean')){
+          fil = 'mean'
+       }
+       if(String(v) == String('Temperature min')){
+          fil = 'min'
+       }
+       if(String(v) == String('Temperature max')){
+          fil = 'max'
+       }
+       if(String(v) == String('Preciptipation')){
+          fil = 'pre'
+       }
+       console.log("key",fil)
     }
-    // console.log(this.stationselected)
-    this.dat = this.testdata1(this.stationselected)
+
+    this.dat = this.testdata1(this.selectstationid,fil)
     return this.dat
   }
 
-  async testdata1(st){
+  async testdata1(st,fil){
     this.checkbox = ''
     let startyear = String(this.fromDate.year)
     let startmonth = String(this.fromDate.month)
@@ -176,14 +194,18 @@ export class TestfunctionComponent implements OnInit {
     this.boxval.length = 0;
     this.nameval.length = 0;
     this.outval.length = 0;
-    await this.tempService.getboxplot(this.stationyear,this.start_date,this.end_date).then(data => data.subscribe(
+    // console.log("file : ", fil)
+    await this.tempService.getboxplot(fil,this.stationyear,this.start_date,this.end_date).then(data => data.subscribe(
       res => { 
-        // console.log("res0 : ",res[0])
+        console.log("get data : ", res)
+        console.log("boxplot value : ",res[0])
+        console.log("outliers value : ", res[2])
         // console.log("res1 : ",res[1])
         this.plotbox.push(res[0])
         this.plotname.push(res[1])
         this.plotout.push(res[2])
-      this.plotbox.map(v=>{
+      this.plotbox.map(u=>{
+        u.map(v=>{
         for (let i in v){
           for (let j in v[i]){
             if(String(v[i][j]) == String('-')){
@@ -192,85 +214,154 @@ export class TestfunctionComponent implements OnInit {
           }
           this.boxval.push(v[i])
        }
-        this.checkbox = 'check';
+        this.checkbox = 'check';          
+        })
       })
-      
+      // console.log("boxval : ",this.boxval)
       this.plotname.map(v=>{
         for(let i of v){
           this.nameval.push(i)
         }
         this.checkbox = 'check';
        })
-       this.plotout.map(v=>{
-         console.log("v : ",v)
+
+       this.plotout.map(u=>{
+         console.log
+         u.map(v=>{
+        //  console.log("v : ",v)
          for (let i in v){
-          console.log("v[i] : ",v[i])
+          // console.log("v[i] : ",v[i])
           for (let j in v[i]){
-            console.log("v[ij] : ",i,v[i][j])
-            if(String(v[i][j]) == String('-')){
-              v[i][j] = null
+            console.log("v[ij] : ", v[i][j] ,v[i][j])
+            for (let k in v[i][j]){
+              if(String(v[i][j][k].value) == String('-')){
+                v[i][j][k].value = null
             }
-            this.outval.push(v[i])
+            console.log("v[ijk] : ",v[i][j][k])
+            this.outval.push(v[i][j].key,v[i][j][k].value)
+            }
+
+            
           }
-          console.log("test get v : ",this.outval)
+          console.log("out get v : ",this.outval)
        }
         this.checkbox = 'check';
       })
+    })
     }))
     console.log("out : ",this.outval)
     return this.boxval
   }
-
-  async testlink(){
-   this.stationyear = '432301'
-   this.start_date = '1980-10-01'
-   this.end_date = '1981-02-31'
-   await this.tempService.getboxplot(this.stationyear,this.start_date,this.end_date).then(data => data.subscribe(
-      res => { 
-        console.log("res0 : ", res[0])
-        console.log("res1 : ", res[1])
-        console.log("res1 : ", res[2])
-        this.plotbox.push(res[0])
-        this.plotname.push(res[1])
-        this.plotout.push(res[2])
-        this.plotbox.map(v=>{
-         for (let i in v){
-            for (let j in v[i]){
-              if(String(v[i][j]) == String('-')){
-                v[i][j] = null
-              }
-            }
-            this.boxval.push(v[i])
-         }
-         console.log("plotbox : ", this.boxval)
-          this.checkbox = 'check';
-        })
-        this.plotname.map(v=>{
-         for(let i of v){
-           this.nameval.push(i)
-         }
-         this.checkbox = 'check';
-         console.log("xname v month : ",this.nameval)
-        })
-        this.plotout.map(v=>{
-          for (let i in v){
-           for (let j in v[i]){
-             if(String(v[i][j]) == String('-')){
-               v[i][j] = null
-             }
-           }
-           this.outval.push(v[i])
-        }
-        console.log("outliers : ", this.outval)
-         this.checkbox = 'check';
-       })
-
-
-      }))
-
-    return this.boxval
-
+  async testgetdata(){
+    let test;
+      this.checkbox = ''
+      this.station = ['300201','432301']
+      this.start_date = '1980-10-01'
+      this.end_date = '1981-05-31'
+      let st = ['300201','432301']
+      this.stationyear = st
+      this.plotbox = []
+      this.plotname = []
+      this.plotout = []
+      this.boxval.length = 0;
+      this.nameval.length = 0;
+      this.outval.length = 0;
+      // test send data
+      let fil = 'mean'
+      // await this.tempService.getboxplot(fil,this.stationyear,this.start_date,this.end_date).then(data => data.subscribe(
+      //   res => {
+      //     console.log("res : ", res)
+      //   const jsondata = BoxLib.convert_to_geojson(res);
+      //   console.log("data json : ",jsondata)    
+      //   }))
+      
+      // console.log('data naja > ',one)
+      this.checkbox = 'check';
+      console.log("checkbox : ",this.checkbox)
   }
+  
+  async testgetdata2(){
+    this.checkbox = ''
+    this.start_date = '1980-10-01'
+    this.end_date = '1981-05-31'
+    let st = ['300201']
+    this.stationyear = st
+    // test send data
+    let fil = 'mean'
+    await this.tempService.getboxplot(fil,this.stationyear,this.start_date,this.end_date).then(data => data.subscribe(
+      res => {
+    const jsondata = TestLib.convert_to_geojson();
+    this.dt.push(jsondata)
+    const pt = TestLib.plot_box(jsondata);
+    
+      }))
+      // console.log("pt : ",this.pt)
+      this.checkbox = 'check'
+      console.log("this dt : ",this.dt)
+      console.log("check box : ", this.checkbox)
+      console.log(this.dt[0]);
+      return this.dt
+    }
+    
+    
+
+    // let a = this.dt
+    highcharts = Highcharts;
+    chartOptions = this.dt[0]
+  //   chartOptions = {   
+  //       chart : {
+  //         type: 'boxplot',
+  //         marginTop: 40,
+  //         marginBottom: 100,
+  
+  //       },
+
+  //     title: {
+  //         text: 'Box Plot'
+  //     },
+  
+  //     legend: {
+  //         enabled: false
+  //     },
+  
+  //     xAxis: {
+  //         categories: this.nameval,
+  //         title: {
+  //             text: 'Month No.'
+  //         }
+  //     },
+  
+  //     yAxis: {
+  //         title: {
+  //             text: 'Observations'
+  //         },
+  //     },
+      
+  //     series: [{
+  //         name: 'Observations',
+  //         data: this.boxval,
+  //         tooltip: {
+  //             headerFormat: '<em>Month No {point.key}</em><br/>'
+  //         }
+  //     }, {
+  //         name: 'Outliers',
+  //         color: Highcharts.getOptions().colors[0],
+  //         type: 'scatter',
+  //         data: 
+  //         this.outval
+  //         ,
+  //         marker: {
+  //             fillColor: 'lightblue',
+  //             lineWidth: 1,
+  //             lineColor: Highcharts.getOptions().colors[0]
+  //         },
+  //         tooltip: {
+  //             pointFormat: 'Observation: {point.y}'
+  //         }
+  //     }]
+      
+  // };
+
   async ngOnInit() {    
     this.missingval = await this.tempService.getMissed();
     this.selectedItems = [];
@@ -311,12 +402,6 @@ export class TestfunctionComponent implements OnInit {
       file: new FormControl('', Validators.required)
     });
   
-      sstartyear = new FormGroup({
-      syear: new FormControl('', Validators.required)
-    });
-      eendyear = new FormGroup({
-      eyear: new FormControl('', Validators.required)
-    });
     async selectmiss(){
       this.checkmiss = ''
       this.selectstationid = [];
@@ -342,20 +427,12 @@ export class TestfunctionComponent implements OnInit {
          }
          console.log("key",fil)
       }
-      let syy = this.sstartyear.value
-      let styear
+
       this.stationmiss = this.selectstationid
-      for(let v of Object.values(syy)){
-         styear = v
-      }
-      this.startyear = Number(styear)
-      let eey = this.eendyear.value
-      let enyear 
-      for(let v of Object.values(eey)){
-         enyear = v
-      }
-      this.stopyear = Number(enyear)
+      this.startyear = Number(this.fromDate.year)
+      this.stopyear = Number(this.toDate.year)
       console.log("start year : ", this.startyear)
+      console.log("stop year : ", this.stopyear)
       let per=[];
       this.percentplot.length = 0
       await this.tempService.getmissing(this.stationmiss,this.startyear,this.stopyear,fil).then(data => data.subscribe(
@@ -399,62 +476,6 @@ export class TestfunctionComponent implements OnInit {
     
      }
 
-    
-    highcharts = Highcharts;
-    chartOptions = {   
-        chart : {
-          type: 'boxplot',
-          marginTop: 40,
-          marginBottom: 100,
-  
-        },
-
-      title: {
-          text: 'Box Plot'
-      },
-  
-      legend: {
-          enabled: false
-      },
-  
-      xAxis: {
-          categories: this.nameval,
-          title: {
-              text: 'Month No.'
-          }
-      },
-  
-      yAxis: {
-          title: {
-              text: 'Observations'
-          },
-      },
-      
-      series: [{
-          name: 'Observations',
-          data: this.boxval,
-          tooltip: {
-              headerFormat: '<em>Month No {point.key}</em><br/>'
-          }
-      }, {
-          name: 'Outliers',
-          color: Highcharts.getOptions().colors[0],
-          type: 'scatter',
-          data: 
-          this.outval
-          ,
-          marker: {
-              fillColor: 'blue',
-              lineWidth: 1,
-              lineColor: Highcharts.getOptions().colors[0]
-          },
-          tooltip: {
-              pointFormat: 'Observation: {point.y}'
-          }
-      }]
-      
-  };
-
   highcharts1 = Highcharts;
   chartOptions1 = {   
      chart : {
@@ -481,7 +502,7 @@ export class TestfunctionComponent implements OnInit {
            rotation: -90,
           step:1,
            style: {
-               fontSize:'7px'
+               fontSize:'10px'
             }
         }
      },

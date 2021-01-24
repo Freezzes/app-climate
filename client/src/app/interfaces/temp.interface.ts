@@ -189,3 +189,9 @@ export interface NC_csv{
     year : any
     month : any
 }
+
+export interface Boxplotval{
+    station : any
+    value : any
+    outliers : any
+}

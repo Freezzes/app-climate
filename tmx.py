@@ -318,58 +318,68 @@ def selectmissing():
     v = getm( startyear,stopyear,res,dff)
     return jsonify(v)
 #--------------------------------------------------------------------------------------
-@app.route('/api/boxplotvalue', methods=['GET'])
-def byear():
-    xname = []
-    all_data = []
-    station = request.args.get("station")
-    start_date = request.args.get("start_date")
-    end_date = request.args.get("end_date")
-    print("date : ", start_date,end_date,station)
- 
-    mask = (df['date'] >= start_date) & (df['date'] <= end_date)
-    data = df.loc[mask]
-    data['date'] = pd.to_datetime(data['date'])
-    data['month'] = data['date'].dt.to_period("M")
-    minvalue = data.groupby(pd.Grouper(key='date', freq='M')).min() 
-    maxvalue = data.groupby(pd.Grouper(key='date', freq='M')).max() 
-    meanvalue = data.groupby(pd.Grouper(key='date', freq='M')).mean() 
+def filter_by_station2(station,data,Upper,lower):
+    check_month = []
+    correct_value = []
+    wrong_value = []
+    #show dataframe only column month and station input
+    df_station_month = data[station]
+    df_station_month.index = data["month"]
+    #list of value in station
+    list_value = list(df_station_month)
 
-    Q1 = data.groupby('month').quantile(0.25)
-    Q3 = data.groupby('month').quantile(0.75)
-    list11 = minvalue[station], Q1[station], meanvalue[station], Q3[station], maxvalue[station]
-    for i in range(len(list11[0])):
-        temp = []
-        for j in range(len(list11)):
-            if str(list11[j][i]) == str(np.nan):
-                temp.append('-') 
-            else:
-                temp.append(list11[j][i])
-        all_data.append(temp)   
-    a = Q1.index
-    for i in a :
-        xname.append(str(i))
-    return jsonify(all_data,xname)
-#--------------------------------------------------------------------
-@app.route('/api/boxplot', methods=["GET"])
-def boxplot():
+    for index in range(len(df_station_month)):
+        month = str(df_station_month.index[index])
+        #get upper and lower value
+        upper_value = Upper.loc[Upper["month"]==month][station]
+        lower_value = lower.loc[lower["month"]==month][station]
+        #check upper an lower
+        if (list_value[index] > upper_value.item() or list_value[index] < lower_value.item()):
+            check_month.append(month)
+            correct_value.append({"month":month,"value":list_value[index]})
+        else:
+            wrong_value.append({"month":month,"value": "-"})
+
+    wrong_value = list({v['month']:v for v in wrong_value}.values())
+    for item in wrong_value:
+        if item["month"] in check_month:
+            pass
+        else:
+            correct_value.append(item)
+
+    sort_correct_value = sorted(correct_value, key = lambda i: i['month'])
+    c = 0
+    o = []
+    v = {}
+    outd = []
+    for k,v in groupby(sort_correct_value,key=lambda x:x['month']):
+        for i in list(v):
+            o.append([c,i["value"]])
+        c+=1
+        outd.append({'month':k,'value':o})
+        print(k)
+        print(o)
+        # o=[]
+
+    data_return = [{"station":int(station),"value":o}]
+
+    return data_return
+
+def byear(df,station,start_date,end_date):
     xname = []
-    station = str(request.args.get("station"))
-    start_date = str(request.args.get("start_date"))
-    end_date = str(request.args.get("end_date"))
     mask = (df['date'] >= start_date) & (df['date'] <= end_date)
     data = df.loc[mask]
     data['date'] = pd.to_datetime(data['date'])
-    m = data['date'].dt.month
     data['month'] = data['date'].dt.to_period("M")
     Q1 = data.groupby('month').quantile(0.25)
+    Q2 = data.groupby('month').quantile(0.50)
     Q3 = data.groupby('month').quantile(0.75)
     IQR = Q3 - Q1
     Upper_Bound = Q3 + 1.5*IQR
     Lower_Bound = Q1 - 1.5*IQR
     minvalue = data.groupby(pd.Grouper(key='date', freq='M')).min() 
     maxvalue = data.groupby(pd.Grouper(key='date', freq='M')).max() 
-    meanvalue = data.groupby(pd.Grouper(key='date', freq='M')).mean() 
+    # meanvalue = data.groupby(pd.Grouper(key='date', freq='M')).mean() 
     lower = Lower_Bound.iloc[:,:-3]
     lowest = minvalue.iloc[:,:-3]
     Upper = Upper_Bound.iloc[:,:-3]
@@ -386,58 +396,393 @@ def boxplot():
                 pass
             else:
                 Upper[i][j] = maxx[i][j]
-    list11 = lower[station], Q1[station], meanvalue[station], Q3[station], Upper[station]
-    all_data = []
-    for i in range(len(list11[0])):
-        temp = []
-        for j in range(len(list11)):
-            if str(list11[j][i]) == str(np.nan):
-                temp.append('-') 
-            else:
-                temp.append(list11[j][i])
-        all_data.append(temp)
+    listall = []
+    listbox = []
+    dataout = []
+
+
+    for i in station:
+        st = str(i)
+        listall = lower[st], Q1[st], Q2[st], Q3[st], Upper[st]
+        for i in range(len(listall[0])):
+            temp = []
+            for j in range(len(listall)):
+                if str(listall[j][i]) == str(np.nan):
+                    temp.append('-') 
+                else:
+                    temp.append(listall[j][i])
+            dataout.append(temp)
+
     Upper['month'] = Upper.index
     lower['month'] = lower.index
-    data = data.reset_index(drop=True)  
-    d = {}
-    list_out = []
-    list_wrong = []
-    check_month = []
-    if station in Upper.columns :
-        for n in range(len(Upper[station])):
-            for m in range(len(data[station])):
-                if str(data['month'][m]) == str(Upper['month'][n]):
-                    if data[station][m] > Upper[station][n] or data[station][m]<lower[station][n]:
-                        d['month'] = str(data['month'][m])
-                        d['value'] = data[station][m]
-                        check_month.append(str(data['month'][m]))
-                        list_out.append(d)
-                        d = {}
-                    else: 
-                        d['month'] = str(data['month'][m])
-                        d['value'] = '-'
-                        list_wrong.append(d)
-                        d = {}
-                else: pass
-        for item in list_wrong:
-            if item["month"] in check_month or item in list_out:
-                pass
-            else:
-                list_out.append(item)
-    listsort = sorted(list_out, key = lambda i: i['month'])
+    data = data.reset_index(drop=True) 
+    outliers = []
+    for i in station:
+        outliers.append(filter_by_station2(str(i),data,Upper,lower))
+    
     name = Q1.index
     for i in name :
         xname.append(str(i))
     
+    outbox = []
+    for i in listbox:
+        for j in outliers:
+            for r in j:
+                if str(i['station']) == str(r['station']):
+                    for v in r['value']:
+                        print(r['station'],v['value'])
+                        outbox.append(v['value'])
+                    print(outbox)
+                    i['outliers']= outbox
+                    outbox = []
+    
+
+    return dataout,xname,outliers
+
+def filteryear_by_station(station,data,Upper,lower):
+    check_month = []
+    correct_value = []
+    wrong_value = []
+    #show dataframe only column month and station input
+    df_station_month = data[station]
+    df_station_month.index = data["year"]
+    #list of value in station
+    list_value = list(df_station_month)
+    for index in range(len(df_station_month)):
+        year = str(df_station_month.index[index])
+        #get upper and lower value
+        upper_value = Upper.loc[Upper["year"]==year][station]
+        lower_value = lower.loc[lower["year"]==year][station]
+              
+        #check upper and lower
+        if (list_value[index] > upper_value.item() or list_value[index] < lower_value.item()):
+            check_month.append(year)
+            correct_value.append({"year":year,"value":list_value[index]})
+        else:
+            wrong_value.append({"year":year,"value": "-"})
+    
+    wrong_value = list({v['year']:v for v in wrong_value}.values())
+   
+    for item in wrong_value:
+        if item["year"] in check_month:
+            pass
+        else:
+            correct_value.append(item)
+
+    sort_correct_value = sorted(correct_value, key = lambda i: i['year'])
     c = 0
     o = []
-    for k,v in groupby(listsort,key=lambda x:x['month']):
+    v = {}
+    outd = []
+    for k,v in groupby(sort_correct_value,key=lambda x:x['year']):
         for i in list(v):
             o.append([c,i["value"]])
         c+=1
+        outd.append({'year':k,'value':o})
+#         print(k)
+#         print(o)
+#         # o=[]
+
+    data_return = [{"station":int(station),"value":o}]
+
+    return data_return
+def boxplotyear(df,station,start_date,end_date):
+    xname = []
+    mask = (df['date'] >= start_date) & (df['date'] <= end_date)
+    data = df.loc[mask]
+    data['date'] = pd.to_datetime(data['date'])
+    data['year'] = data['date'].dt.to_period("Y")
+    Q1 = data.groupby('year').quantile(0.25)
+    Q2 = data.groupby('year').quantile(0.50)
+    Q3 = data.groupby('year').quantile(0.75)
+    IQR = Q3 - Q1
+    Upper_Bound = Q3 + 1.5*IQR
+    Lower_Bound = Q1 - 1.5*IQR
+    minvalue = data.groupby(pd.Grouper(key='date', freq='Y')).min() 
+    maxvalue = data.groupby(pd.Grouper(key='date', freq='Y')).max() 
+    # meanvalue = data.groupby(pd.Grouper(key='date', freq='M')).mean() 
+    lower = Lower_Bound.iloc[:,:-3]
+    lowest = minvalue.iloc[:,:-3]
+    Upper = Upper_Bound.iloc[:,:-3]
+    maxx = maxvalue.iloc[:,:-3]
+    for i in lower.columns:
+        for j in range(len(lower[i])):
+            if lower[i][j] > lowest[i][j]:
+                pass
+            else:
+                lower[i][j] = lowest[i][j]
+    for i in Upper.columns:
+        for j in range(len(Upper[i])):
+            if Upper[i][j] < maxx[i][j]:
+                pass
+            else:
+                Upper[i][j] = maxx[i][j]
+    listall = []
+    listbox = []
+    dataout = []
 
 
-    return jsonify(all_data, xname, o)
+    for i in station:
+        st = str(i)
+        listall = lower[st], Q1[st], Q2[st], Q3[st], Upper[st]
+        for i in range(len(listall[0])):
+            temp = []
+            for j in range(len(listall)):
+                if str(listall[j][i]) == str(np.nan):
+                    temp.append('-') 
+                else:
+                    temp.append(listall[j][i])
+            dataout.append(temp)
+
+    Upper['year'] = Upper.index
+    lower['year'] = lower.index
+    data = data.reset_index(drop=True) 
+    outliers = []
+    for i in station:
+        outliers.append(filteryear_by_station(str(i),data,Upper,lower))
+    
+    name = Q1.index
+    for i in name :
+        xname.append(str(i))
+    outbox = []
+    for i in listbox:
+        for j in outliers:
+            for r in j:
+                if str(i['station']) == str(r['station']):
+                    for v in r['value']:
+                        outbox.append(v['value'])
+                    i['outliers']= outbox
+                    outbox = []
+    
+
+    return dataout,xname,outliers
+
+@app.route('/api/boxplotvalue', methods=["GET"])
+def selectboxplot2():
+    df = str(request.args.get("df"))
+    showtype = str(request.args.get("showtype"))
+    station = str(request.args.get("station"))
+    start_date = str(request.args.get("start_date"))
+    end_date = str(request.args.get("end_date"))
+    res = station.strip('][').split(',') 
+    if df == 'mean':
+        df = tmean
+    elif df == 'min':
+        df = tmin
+    elif df == 'max':
+        df = tmax
+    elif df == 'pre':
+        df = rain
+    if showtype =='month':
+        b = byear(df,res,start_date,end_date)
+    elif showtype =='year':
+        b = boxplotyear(df,res,start_date,end_date)
+    
+    print("station : ", station)
+    return jsonify(b)
+
+#--------------------------------------------------------------------
+# BOXPLOT
+tmean = pd.read_csv("C:/Users/ice/Documents/climate/TMD_DATA/TMD_DATA/clean_data/tmean1951-2015.csv")
+tmin = pd.read_csv("C:/Users/ice/Documents/climate/TMD_DATA/TMD_DATA/clean_data/tmin1951-2016.csv")
+tmax = pd.read_csv("C:/Users/ice/Documents/climate/TMD_DATA/TMD_DATA/clean_data/tmax1951-2016.csv")
+rain = pd.read_csv("C:/Users/ice/Documents/climate/TMD_DATA/TMD_DATA/clean_data/rain1951-2018.csv")
+def filter_by_station(station,data,Upper,lower):
+    check_month = []
+    correct_value = []
+    wrong_value = []
+    #show dataframe only column month and station input
+    df_station_month = data[station]
+    df_station_month.index = data["month"]
+    #list of value in station
+    list_value = list(df_station_month)
+
+    for index in range(len(df_station_month)):
+        month = str(df_station_month.index[index])
+        #get upper and lower value
+        upper_value = Upper.loc[Upper["month"]==month][station]
+        lower_value = lower.loc[lower["month"]==month][station]
+        #check upper an lower
+        if (list_value[index] > upper_value.item() or list_value[index] < lower_value.item()):
+            check_month.append(month)
+            correct_value.append({"month":month,"value":list_value[index]})
+        else:
+            wrong_value.append({"month":month,"value": "-"})
+
+    wrong_value = list({v['month']:v for v in wrong_value}.values())
+    for item in wrong_value:
+        if item["month"] in check_month:
+            pass
+        else:
+            correct_value.append(item)
+
+    sort_correct_value = sorted(correct_value, key = lambda i: i['month'])
+    c = 0
+    o = []
+    v = {}
+    outd = []
+    for k,v in groupby(sort_correct_value,key=lambda x:x['month']):
+        for i in list(v):
+            o.append([c,i["value"]])
+        c+=1
+        outd.append({'month':k,'value':o})
+        print(k)
+        print(o)
+        o=[]
+
+    data_return = [{"station":int(station),"value":outd}]
+
+    return data_return
+
+def boxplot(df,station,start_date,end_date):
+    xname = []
+    # station = ['300201','432301']
+    # start_date = '1980-10-01'
+    # end_date = '1981-02-31'
+    mask = (df['date'] >= start_date) & (df['date'] <= end_date)
+    data = df.loc[mask]
+    data['date'] = pd.to_datetime(data['date'])
+    # m = data['date'].dt.month
+    data['month'] = data['date'].dt.to_period("M")
+    Q1 = data.groupby('month').quantile(0.25)
+    Q2 = data.groupby('month').quantile(0.50)
+    Q3 = data.groupby('month').quantile(0.75)
+    IQR = Q3 - Q1
+    Upper_Bound = Q3 + 1.5*IQR
+    Lower_Bound = Q1 - 1.5*IQR
+    minvalue = data.groupby(pd.Grouper(key='date', freq='M')).min() 
+    maxvalue = data.groupby(pd.Grouper(key='date', freq='M')).max() 
+    # meanvalue = data.groupby(pd.Grouper(key='date', freq='M')).mean() 
+    lower = Lower_Bound.iloc[:,:-3]
+    lowest = minvalue.iloc[:,:-3]
+    Upper = Upper_Bound.iloc[:,:-3]
+    maxx = maxvalue.iloc[:,:-3]
+    for i in lower.columns:
+        for j in range(len(lower[i])):
+            if lower[i][j] > lowest[i][j]:
+                pass
+            else:
+                lower[i][j] = lowest[i][j]
+    for i in Upper.columns:
+        for j in range(len(Upper[i])):
+            if Upper[i][j] < maxx[i][j]:
+                pass
+            else:
+                Upper[i][j] = maxx[i][j]
+    listall = []
+    listbox = []
+    dataout = []
+    box = {}
+
+    for i in station:
+        st = str(i)
+        listall = lower[st], Q1[st], Q2[st], Q3[st], Upper[st]
+        for i in range(len(listall[0])):
+            temp = []
+            for j in range(len(listall)):
+                if str(listall[j][i]) == str(np.nan):
+                    temp.append('-') 
+                else:
+                    temp.append(listall[j][i])
+            dataout.append(temp)
+        box['station'] = st
+        box['value'] = dataout
+        listbox.append(box)
+        dataout = []
+        box = {}
+
+    Upper['month'] = Upper.index
+    lower['month'] = lower.index
+    data = data.reset_index(drop=True) 
+    outliers = []
+    for i in station:
+        outliers.append(filter_by_station(str(i),data,Upper,lower))
+    
+    name = Q1.index
+    for i in name :
+        xname.append(str(i))
+    
+    outbox = []
+    for i in listbox:
+        for j in outliers:
+            for r in j:
+                if str(i['station']) == str(r['station']):
+                    for v in r['value']:
+                        print(r['station'],v['value'])
+                        outbox.append(v['value'])
+                    print(outbox)
+                    i['outliers']= outbox
+                    outbox = []
+    
+
+    return listbox,xname
+
+@app.route('/api/boxplot', methods=["GET"])
+def selectboxplot():
+    df = str(request.args.get("df"))
+    station = str(request.args.get("station"))
+    start_date = str(request.args.get("start_date"))
+    end_date = str(request.args.get("end_date"))
+    res = station.strip('][').split(',') 
+    if df == 'mean':
+        df = tmean
+    elif df == 'min':
+        df = tmin
+    elif df == 'max':
+        df = tmax
+    elif df == 'pre':
+        df = rain
+    b = boxplot(df,res,start_date,end_date)
+    print("station : ", station)
+    return jsonify(b)
+
+# ------- LINE ANOMALY -------------------------------------------------------------
+@app.route('/api/line',methods=["GET"])
+def lineplot():
+    df = str(request.args.get("df"))
+    if df == 'mean':
+        df = tmean
+    elif df == 'min':
+        df = tmin
+    elif df == 'max':
+        df = tmax
+    elif df == 'pre':
+        df = rain
+
+    group_year = df.groupby('year')
+    year = list(set(df['year']))
+    station = str(request.args.get("station"))
+    print( "station ::::: ", station, type(station))
+    # res = station.strip('][').split(',')
+    dt = df[[station,'year']]
+    group_year = dt.groupby('year')
+    grouplist = []
+    for i in year:
+        m = group_year.get_group(i).mean()
+        grouplist.append(m[0])
+    mask = (dt['year'] >= 1970) & (df['year'] <= 1999)
+    baseline = dt.loc[mask]
+    bs = baseline[station].mean()
+    anamol = []
+    for i in range(len(grouplist)):
+        a = grouplist[i]-bs
+        if str(a)=='nan':
+            anamol.append('-')
+        else:
+            anamol.append(float("%.2f"% a))
+    ana = {station:anamol}
+    year = {'year':year}
+    # listplot = []
+    # anomaly = {}
+    # for i in range(len(year)):
+    #     anomaly['year'] = year[i]
+    #     if str(anamol[i])== str('nan'):
+    #         anomaly['value'] = '-'
+    #     else:
+    #         anomaly['value'] = anamol[i]
+    #     listplot.append(anomaly)
+    #     anomaly = {}
+    return jsonify(ana,year)
 #----------------------------map-------------------------------------
 @app.route("/nc_csv",methods=["GET"])
 def get_tomap():
@@ -456,5 +801,3 @@ def get_tomap():
 #----------------------------------------------------------------------
 if __name__ == '__main__':
     app.run(debug=True, port= 5500)
-
-

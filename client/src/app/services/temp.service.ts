@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { HttpClient, HttpClientModule } from '@angular/common/http'
 import { Observable } from 'rxjs'
-import { Temp, Plot, meanplot, station5, st, Missing } from '../interfaces/temp.interface'
+import { Temp, Plot, meanplot, station5, st, Missing, Boxplotval } from '../interfaces/temp.interface'
 
 @Injectable()
 export class TempService {
@@ -64,14 +64,15 @@ export class TempService {
                          
     }
 
-    async getboxvalue(station:string,start_date:string,end_date:string):Promise<Observable<any>>{
+    async getboxvalue(df:string,showtype:string,station:string,start_date:string,end_date:string):Promise<Observable<any>>{
         return this.http.get('http://127.0.0.1:5500/api'+
-                        `/boxplotvalue?station=${station}&start_date=${start_date}&end_date=${end_date}`)
+                        `/boxplotvalue?df=${df}&showtype=${showtype}&station=${station}&start_date=${start_date}&end_date=${end_date}`)
     }
 
-    async getboxplot(station:string,start_date:string,end_date:string):Promise<Observable<any>>{
-        return this.http.get('http://127.0.0.1:5500/api/'+
-                        `boxplot?station=${station}&start_date=${start_date}&end_date=${end_date}`)
+    async getboxplot(df:string,station:string,start_date:string,end_date:string):Promise<Observable<Boxplotval>>{
+        const response:Observable<any> = this.http.get('http://127.0.0.1:5500/api/'+
+                        `boxplot?df=${df}&station=${station}&start_date=${start_date}&end_date=${end_date}`)
+        return response
     }
 
     async getMissed(): Promise<Missing[]> {
@@ -86,6 +87,12 @@ export class TempService {
         return this.http.get('http://127.0.0.1:5500/api'+
                         `/selectmissing?sta=${sta}&startyear=${startyear}&stopyear=${stopyear}&dff=${dff}`
         )}
+
+    async getanomaly(station:string,df:string){
+        return this.http.get('http://127.0.0.1:5500'+
+                            `/api/line?station=${station}&df=${df}`
+        )
+    }
 
     getData(){
         return this.http.get('http://127.0.0.1:5500/api/missing')

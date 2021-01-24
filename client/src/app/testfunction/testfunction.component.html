@@ -1,6 +1,24 @@
 <head>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
   <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
+<style>
+.up
+{
+	float:center;
+	width:300px;
+	background-color:#bff00e;
+}
+.right
+{
+	float:right;
+	width:300px;
+}
+.left
+{
+	float:left;
+	width:900px;
+}
+</style>
 </head>
 <body>
   <form [formGroup]="choosefile"> 
@@ -23,36 +41,7 @@
         (onSelectAll)="onSelectAll($event)">
     </ng-multiselect-dropdown>
   </form>
-  <form [formGroup]="sstartyear"> 
-    <div class="form-group">
-      <label for="syear">Start year : </label>
-      <select formControlName="syear" class="form-control">
-        <option *ngFor="let y of yearList">{{y}}</option>
-      </select>
-    </div>
-  </form>
-  <form [formGroup]="eendyear"> 
-    <div class="form-group">
-      <label for="eyear">Stop year : </label>
-      <select formControlName="eyear" class="form-control">
-        <option *ngFor="let y of yearList">{{y}}</option>
-      </select>
-    </div>
-  </form>
 
-  <div>
-      <div >
-        <h5>Select Station</h5>
-        <form [formGroup]="getstation"> 
-          <div class="form-group">
-            <label for="station">STATION</label>
-            <select formControlName="station" class="form-control"  >
-              <option *ngFor="let st of station">{{st.id}}-{{st.name}}</option>
-            </select>
-          </div>
-        </form>
-      </div>
-  </div>
 
 <div class="form-group hidden">
   <div class="input-group" style="margin-top: 3em;">
@@ -91,14 +80,10 @@
   </div>
 </form>
   <div class="space">
-    <button type="button" (click)="getstationcode();">PLOT</button>
+    <button type="button" (click)="getstationcode();selectmiss();">PLOT</button>
   </div>
 
-  <div class="space">
-    <button type="button" (click)="testlink();">TEST</button>
-  </div>
-
-  <div *ngIf="checkbox=='check'">
+  <div class="left" *ngIf="checkbox=='check'">
       <highcharts-chart
         [Highcharts]="highcharts" 
         [options] = "chartOptions" 
@@ -106,8 +91,7 @@
       </highcharts-chart>
   </div>
 
-  <button (click)= "selectmiss();"> PLOTmiss </button>
-  <div *ngIf="checkmiss=='check'">
+  <div class="right" *ngIf="checkmiss=='check'">
     <highcharts-chart
       [Highcharts]="highcharts1" 
       [options] = "chartOptions1" 
@@ -115,5 +99,11 @@
     </highcharts-chart>
 </div>
 
+<div class="space">
+  <button type="button" (click)="testgetdata();">TEST</button>
+</div>
+<div class="space">
+  <button type="button" (click)="testgetdata2();">TEST 2</button>
+</div>
 
 </body>

@@ -1,21 +1,47 @@
 <head>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
   <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
+<style>
+.up
+{
+	float:center;
+	width:300px;
+	background-color:#bff00e;
+}
+.right
+{
+	float:right;
+	width:300px;
+}
+.left
+{
+	float:left;
+	width:900px;
+}
+</style>
 </head>
 <body>
-<div>
-    <div >
-      <h5>Select Station</h5>
-      <form [formGroup]="getstation"> 
-        <div class="form-group">
-          <label for="station">STATION</label>
-          <select formControlName="station" class="form-control"  >
-            <option *ngFor="let st of station">{{st.id}}-{{st.name}}</option>
-          </select>
-        </div>
-      </form>
+  <form [formGroup]="choosefile"> 
+    <div class="form-group">
+      <label for="file">Select dataset : </label>
+      <select formControlName="file" class="form-control">
+        <option >-</option>
+        <option *ngFor="let f of filename">{{f.name}}</option>
+      </select>
     </div>
-</div>
+  </form>
+  <form [formGroup]="myForm">
+    <ng-multiselect-dropdown
+        name="city"
+        [placeholder]="'Select Station'"
+        [settings]="dropdownSettings"
+        [data]="station"
+        formControlName="city"
+        [disabled]="disabled"
+        (onSelect)="onItemSelect($event)"
+        (onSelectAll)="onSelectAll($event)">
+    </ng-multiselect-dropdown>
+  </form>
 
 <div class="form-group hidden">
   <div class="input-group" style="margin-top: 3em;">
@@ -53,15 +79,49 @@
       </div>
   </div>
 </form>
+<form [formGroup]="choosetype"> 
+  <div class="form-group">
+    <label for="type">How to show boxplot : </label>
+    <select formControlName="type" class="form-control">
+      <option >-</option>
+      <option *ngFor="let t of typename">{{t.name}}</option>
+    </select>
+  </div>
+  </form>
+
+<br>
+
   <div class="space">
-    <button type="button" (click)="getstationcode();">PLOT</button>
+    <button type="button" (click)="getstationcode();selectmiss();plotbar();">PLOT</button>
   </div>
 
-  <div *ngIf="check=='check'">
+  <div class="space">
+    <button type="button" (click)="testget();">TEST</button>
+  </div>
+
+  <div class="left" *ngIf="checkbox=='check'">
       <highcharts-chart
         [Highcharts]="highcharts" 
         [options] = "chartOptions" 
         style = "width: 90%; height: 550px; display: block;margin-left: 50px;">
       </highcharts-chart>
   </div>
+
+  <div class="right" *ngIf="checkmiss=='check'">
+    <highcharts-chart
+      [Highcharts]="highcharts1" 
+      [options] = "chartOptions1" 
+      style = "width: 70%; height: 550px; display: block;margin-left: 50px;">
+    </highcharts-chart>
+</div>
+
+  <div class="left" *ngIf="checkbar=='check'">
+    <highcharts-chart
+      [Highcharts]="highchartsbar" 
+      [options] = "chartOptionsbar" 
+      style = "width: 90%; height: 550px; display: block;margin-left: 50px;">
+    </highcharts-chart>
+  </div>
+
+
 </body>

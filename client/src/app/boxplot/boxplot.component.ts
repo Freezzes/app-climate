@@ -6,9 +6,16 @@ import * as Highcharts from 'highcharts';
 import * as highheat from 'highcharts/modules/heatmap';
 import { HighchartsChartComponent } from 'highcharts-angular';
 import HighchartsMore from 'highcharts/highcharts-more';
-import { FormControl, FormGroup, Validators} from '@angular/forms';
+import { FormControl, FormGroup, Validators, FormBuilder} from '@angular/forms';
+import {Config, Data, Layout} from 'plotly.js';
+import { Chart,ChartData } from 'chart.js';
+import * as CanvasJS from 'C:/Users/ice/Downloads//cli/canvasjs-3.0.5/canvasjs.min';
+import Plotly from 'plotly.js-dist'
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
 
+highheat(Highcharts);
 HighchartsMore(Highcharts);
+
 @Component({
   selector: 'app-boxplot',
   templateUrl: './boxplot.component.html',
@@ -22,18 +29,24 @@ export class BoxplotComponent implements OnInit {
   fromDate: NgbDate;
   toDate: NgbDate | null = null;
 
-  public dataplot = [];
-  public xname = [];
-  public calldata = [];
-  public plotdata = []
-  public testget = [];
   public test=[];
   public stationyear;
-  public plotdate = [];
   public start_date;
   public end_date;
   public stationselected;
-  check = "";
+  public plotbox = [];
+  public plotout = [];
+  public plotname = [];
+  public boxval = [];
+  public outval = [];
+  public nameval = [];
+  public anomalydata = []
+  public anomaly = []
+  public anomalyyear = []
+  public checkbar = ''
+  public st;
+  checkbox = "";
+  checkmiss = "";
   dat:any;
   station:Array<Object> = [
     {id: 300201, name: "แม่ฮ่องสอน"},{id: 300202, name: "แม่สะเรียง"},{id: 303201, name: "เชียงราย"},{id: 303301, name: "เชียงราย สกษ."},{id:310201 , name: "พะเยา"}, {id: 327202, name: "ดอยอ่างขาง"},
@@ -58,9 +71,43 @@ export class BoxplotComponent implements OnInit {
     {id: 567201, name: "ตรัง"},{id: 568301, name: "คอหงษ์ สกษ."},{id: 568401, name: "สะเดา"},{id: 568501, name: "สงขลา"},{id: 568502, name: "หาดใหญ่"},{id: 570201, name: "สตูล"},
     {id: 580201, name: "ปัตตานี"},{id: 581301, name: "ยะลา สกษ."},{id: 583201, name: "นราธิวาส"}
 ];
+  yearList = [1951,1952,1953,1954,1955,1956,1957,1958,1959,1960,1961,1962,1963,1964,1965,1966,1967,1968,1969,1970,1971,1972,1973,1974,
+    1975,1976,1977,1978,1979,1980,1981,1982,1983,1984,1985,1986,1987,1988,1989,1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,
+    2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018]
 
+  filename = [{id:'mean',name:'Temperature mean'},
+    {id:'min',name:'Temperature min'},
+    {id:'max',name:'Temperature max'},
+    {id:'pre',name:'Preciptipation'}]
 
-  constructor(private calendar: NgbCalendar, public formatter:NgbDateParserFormatter, private tempService: TempService) {
+  typename = [{id:'month',name:'รายเดือน'},
+    {id:'season',name:'รายฤดู'},
+    {id:'year',name:'รายปี'}]
+
+  myForm:FormGroup;
+  disabled = false;
+  ShowFilter = false;
+  limitSelection = false;
+  cities = [];
+  selectedItems = [];
+  dropdownSettings: any = {};
+  public dataplotcsv = [];
+  public TempData;
+  public startyear;
+  public stopyear;
+  public startmonth;
+  public stopmonth;
+  public stationmiss;
+  public missdata = [];
+  public missingval = [];
+  public percent = [];
+  public percentplot = [];
+  public d = [];
+  public dfile = [];
+  public selectstation = [];
+  public selectstationid = [];
+
+  constructor(private calendar: NgbCalendar, public formatter:NgbDateParserFormatter, private tempService: TempService, private fb: FormBuilder) {
     // this.fromDate = calendar.getToday();
     // this.toDate = calendar.getNext(calendar.getToday(), 'd', 20);
   }
@@ -94,22 +141,52 @@ export class BoxplotComponent implements OnInit {
     station: new FormControl('', Validators.required)
   });
   async getstationcode(){
-    let s = this.getstation.value
-    let select
-
     // GET STATION CODE
-    for (let value of Object.values(s)) {
-      select = value
-      var splitted = select.split("-"); 
-      this.stationselected = splitted[0];
+    this.selectstationid = [];
+    const selectValueList = this.myForm.get("city").value;
+    selectValueList.map( item => {
+       this.selectstationid.push(item.id);
+    });
+
+    let fi = this.choosefile.value
+    let fil = ''
+    for (let v of Object.values(fi)){
+       if(String(v) == String('Temperature mean')){
+          fil = 'mean'
+       }
+       if(String(v) == String('Temperature min')){
+          fil = 'min'
+       }
+       if(String(v) == String('Temperature max')){
+          fil = 'max'
+       }
+       if(String(v) == String('Preciptipation')){
+          fil = 'pre'
+       }
+       console.log("key",fil)
     }
-    // console.log(this.stationselected)
-    this.dat = this.testdata1(this.stationselected)
+    let typeshow = this.choosetype.value
+    let ts = ''
+    console.log("typeshow : ",typeshow)
+    for (let v of Object.values(typeshow)){
+      console.log("v : ",v)
+      if(String(v) == String('รายเดือน')){
+         ts = 'month'
+      }
+      else if(String(v) == String('รายฤดู')){
+        ts = 'season'
+     }else if(String(v) == String('รายปี')){
+       ts = 'year'
+     }
+     console.log("type : ",ts)
+    }
+
+    this.dat = this.testdata1(this.selectstationid,fil,ts)
     return this.dat
   }
 
-  async testdata1(st){
-    this.check = ''
+  async testdata1(st,fil,ts){
+    this.checkbox = ''
     let startyear = String(this.fromDate.year)
     let startmonth = String(this.fromDate.month)
     let startday = String(this.fromDate.day)
@@ -123,7 +200,6 @@ export class BoxplotComponent implements OnInit {
       startmonth = '0'+startmonth
     }
     this.start_date = String(startyear+'-'+startmonth+'-'+startday)
-    // this.plotdate = String(startmonth+'-'+startyear)
     if(stopday.length == 1){
       stopday = '0'+stopday
     }
@@ -132,45 +208,280 @@ export class BoxplotComponent implements OnInit {
     }
     this.end_date = String(stopyear+'-'+stopmonth+'-'+stopday)
     this.stationyear = st
-    this.calldata = []
-    this.plotdata = []
-    this.testget.length = 0;
-    this.plotdate.length = 0;
-    await this.tempService.getboxvalue(this.stationyear,this.start_date,this.end_date).then(data => data.subscribe(
+    this.plotbox = []
+    this.plotname = []
+    this.plotout = []
+    this.boxval.length = 0;
+    this.nameval.length = 0;
+    this.outval.length = 0;
+    // console.log("file : ", fil)
+    await this.tempService.getboxvalue(fil,ts,this.stationyear,this.start_date,this.end_date).then(data => data.subscribe(
       res => { 
-        console.log("res0 : ",res[0])
-        console.log("res1 : ",res[1])
-        this.calldata.push(res[0])
-        this.plotdata.push(res)
-        console.log("plot data : ",this.plotdata)
-      this.calldata.map(v=>{
+        // console.log("get data : ", res)
+        console.log("boxplot value : ",res[0])
+        // console.log("outliers value : ", res[2])
+        // console.log("res1 : ",res[1])
+        this.plotbox.push(res[0])
+        this.plotname.push(res[1])
+        this.plotout.push(res[2])
+      this.plotbox.map(u=>{
+        u.map(v=>{
         for (let i in v){
-          for (let j in v[i]){
-            if(String(v[i][j]) == String('-')){
-              v[i][j] = null
+            if(String(v[i]) == String('-')){
+              v[i] = null
             }
-          }
-          this.testget.push(v[i])
-       }
-        this.check = 'check';
-      })
-      
-      this.plotdata.map(v=>{
-        for(let i of v[1]){
-          this.plotdate.push(i)
+          // console.log("i in v[i] : ",v[i])
         }
-        this.check = 'check';
-        console.log("v month : ",this.plotdate)
+        this.boxval.push(v)
+        this.checkbox = 'check';          
+        })
       })
-    }))
-    console.log("test get : ",this.testget)  
-    // this.test = this.testget
-    return this.testget
-    // console.log('test get',this.test)
+      // console.log("boxval : ",this.boxval)
+      this.plotname.map(v=>{
+        for(let i of v){
+          this.nameval.push(i)
+        }
+        this.checkbox = 'check';
+       })
 
+       this.plotout.map(u=>{
+         console.log
+         u.map(v=>{
+        //  console.log("v out : ",v)
+         for (let i in v){
+          // console.log("v[i] : ",v[i])
+          for (let j in v[i]){
+            // console.log("v[ij] : ", v[i][j] ,v[i][j])
+            for (let k in v[i][j]){
+              for(let l in v[i][j][k]){
+                  console.log("change val : ",v[i][j][k][l])      
+
+                if(String(v[i][j][k][l]) == String('-')){
+                  v[i][j][k][l] = null
+                }          
+              }
+
+            console.log("v[ijk] : ",v[i][j][k])
+            this.outval.push(v[i][j][k])
+            }
+
+            
+          }
+          console.log("out get v : ",this.outval)
+       }
+        this.checkbox = 'check';
+      })
+    })
+    }))
+    console.log("out : ",this.outval)
+    return this.boxval
   }
-  async ngOnInit() {      
+
+  async ngOnInit() {    
+    this.missingval = await this.tempService.getMissed();
+    this.selectedItems = [];
+    this.dropdownSettings = {
+        singleSelection: false,
+        idField: 'id',
+        textField: 'name',
+        selectAllText: 'Select All',
+        unSelectAllText: 'UnSelect All',
+        itemsShowLimit: 10,
+        allowSearchFilter: this.ShowFilter
+    };
+    this.myForm = this.fb.group({
+        city: [this.selectedItems]
+    });
+    
     }
+    onItemSelect(item: any) {
+      //  this.selectstationid = []
+      console.log('!!!onItemSelect', item);
+  }
+    onSelectAll(items: any) {
+      console.log('onSelectAll', items);
+  }
+    toogleShowFilter() {
+      this.ShowFilter = !this.ShowFilter;
+      this.dropdownSettings = Object.assign({}, this.dropdownSettings, { allowSearchFilter: this.ShowFilter });
+  }
+
+    handleLimitSelection() {
+      if (this.limitSelection) {
+          this.dropdownSettings = Object.assign({}, this.dropdownSettings, { limitSelection: 2 });
+      } else {
+          this.dropdownSettings = Object.assign({}, this.dropdownSettings, { limitSelection: null });
+      }
+  }
+    choosefile = new FormGroup({
+      file: new FormControl('', Validators.required)
+    });
+
+    choosetype = new FormGroup({
+      type:new FormControl('',Validators.required)
+    });
+
+    choosetype2 = new FormGroup({
+      month:new FormControl('',Validators.required),
+      season:new FormControl('',Validators.required),
+      year:new FormControl('',Validators.required)
+    });
+  
+    async selectmiss(){
+      this.checkmiss = ''
+      this.selectstationid = [];
+      const selectValueList = this.myForm.get("city").value;
+      selectValueList.map( item => {
+         this.selectstationid.push(item.id);
+      });
+      console.log("station id: ", this.selectstationid)
+      let fi = this.choosefile.value
+      let fil = ''
+      for (let v of Object.values(fi)){
+         if(String(v) == String('Temperature mean')){
+            fil = 'mean'
+         }
+         if(String(v) == String('Temperature min')){
+            fil = 'min'
+         }
+         if(String(v) == String('Temperature max')){
+            fil = 'max'
+         }
+         if(String(v) == String('Preciptipation')){
+            fil = 'pre'
+         }
+         console.log("key",fil)
+      }
+
+      this.stationmiss = this.selectstationid
+      this.startyear = Number(this.fromDate.year)
+      this.stopyear = Number(this.toDate.year)
+      console.log("start year : ", this.startyear)
+      console.log("stop year : ", this.stopyear)
+      let per=[];
+      this.percentplot.length = 0
+      await this.tempService.getmissing(this.stationmiss,this.startyear,this.stopyear,fil).then(data => data.subscribe(
+        res => { 
+        this.missdata = [];
+          this.missdata.push(res)
+         //  console.log("missdata : ",this.missdata)
+        this.missdata.map(u => { 
+         //   console.log("select u",u)
+           let val = []
+           const a = {}
+           let count = 0
+           u.map(v =>{
+              // console.log("select v",typeof(v))
+              for (let n in v.value){   
+               //   console.log("miss value",v.value,v.x,v.y)
+               //   console.log("miss type",typeof(v.value),typeof(v.x),typeof(v.y))
+                 if (String(v.value[n]) == String("-") ){
+                    v.value = null
+                 }else{
+                    v.value = v.value
+              }
+           }
+         //   console.log("miss value",v.value,v.x,v.y)
+              val.push(v.x,v.y,v.value)
+               a[count] = val
+               count += 1
+               val = []
+               // console.log("miss val",a)
+           })
+   
+           for (let i in a){
+             this.percentplot.push(a[i])
+          }
+          console.log("miss per : ",this.percentplot)
+          console.log("p",typeof(this.percentplot))
+           val = []
+        })
+       this.checkmiss = 'check';
+     }))
+    
+     }
+     // bar plot anomaly data\
+     public anomaly_year = []
+     public anomaly_name = [];
+     
+     async plotbar(){
+        this.checkbar = ''
+        this.selectstationid = [];
+        const selectValueList = this.myForm.get("city").value;
+        selectValueList.map( item => {
+           this.selectstationid.push(item.id);
+        });
+        this.st = String(this.selectstationid)
+        let fi = this.choosefile.value
+        let fil = ''
+        for (let v of Object.values(fi)){
+           if(String(v) == String('Temperature mean')){
+              fil = 'mean'
+           }
+           if(String(v) == String('Temperature min')){
+              fil = 'min'
+           }
+           if(String(v) == String('Temperature max')){
+              fil = 'max'
+           }
+           if(String(v) == String('Preciptipation')){
+              fil = 'pre'
+           }
+          }  
+        console.log("st : ",this.st)
+        this.anomaly = []
+        this.anomaly_year = []
+        this.anomaly_name.length = 0;
+        this.anomalydata.length = 0;
+        this.anomalyyear.length = 0;
+        await this.tempService.getanomaly(this.st,fil).then(data => data.subscribe(
+        res => { 
+          this.anomaly.push(res[0])
+          this.anomaly_year.push(res[1])
+          this.anomaly.map(u=>{
+            
+            for (let v in u){
+              this.anomaly_name.push(v)
+              console.log(v,"v")
+              for (let i in u[v]){
+                if(String(u[v][i]) == String("-")){
+                    u[v][i] = null
+                }else{
+                  u[v][i] = Number(u[v][i])
+                }   
+              this.anomalydata.push(u[v][i])               
+              }
+            }
+          })
+          this.anomaly_year.map(u=>{
+            for (let v in u){
+              for (let i in u[v]){
+              this.anomalyyear.push(u[v][i])               
+              }
+            }
+          })
+          console.log("anomaly_name : ",this.anomaly_name)
+          this.checkbar = 'check'
+        }))
+
+     }
+     async testget(){
+      let typeshow = this.choosetype2.value
+      let ts = ''
+      console.log("typeshow : ",typeshow)
+      for (let i in typeshow){
+        console.log("type i :",typeshow[i].keys)
+      }
+      for (let va of Object.values(typeshow)){
+        console.log("va ",va)
+        if( va == true){
+          console.log("key : ",Object.keys(typeshow))
+        }
+        else{
+          console.log("va key ",va)
+        }
+      }
+     }
 
     
     highcharts = Highcharts;
@@ -191,7 +502,7 @@ export class BoxplotComponent implements OnInit {
       },
   
       xAxis: {
-          categories: this.plotdate,
+          categories: this.nameval,
           title: {
               text: 'Month No.'
           }
@@ -201,23 +512,11 @@ export class BoxplotComponent implements OnInit {
           title: {
               text: 'Observations'
           },
-          plotLines: [{
-              value: 932,
-              color: 'red',
-              width: 1,
-              label: {
-                  text: 'Theoretical mean: 932',
-                  align: 'center',
-                  style: {
-                      color: 'gray'
-                  }
-              }
-          }]
       },
       
       series: [{
           name: 'Observations',
-          data: this.testget,
+          data: this.boxval,
           tooltip: {
               headerFormat: '<em>Month No {point.key}</em><br/>'
           }
@@ -225,14 +524,11 @@ export class BoxplotComponent implements OnInit {
           name: 'Outliers',
           color: Highcharts.getOptions().colors[0],
           type: 'scatter',
-          data: [ // x, y positions where 0 is the first category
-              // [0, 6],
-              // [4, 718],
-              // [4, 951],
-              // [4, 969]
-          ],
+          data: 
+          this.outval
+          ,
           marker: {
-              fillColor: 'white',
+              fillColor: 'lightblue',
               lineWidth: 1,
               lineColor: Highcharts.getOptions().colors[0]
           },
@@ -242,6 +538,104 @@ export class BoxplotComponent implements OnInit {
       }]
       
   };
+
+  highcharts1 = Highcharts;
+  chartOptions1 = {   
+     chart : {
+        type: 'heatmap',
+        marginTop: 40,
+        marginBottom: 80,
+
+     },
+     title : {
+        text: 'Missing Value'   
+     },
+     xAxis : {
+        categories: [300201,300202,303201,303301,310201,327202,327301,327501,328201,328202, 328301, 329201, 
+         330201,331201, 331301, 331401, 331402, 351201,352201, 353201, 353301, 354201, 356201, 356301,357201, 
+         357301, 373201, 373301, 376201, 376202, 376203, 376301, 376401, 378201, 379201,379401, 379402, 380201, 
+         381201, 381301, 383201, 386301, 387401, 388401, 400201, 400301, 402301,403201, 405201,405301, 407301, 
+         407501, 409301,415301, 419301, 423301, 424301, 425201,425301,426201, 426401, 429201,429601, 430201,430401,
+         431201, 431301, 431401,432201, 432301, 432401, 436201, 436401, 440201, 440401, 450201,450401,451301, 
+         455201, 455203, 455301, 455302, 455601,459201, 459202, 459203, 459204, 459205, 465201,478201, 478301, 
+         480201, 480301, 500201, 500202,500301, 501201, 517201, 517301, 532201, 551203, 551301, 551401, 552201, 
+         552202, 552301, 552401,560301, 561201, 564201, 564202, 566201,566202,567201, 568301, 568401, 568501, 568502, 
+         570201, 580201, 581301, 583201],
+         labels: {
+           rotation: -90,
+          step:1,
+           style: {
+               fontSize:'10px'
+            }
+        }
+     },
+     yAxis : {
+        categories: [1951,1952,1953,1954,1955,1956,1957,1958,1959,1960,1961,1962,1963,1964,1965,1966,1967,1968,1969,1970,1971,1972,1973,1974,
+         1975,1976,1977,1978,1979,1980,1981,1982,1983,1984,1985,1986,1987,1988,1989,1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,
+         2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015],
+           title: null
+     },
+     colorAxis : {
+        min: 0,
+        max:100,
+        minColor: '#0661CC',
+        maxColor: '#FFFFFF'
+     },
+     legend : {
+        align: 'right',
+        layout: 'vertical',
+        margin: 0,
+        verticalAlign: 'top',
+        // color: '#ffffff',
+        y: 25,
+        symbolHeight: 280
+     },
+     tooltip : {
+        formatter: function () {
+           return '<b>' + '</b> missing <br><b>' +
+              this.point.value +'</b> % <br><b>' 
+
+        }
+     },
+     series : [{
+        name: 'missing',
+        borderWidth: 1,
+        turboThreshold:0,
+        borderColor:'#FFFFFF',
+        nullColor:'#000000',
+        data: this.percentplot,       
+        dataLabels: {
+           enabled: false,
+           color: '#000000'
+        }
+     }]
+    
+   };
+
+   highchartsbar = Highcharts;
+   chartOptionsbar = {   
+      chart: {
+         type: 'column'
+      },
+      title: {
+         text: 'Anomaly'
+      },
+      xAxis:{
+         categories: this.anomalyyear
+      },     
+      series: [
+         {
+            name: this.anomaly_name,
+            data: this.anomalydata,
+            zones: [{
+                value: -0,
+                color: '#306EFF'
+            }, {
+                color: '#E42217'
+            }]
+         }
+      ]
+   };
   
 
 }
