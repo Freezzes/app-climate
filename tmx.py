@@ -557,6 +557,268 @@ def boxplotyear(df,station,start_date,end_date):
 
     return dataout,xname,outliers
 
+def filterseason_by_station(station,data,Upper,lower):
+    check_month = []
+    correct_value = []
+    wrong_value = []
+   
+    df_station_month = data[station]
+    df_station_month.index = data["season"]
+    #list of value in station
+    list_value = list(df_station_month)
+    for index in range(len(df_station_month)):
+        season = str(df_station_month.index[index])
+        #get upper and lower value
+        upper_value = Upper.loc[Upper["season"]==season][station]
+        lower_value = lower.loc[lower["season"]==season][station]
+              
+        #check upper and lower
+        if (list_value[index] > upper_value.item() or list_value[index] < lower_value.item()):
+            check_month.append(season)
+            correct_value.append({"season":season,"value":list_value[index]})
+        else:
+            wrong_value.append({"season":season,"value": "-"})
+    
+    wrong_value = list({v['season']:v for v in wrong_value}.values())
+   
+    for item in wrong_value:
+        if item["season"] in check_month:
+            pass
+        else:
+            correct_value.append(item)
+
+    sort_correct_value = sorted(correct_value, key = lambda i: i['season'])
+    c = 0
+    o = []
+    v = {}
+    outd = []
+    for k,v in groupby(sort_correct_value,key=lambda x:x['season']):
+        for i in list(v):
+            o.append([c,i["value"]])
+        c+=1
+        outd.append({'season':k,'value':o})
+
+
+    data_return = [{"station":int(station),"value":o}]
+
+    return data_return
+
+def boxplotseason(df,station,start_date,end_date):
+    # create a list of our conditions
+    conditions = [
+        (df['month'] >= 3) & (df['month'] <= 5),
+        (df['month'] >= 6) & (df['month'] <= 8),
+        (df['month'] >= 9) & (df['month'] <= 11),
+        (df['month'] == 12) | (df['month'] == 1) | (df['month'] == 2),
+        ]
+
+    # create a list of the values we want to assign for each condition
+    values = ['MAM', 'JJA', 'SON', 'DJF']
+
+    # create a new column and use np.select to assign values to it using our lists as arguments
+    df['season'] = np.select(conditions, values)
+    
+    xname = []
+    mask = (df['date'] >= start_date) & (df['date'] <= end_date)
+    data = df.loc[mask]
+    data['date'] = pd.to_datetime(data['date'])
+    Q1 = data.groupby('season').quantile(0.25)
+    Q2 = data.groupby('season').quantile(0.50)
+    Q3 = data.groupby('season').quantile(0.75)
+    IQR = Q3 - Q1
+    Upper_Bound = Q3 + 1.5*IQR
+    Lower_Bound = Q1 - 1.5*IQR
+    minvalue = data.groupby(pd.Grouper(key='season')).min() 
+    maxvalue = data.groupby(pd.Grouper(key='season')).max() 
+    lower = Lower_Bound.iloc[:,:-4]
+    lowest = minvalue.iloc[:,:-4]
+    Upper = Upper_Bound.iloc[:,:-4]
+    maxx = maxvalue.iloc[:,:-4]
+    for i in lower.columns:
+        for j in range(len(lower[i])):
+            if lower[i][j] > lowest[i][j]:
+                pass
+            else:
+                lower[i][j] = lowest[i][j]
+    for i in Upper.columns:
+        for j in range(len(Upper[i])):
+            if Upper[i][j] < maxx[i][j]:
+                pass
+            else:
+                Upper[i][j] = maxx[i][j]
+    listall = []
+    listbox = []
+    dataout = []
+
+
+    for i in station:
+        st = str(i)
+        listall = lower[st], Q1[st], Q2[st], Q3[st], Upper[st]
+        for i in range(len(listall[0])):
+            temp = []
+            for j in range(len(listall)):
+                if str(listall[j][i]) == str(np.nan):
+                    temp.append('-') 
+                else:
+                    temp.append(listall[j][i])
+            dataout.append(temp)
+
+    Upper['season'] = Upper.index
+    lower['season'] = lower.index
+    data = data.reset_index(drop=True) 
+    outliers = []
+    for i in station:
+        outliers.append(filterseason_by_station(str(i),data,Upper,lower))
+    
+    name = Q1.index
+    for i in name :
+        xname.append(str(i))
+    outbox = []
+    for i in listbox:
+        for j in outliers:
+            for r in j:
+                if str(i['station']) == str(r['station']):
+                    for v in r['value']:
+                        outbox.append(v['value'])
+                    i['outliers']= outbox
+                    outbox = []
+
+    return dataout,xname,outliers
+
+def filter_ERA_by_station(station,data,Upper,lower):
+    check_month = []
+    correct_value = []
+    wrong_value = []
+   
+    df_station_month = data[station]
+    df_station_month.index = data["era"]
+    
+    #list of value in station
+    list_value = list(df_station_month)
+    for index in range(len(df_station_month)):
+        era = str(df_station_month.index[index])
+        #get upper and lower value
+        upper_value = Upper.loc[Upper["era"]==era][station]
+        lower_value = lower.loc[lower["era"]==era][station]
+              
+        #check upper and lower
+        if (list_value[index] > upper_value.item() or list_value[index] < lower_value.item()):
+            check_month.append(era)
+            correct_value.append({"era":era,"value":list_value[index]})
+        else:
+            wrong_value.append({"era":era,"value": "-"})
+    wrong_value = list({v['era']:v for v in wrong_value}.values())
+   
+    for item in wrong_value:
+        if item["era"] in check_month:
+            pass
+        else:
+            correct_value.append(item)
+
+    sort_correct_value = sorted(correct_value, key = lambda i: i['era'])
+    c = 0
+    o = []
+    v = {}
+    outd = []
+    for k,v in groupby(sort_correct_value,key=lambda x:x['era']):
+        for i in list(v):
+            o.append([c,i["value"]])
+        c+=1
+        outd.append({'era':k,'value':o})
+
+    data_return = [{"station":int(station),"value":o}]
+
+    return data_return
+
+def boxplotera(df,station,start_date,end_date):
+    # create a list of our conditions
+    df['era'] = "NaN"
+    for v in df['year']:
+
+        if v in range(1950,1960):
+            df['era'].loc[df.year == v] = "1950s"
+        elif v in range(1960,1970):
+            df['era'].loc[df.year == v] = "1960s"
+        elif v in range(1970,1980):
+            df['era'].loc[df.year == v] = "1970s"
+        elif v in range(1980,1990):
+            df['era'].loc[df.year == v] = "1980s"
+        elif v in range(1990,2000):
+            df['era'].loc[df.year == v] = "1990s"
+        elif v in range(2000,2010):
+            df['era'].loc[df.year == v] = "2000s"
+        elif v in range(2010,2020):
+            df['era'].loc[df.year == v] = "2010s"
+  
+    xname = []
+    mask = (df['date'] >= start_date) & (df['date'] <= end_date)
+    data = df.loc[mask]
+    data['date'] = pd.to_datetime(data['date'])
+    Q1 = data.groupby('era').quantile(0.25)
+    Q2 = data.groupby('era').quantile(0.50)
+    Q3 = data.groupby('era').quantile(0.75)
+    IQR = Q3 - Q1
+    Upper_Bound = Q3 + 1.5*IQR
+    Lower_Bound = Q1 - 1.5*IQR
+    minvalue = data.groupby(pd.Grouper(key='era')).min() 
+    maxvalue = data.groupby(pd.Grouper(key='era')).max() 
+    lower = Lower_Bound.iloc[:,:-4]
+    lowest = minvalue.iloc[:,:-4]
+    Upper = Upper_Bound.iloc[:,:-4]
+    maxx = maxvalue.iloc[:,:-4]
+    for i in lower.columns:
+        for j in range(len(lower[i])):
+            if lower[i][j] > lowest[i][j]:
+                pass
+            else:
+                lower[i][j] = float("%.2f"% lowest[i][j])
+    for i in Upper.columns:
+        for j in range(len(Upper[i])):
+            if Upper[i][j] < maxx[i][j]:
+                pass
+            else:
+                Upper[i][j] = float("%.2f"% maxx[i][j])
+    listall = []
+    listbox = []
+    dataout = []
+
+
+    for i in station:
+        st = str(i)
+        listall = lower[st], Q1[st], Q2[st], Q3[st], Upper[st]
+        for i in range(len(listall[0])):
+            temp = []
+            for j in range(len(listall)):
+                if str(listall[j][i]) == str(np.nan):
+                    temp.append('-') 
+                else:
+                    temp.append(float("%.2f"% listall[j][i]))
+            dataout.append(temp)
+
+    Upper['era'] = Upper.index
+    lower['era'] = lower.index
+    data = data.reset_index(drop=True) 
+    outliers = []
+    for i in station:
+        outliers.append(filter_ERA_by_station(str(i),data,Upper,lower))
+    
+    name = Q1.index
+    for i in name :
+        xname.append(str(i))
+    outbox = []
+    for i in listbox:
+        for j in outliers:
+            for r in j:
+                if str(i['station']) == str(r['station']):
+                    for v in r['value']:
+                        outbox.append(v['value'])
+                    i['outliers']= outbox
+                    outbox = []
+    
+
+    return dataout,xname,outliers
+
+
 @app.route('/api/boxplotvalue', methods=["GET"])
 def selectboxplot2():
     df = str(request.args.get("df"))
@@ -573,11 +835,19 @@ def selectboxplot2():
         df = tmax
     elif df == 'pre':
         df = rain
+    # drop columns
+    if len(df.columns)==127:
+        df = df.drop(df.columns[-1],axis=1)
+        
+    # calculate value
     if showtype =='month':
-        b = byear(df,res,start_date,end_date)
+         b = boxplot(df,res,start_date,end_date)
     elif showtype =='year':
         b = boxplotyear(df,res,start_date,end_date)
-    
+    elif showtype =='season':
+        b = boxplotseason(df,res,start_date,end_date)
+    elif showtype =='era':
+        b = boxplotera(df,res,start_date,end_date)
     print("station : ", station)
     return jsonify(b)
 
@@ -798,6 +1068,59 @@ def get_tomap():
     print (select[0])
     return jsonify(select)
 
+# ----------------------------------- NC plot color --------------------------------------
+ds1 = pd.read_csv("C:/Users/ice/Documents/climate/data/tmp_01-19_resize.csv")
+ds2 = pd.read_csv("C:/Users/ice/Documents/climate/data/temp1911-20_resize.csv")
+# ds3 = pd.read_csv("C:/Users/ice/Documents/climate/data/temp1921-30_resize.csv")
+ds_p = pd.read_csv("C:/Users/ice/Documents/climate/data/pre1901-10_resize.csv")
+# h = pd.read_csv("C:/Mew/Project/hadex2/hadex2_Jan.csv")
+@app.route("/nc_Avg",methods=["GET"])
+def get_Avgmap():
+    start = time.time()
+    df_f = str(request.args.get("df_f"))
+    startyear = int(request.args.get("startyear"))
+    stopyear = int(request.args.get("stopyear"))
+    startmonth = int(request.args.get("startmonth"))
+    stopmonth = int(request.args.get("stopmonth"))
+    print("year",startyear)
+    if df_f == 'mean':
+        color_map = 'cool_warm'
+        if startyear <= 1910:
+            ds = ds1
+        elif startyear > 1910 and startyear <= 1920:
+            ds = ds2
+        # elif startyear > 1920 and startyear <= 1930:
+        #     ds = ds3
+    elif df_f == 'pre':
+        color_map = 'dry_wet'
+        ds = ds_p
+    # elif df_f == 'hadex2':
+    #     color_map = 'cool_warm'
+    #     ds = h
+        
+    
+    ds['time'] = pd.to_datetime(ds['time'] , format='%Y-%m-%d')
+    df1 = ds.loc[(ds['time'].dt.year >= startyear) & (ds['time'].dt.year <= stopyear) & (ds['time'].dt.month >= startmonth) & (ds['time'].dt.month <= stopmonth)]
+    N_data = pd.DataFrame()
+    temp_lat = np.repeat(np.arange(-89.5, 89.6, 1),360)
+    temp_lon = np.tile(np.arange(-179.5, 179.6, 1),180)
+    # temp_lat = np.repeat(np.arange(-90, 92.5, 2.5),96)
+    # temp_lon = np.tile(np.arange(-180, 180, 3.75),73)
+    n_val = df1.groupby(["lat", "lon"])['values'].mean()
+
+    N_data['lat'] = temp_lat
+    N_data['lon'] = temp_lon
+    N_data['values'] = list(n_val)
+    select = N_data[['lat','lon','values']].to_json(orient='records')
+    select = json.loads(select)
+    end = time.time()
+    print(end-start)
+    print (select[0])
+    # df1 = ds.query('{} <= year <= {} &  {} <=month<= {}'.format(startyear,stopyear,startmonth,stopmonth))
+    # select = df1[['lat','lon','values']].to_json(orient='records')
+    # select = json.loads(select)
+
+    return jsonify(color_map,select)
 #----------------------------------------------------------------------
 if __name__ == '__main__':
     app.run(debug=True, port= 5500)

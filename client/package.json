@@ -36,6 +36,7 @@
     "chartjs-chart-box-and-violin-plot": "^2.3.0",
     "highcharts": "^8.2.0",
     "highcharts-angular": "^2.8.0",
+    "jquery": "^3.5.1",
     "ng-multiselect-dropdown": "^0.2.10",
     "ol": "^6.4.3",
     "openlayers": "^4.6.5",

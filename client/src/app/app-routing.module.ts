@@ -8,7 +8,7 @@ import { MissingvalueComponent } from './missingvalue/missingvalue.component';
 import { BoxplotComponent } from './boxplot/boxplot.component';
 import { NetcdfComponent } from './netcdf/netcdf.component';
 import { from } from 'rxjs';
-
+import { HomeComponent } from './home/home.component';
 const routes: Routes = [
   { path: 'plot', component: GraphComponent },
   { path: 'map', component: MapComponent },
@@ -16,6 +16,7 @@ const routes: Routes = [
   { path: 'testfunction', component: TestfunctionComponent},
   { path: 'missingvalue', component: MissingvalueComponent },
   { path: 'boxplot', component:BoxplotComponent},
+  { path: 'home', component:HomeComponent},
   { path: '', component:NetcdfComponent}
 ];
 

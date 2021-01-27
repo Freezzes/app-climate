@@ -23,6 +23,7 @@ import { BoxplotComponent } from './boxplot/boxplot.component';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { NetcdfComponent } from './netcdf/netcdf.component';
 import {MatRadioModule} from '@angular/material/radio';
+import { HomeComponent } from './home/home.component';
 PlotlyModule.plotlyjs = PlotlyJS;
 
 @NgModule({
@@ -34,7 +35,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     TestfunctionComponent,
     MissingvalueComponent,
     BoxplotComponent,
-    NetcdfComponent
+    NetcdfComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,

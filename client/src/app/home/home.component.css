@@ -1,0 +1,89 @@
+.pad{
+    font-family: Montserrat, sans-serif;
+    margin-right: 10px;
+    padding-right: 50px;
+    display: inline-block;
+  }
+  .map{
+    width: 80vw;
+    height: 90vh;
+    /* background-color: #eceff1; */
+    background-color: #ffffff;
+    margin-top: 10px;
+    margin-left: 80px;
+    margin-right: 50px;
+    margin-bottom: 30px;
+  }
+  .selectzone {
+    margin-top: 50px;
+    margin-left: 80px;
+    /* margin-right: 50px; */
+    margin-bottom: 20px;
+  }
+  
+  .paragraphs{
+    /* margin-left: 20px; */
+    padding: 20px;
+  }
+  canvas {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+  }
+  .chart-wrapper {
+    width: 500px;
+    height: 500px;
+    position: relative;
+  }
+  
+  
+  select{
+    font-size: 18px;
+    display: block;
+    width: 326px;
+  }
+  
+  .custom-day {
+    text-align: center;
+    padding: 0.185rem 0.25rem;
+    display: inline-block;
+    height: 2rem;
+    width: 2rem;
+  }
+  .custom-day.focused {
+    background-color: #e6e6e6;
+  }
+  .custom-day.range, .custom-day:hover {
+    background-color: rgb(2, 117, 216);
+    color: white;
+  }
+  .custom-day.faded {
+    background-color: rgba(2, 117, 216, 0.5);
+  }
+  .form-control1{
+    display: none;
+  }
+  
+  .form-group.hidden {
+    width: 0;
+    margin: 0;
+    border: none;
+    padding: 3px;
+  }
+  .custom-day {
+    text-align: center;
+    padding: 0.185rem 0.25rem;
+    display: inline-block;
+    height: 2rem;
+    width: 2rem;
+  }
+  .custom-day.focused {
+    background-color: #e6e6e6;
+  }
+  .custom-day.range, .custom-day:hover {
+    background-color: rgb(2, 117, 216);
+    color: white;
+  }
+  .custom-day.faded {
+    background-color: rgba(2, 117, 216, 0.5);
+  }

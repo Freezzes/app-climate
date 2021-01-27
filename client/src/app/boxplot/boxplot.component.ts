@@ -82,7 +82,8 @@ export class BoxplotComponent implements OnInit {
 
   typename = [{id:'month',name:'รายเดือน'},
     {id:'season',name:'รายฤดู'},
-    {id:'year',name:'รายปี'}]
+    {id:'year',name:'รายปี'},
+    {id: 'era',name:'ราย 10 ปี'}]
 
   myForm:FormGroup;
   disabled = false;
@@ -177,7 +178,9 @@ export class BoxplotComponent implements OnInit {
         ts = 'season'
      }else if(String(v) == String('รายปี')){
        ts = 'year'
-     }
+     }else if(String(v) == String('ราย 10 ปี')){
+      ts = 'era'
+    }
      console.log("type : ",ts)
     }
 

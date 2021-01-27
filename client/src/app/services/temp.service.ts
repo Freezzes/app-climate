@@ -98,9 +98,14 @@ export class TempService {
         return this.http.get('http://127.0.0.1:5500/api/missing')
     }
 
-    async get_testnc_csv(startyear:string,stopyear:string,startmonth:string,stopmonth:string):Promise<Observable<any>> {
+    async get_testnc_csv(df_f:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string):Promise<Observable<any>> {
         return this.http.get('http://127.0.0.1:5500' +
-        `/nc_csv?startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`);
+        `/nc_csv?df_f=${df_f}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`);
+    }
+
+    async get_Avgcsv(df_f:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string):Promise<Observable<any>> {
+        return this.http.get('http://127.0.0.1:5500' +
+        `/nc_Avg?df_f=${df_f}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`);
     }
 
 
