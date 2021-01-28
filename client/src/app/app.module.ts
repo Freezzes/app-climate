@@ -22,6 +22,22 @@ import { HIGHCHARTS_MODULES, ChartModule } from 'angular-highcharts';
 import { BoxplotComponent } from './boxplot/boxplot.component';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { NetcdfComponent } from './netcdf/netcdf.component';
+import { HomeComponent } from './home/home.component';
+import { MockComponent } from './mock/mock.component';
+// import { SharedModule, PanelModule } from 'primeng/primeng';
+import { TempService } from './services/temp.service'
+import { PopUpService } from './services/pop-up.service'
+import { MarkerService } from './services/markers.service'
+import {LeafletModule} from '@asymmetrik/ngx-leaflet';
+
+import { 
+	IgxDropDownModule,
+	IgxButtonModule,
+	IgxSwitchModule,
+	IgxToggleModule
+ } from "igniteui-angular";
+// import { DropDownSample5Component } from "./dropdown-sample-5/dropdown-sample-5.component";
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 
 PlotlyModule.plotlyjs = PlotlyJS;
@@ -35,7 +51,9 @@ PlotlyModule.plotlyjs = PlotlyJS;
     TestfunctionComponent,
     MissingvalueComponent,
     BoxplotComponent,
-    NetcdfComponent
+    NetcdfComponent,
+    HomeComponent,
+    MockComponent
   ],
   imports: [
     BrowserModule,
@@ -49,10 +67,16 @@ PlotlyModule.plotlyjs = PlotlyJS;
     PlotlyModule,
     HighchartsChartModule,
     ChartModule,
-    NgMultiSelectDropDownModule.forRoot()
+    NgMultiSelectDropDownModule.forRoot(),
+    IgxDropDownModule,
+    IgxButtonModule,
+    IgxSwitchModule,
+    IgxToggleModule,
+    BrowserAnimationsModule,
+    LeafletModule
 
   ],
-  providers: [],
+  providers: [PopUpService,MarkerService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

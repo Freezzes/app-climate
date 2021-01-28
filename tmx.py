@@ -10,6 +10,7 @@ import json
 from matplotlib import cm
 import matplotlib.dates as mdates
 import  netCDF4
+from netCDF4 import Dataset
 import datetime
 
 app = Flask(__name__)
@@ -357,7 +358,9 @@ ds1 = pd.read_csv("C:/Mew/Project/tmp_01-19_resize.csv")
 ds2 = pd.read_csv("C:/Mew/Project/temp1911-20_resize.csv")
 ds3 = pd.read_csv("C:/Mew/Project/temp1921-30_resize.csv")
 ds_p = pd.read_csv("C:/Mew/Project/pre1901-10_resize.csv")
-# h = pd.read_csv("C:/Mew/Project/hadex2/hadex2_Jan.csv")
+e = pd.read_csv("C:/Mew/Project/EC-Earth3/pr_1980-1.csv")
+E = pd.read_csv("C:/Mew/Project/EC-Earth3/tas_1994.csv")
+h = pd.read_csv("C:/Mew/Project/hadex2/hadex2_Jan.csv")
 
 @app.route("/nc_csv",methods=["GET"])
 def get_tomap():
@@ -370,6 +373,7 @@ def get_tomap():
     print("year",startyear)
     if df_f == 'mean':
         color_map = 'cool_warm'
+        stepsize = int(1)
         if startyear <= 1910:
             ds = ds1
         elif startyear > 1910 and startyear <= 1920:
@@ -382,6 +386,11 @@ def get_tomap():
     elif df_f == 'hadex2':
         ds = h
         color_map = 'cool_warm'
+    elif df_f == 'EC':
+        ds = e
+        color_map = 'cool_warm'
+        stepsize = float(0.703125)
+        
     
     # ds = pd.read_csv("C:/Mew/Project/tmp_01-19_resize1.csv")
     df1 = ds.query('{} <= year <= {} &  {} <=month<= {}'.format(startyear,stopyear,startmonth,stopmonth))
@@ -389,20 +398,22 @@ def get_tomap():
     select = json.loads(select)
     end = time.time()
     print(end-start)
-    print (select[0])
-    return jsonify(color_map,select)
+    # print (select[0])
+    return jsonify(color_map,stepsize,select)
 #----------------------------------------------------------------------
-@app.route("/nc_Avg",methods=["GET"])
-def get_Avgmap():
+# @app.route("/nc_Avg",methods=["GET"])
+def get_Avgmap(df_f,startyear,stopyear,startmonth,stopmonth):
     start = time.time()
-    df_f = str(request.args.get("df_f"))
-    startyear = int(request.args.get("startyear"))
-    stopyear = int(request.args.get("stopyear"))
-    startmonth = int(request.args.get("startmonth"))
-    stopmonth = int(request.args.get("stopmonth"))
+    # df_f = str(request.args.get("df_f"))
+    # startyear = int(request.args.get("startyear"))
+    # stopyear = int(request.args.get("stopyear"))
+    # startmonth = int(request.args.get("startmonth"))
+    # stopmonth = int(request.args.get("stopmonth"))
     print("year",startyear)
     if df_f == 'mean':
         color_map = 'cool_warm'
+        lon_step = int(1)
+        lat_step = int(1)
         if startyear <= 1910:
             ds = ds1
         elif startyear > 1910 and startyear <= 1920:
@@ -411,7 +422,14 @@ def get_Avgmap():
             ds = ds3
     elif df_f == 'pre':
         color_map = 'dry_wet'
+        lon_step = int(1)
+        lat_step = int(1)
         ds = ds_p
+    elif df_f == 'EC':
+        ds = e
+        color_map = 'cool_warm'
+        lon_step = float(0.703125)
+        lat_step = float(0.703125)
     # elif df_f == 'hadex2':
     #     color_map = 'cool_warm'
     #     ds = h
@@ -422,6 +440,8 @@ def get_Avgmap():
     N_data = pd.DataFrame()
     temp_lat = np.repeat(np.arange(-89.5, 89.6, 1),360)
     temp_lon = np.tile(np.arange(-179.5, 179.6, 1),180)
+    # temp_lat = np.repeat(np.arange(-90, 90, 0.703125),512)
+    # temp_lon = np.tile(np.arange(-180, 180,  0.703125),256)
     # temp_lat = np.repeat(np.arange(-90, 92.5, 2.5),96)
     # temp_lon = np.tile(np.arange(-180, 180, 3.75),73)
     n_val = df1.groupby(["lat", "lon"])['values'].mean()
@@ -438,7 +458,163 @@ def get_Avgmap():
     # select = df1[['lat','lon','values']].to_json(orient='records')
     # select = json.loads(select)
 
-    return jsonify(color_map,select)
+    return color_map,lon_step,lat_step,select
+#---------------------------------------nc per--------------------------------------------
+# nc1 = Dataset("C:/Mew/Project/cru_ts4.04.1901.2019.tmp.dat.nc")
+
+@app.route("/NC_per",methods=["GET"])
+def nc_per():
+    start = time.time()
+    df_f = str(request.args.get("df_f"))
+    start1 = int(request.args.get("start1"))
+    stop1 = int(request.args.get("stop1"))
+    start2 = int(request.args.get("start2"))
+    stop2 = int(request.args.get("stop2"))
+    if df_f == 'mean':
+        color_map = 'cool_warm'
+        stepsize = int(1)
+        if start1 <= 1910:
+            ds = ds1
+        elif start1 > 1910 and start1 <= 1920:
+            ds = ds2
+        elif start1 > 1920 and start1 <= 1930:
+            ds = ds3
+    elif df_f == 'pre':
+        stepsize = int(1)
+        color_map = 'dry_wet'
+        ds = ds_p
+    elif df_f == 'EC':
+        ds = E
+        color_map = 'cool_warm'
+        stepsize = float(0.703125)
+
+    ds['time'] = pd.to_datetime(ds['time'] , format='%Y-%m-%d')
+    df1 = ds.loc[(ds['time'].dt.year >= start1) & (ds['time'].dt.year <= stop1)]
+    df2 = ds.loc[(ds['time'].dt.year >= start2) & (ds['time'].dt.year <= stop2)]
+    N_data = pd.DataFrame()
+    temp_lat = np.repeat(np.arange(-89.5, 89.6, 1),360)
+    temp_lon = np.tile(np.arange(-179.5, 179.6, 1),180)
+    n_val1 = df1.groupby(["lat", "lon"])['values'].mean()
+    n_val2 = df2.groupby(["lat", "lon"])['values'].mean()
+    n_val = n_val1-n_val2
+    N_data['lat'] = temp_lat
+    N_data['lon'] = temp_lon
+    N_data['values'] = list(n_val)
+    select = N_data[['lat','lon','values']].to_json(orient='records')
+    select = json.loads(select)
+    # start1 = 1901
+    # start2 = 1991
+    # stop1 = 1921
+    # stop2 = 2011
+    # start_year = 1901
+    # # rang1
+    # start_index1 = start1 - start_year
+    # end_index1 = stop1 - start_year
+    # num_range1_year = stop1 - start1
+    # print("start_index1",start_index1)
+    # print("end_index1",end_index1)
+    # print("num_range1_year",num_range1_year)
+    # range1 = np.nansum(df['tmp'][start_index1:end_index1], axis=0)
+    # range1 = range1/(num_range1_year)
+
+    # # rang2
+    # start_index2 = start2 - start_year
+    # end_index2 = stop2 - start_year
+    # num_range2_year = stop2 - start2
+    # range2 = np.nansum(df['tmp'][start_index2:end_index2], axis=0)
+    # range2 = range2/(num_range2_year)
+
+    # different = range1 - range2
+    # N_data = pd.DataFrame()
+    # lats = df['lat']
+    # lons = df['lon']
+    # lats = np.repeat(np.arange(-89.5, 89.6, 1),360)
+    # lons = np.tile(np.arange(-179.5, 179.6, 1),180)
+    # N_data['lon'] = lons
+    # N_data['lat'] = lats
+    # for i in range(len(df['lat'])):
+    #     for j in range(len(df['lon'])):
+    #         N_data['values'] = different[i,j]
+    # select = N_data[['lat','lon','values']].to_json(orient='records')
+    # select = json.loads(select)
+    end = time.time()
+    print(end-start)
+    return jsonify(color_map,stepsize,select)
+
+# @app.route("/ec-earth",methods=["GET"])
+def ec_earth(df_f,startyear,stopyear,startmonth,stopmonth):
+    start = time.time()
+    print("year",startyear)
+    print("file",df)
+    if df_f == 'mean':
+        color_map = 'cool_warm'
+        lon_step = int(1)
+        lat_step = int(1)
+        if startyear <= 1910:
+            ds = ds1
+        elif startyear > 1910 and startyear <= 1920:
+            ds = ds2
+        elif startyear > 1920 and startyear <= 1930:
+            ds = ds3
+    elif df_f == 'pre':
+        color_map = 'dry_wet'
+        stepsize = int(1)
+        ds = ds_p
+    elif df_f == 'ec':
+        ds = E
+        color_map = 'cool_warm'
+        lon_step = float(0.703125)
+        lat_step = float(0.703125)
+    elif df_f == 'CDD':
+        color_map = 'cool_warm'
+        ds = h
+        lon_step = float(3.75)
+        lat_step = float(2.5)
+        
+    
+    ds['time'] = pd.to_datetime(ds['time'] , format='%Y-%m-%d')
+    df1 = ds.loc[(ds['time'].dt.year >= startyear) & (ds['time'].dt.year <= stopyear) & (ds['time'].dt.month >= startmonth) & (ds['time'].dt.month <= stopmonth)]
+    N_data = pd.DataFrame()
+    temp_lat = np.repeat(np.arange(-90, 90, 0.703125),512)
+    temp_lon = np.tile(np.arange(-180, 180,  0.703125),256)
+    # temp_lat = np.repeat(np.arange(-90, 92.5, 2.5),96)
+    # temp_lon = np.tile(np.arange(-180, 180, 3.75),73)
+    n_val = df1.groupby(["lat", "lon"])['values'].mean()
+
+    N_data['lat'] = temp_lat
+    N_data['lon'] = temp_lon
+    N_data['values'] = list(n_val)
+    select = N_data[['lat','lon','values']].to_json(orient='records')
+    select = json.loads(select)
+    end = time.time()
+    print(end-start)
+    print (select[0])
+
+    return color_map,lon_step,lat_step,select
+
+@app.route('/nc_avg',methods=['GET'])
+def selectNC():
+    ncfile = str(request.args.get("ncfile"))
+    df_f = str(request.args.get("df_f"))
+    startyear = int(request.args.get("startyear"))
+    stopyear = int(request.args.get("stopyear"))
+    startmonth = int(request.args.get("startmonth"))
+    stopmonth = int(request.args.get("stopmonth"))
+    if ncfile == 'CRU':
+        a = get_Avgmap(df_f,startyear,stopyear,startmonth,stopmonth)
+        # print("CRU A : ")
+    elif ncfile == 'EC':
+        a = ec_earth(df_f,startyear,stopyear,startmonth,stopmonth)
+        # print("ec earth a : ")
+    return jsonify(a)
+
+#--------------------------------station---------------------------------------
+@app.route('/locat/station',methods=['GET'])
+def locat():
+    ds = pd.read_csv("C:\Mew\Project\data_station\station.csv")
+    select = ds[['id','name','latitude','longitude']].to_json(orient='records')
+    select = json.loads(select)
+    return jsonify(select)
 
 if __name__ == '__main__':
     app.run(debug=True, port= 5500)

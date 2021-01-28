@@ -196,3 +196,29 @@ export interface NC_Avg{
     year : any
     month : any
 }
+export interface NC_ec{
+    lat : any
+    lon : any
+    temp : any
+    year : any
+    month : any
+}
+
+export interface data_test{
+    name : string
+    values : number
+}
+
+export interface data_db{
+    dataset : string
+    grid : number
+    year : number
+    geo: any
+}
+
+export interface data_sta{
+    _id : number
+    name : string
+    lat : number
+    lon: number
+}

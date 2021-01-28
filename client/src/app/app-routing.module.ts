@@ -7,6 +7,8 @@ import { TestfunctionComponent } from './testfunction/testfunction.component';
 import { MissingvalueComponent } from './missingvalue/missingvalue.component';
 import { BoxplotComponent } from './boxplot/boxplot.component';
 import { NetcdfComponent } from './netcdf/netcdf.component';
+import { HomeComponent } from './home/home.component';
+import { MockComponent} from './mock/mock.component';
 import { from } from 'rxjs';
 
 const routes: Routes = [
@@ -16,7 +18,9 @@ const routes: Routes = [
   { path: 'testfunction', component: TestfunctionComponent},
   { path: 'missingvalue', component: MissingvalueComponent },
   { path: 'boxplot', component:BoxplotComponent},
-  { path: '', component:NetcdfComponent}
+  { path: 'nc', component:NetcdfComponent},
+  { path: '', component:HomeComponent},
+  { path: 'mock', component: MockComponent}
 ];
 
 @NgModule({

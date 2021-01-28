@@ -1,14 +1,58 @@
 <!-- <div class="selectzone">
-    <div class="pad">
-      <div class="map-container">
-        <div class="map-frame">
-          <div  id="map"
-            leaflet
-            (leafletMapReady)="onMapReady($event)"
-            [leafletOptions]="mapOptions">
-          </div>
-        </div>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <title>Geographic Coordinates</title>
+      
+      <script src="https://unpkg.com/elm-pep"></script>
+      
+      <script src="https://cdn.polyfill.io/v3/polyfill.min.js?features=fetch,requestAnimationFrame,Element.prototype.classList,URL,TextDecoder"></script>
+      <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+      <style>
+        .map {
+          width: 100%;
+          height:600px;
+        }
+        td {
+          padding: 0 0.5em;
+          text-align: right;
+        }
+        #marker {
+          width: 10px;
+          height: 10px;
+          border: 1px solid #088;
+          border-radius: 10px;
+          background-color: #0FF;
+          opacity: 0.5;
+      }
+      </style>
+    </head>
+    <body>
+      <p>testttttttttttt</p>
+      <div id='map_thai' class="map">
+        <div id="marker"></div>
       </div>
-    </div>
-  </div>
+      <div id="info"></div>
+  
+      <script src="main.js"></script>
+    </body>
+  </html>
+</div>
    -->
+
+<script src="https://unpkg.com/elm-pep"></script>
+<!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
+<script src="https://cdn.polyfill.io/v3/polyfill.min.js?features=fetch,requestAnimationFrame,Element.prototype.classList,URL,TextDecoder"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+
+<div class="selectzone">
+  <div id="map" style="height: 550px; width: 400px; border-style: solid;"></div>
+  <div id="popup" class="ol-popup">
+    <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+    <div id="popup-content"></div>
+  </div>
+</div>

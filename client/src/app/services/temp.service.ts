@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core'
 import { HttpClient, HttpClientModule } from '@angular/common/http'
-import { Observable } from 'rxjs'
-import { Temp, Plot, meanplot, station5, st, Missing } from '../interfaces/temp.interface'
+import { from, Observable } from 'rxjs'
+import { Temp, Plot, meanplot, station5, st, Missing ,data_test, data_db,data_sta} from '../interfaces/temp.interface'
 
 @Injectable()
+
 export class TempService {
+    private API_URL = 'http://127.0.0.1:5500';
     constructor(private http: HttpClient) { }
 
     async getTemp(): Promise<Temp[]> {
@@ -91,11 +93,30 @@ export class TempService {
         `/nc_csv?df_f=${df_f}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`);
     }
 
-    async get_Avgcsv(df_f:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string):Promise<Observable<any>> {
+    async get_Avgcsv(ncfile:string,df_f:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string):Promise<Observable<any>> {
         return this.http.get('http://127.0.0.1:5500' +
-        `/nc_Avg?df_f=${df_f}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`);
+        `/nc_avg?ncfile=${ncfile}&df_f=${df_f}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`);
     }
 
+    async nc_per(df_f:string,start1:string,stop1:string,start2:string,stop2:string):Promise<Observable<any>> {
+        return this.http.get('http://127.0.0.1:5500' +
+        `/NC_per?df_f=${df_f}&start1=${start1}&stop1=${stop1}&start2=${start2}&stop2=${stop2}`);
+    }
 
+    getdata_test(): Observable<data_test[]>{
+        console.log("service",this.http.get<data_test[]>('http://127.0.0.1:5500/api/getdata'))
+        return this.http.get<data_test[]>('http://127.0.0.1:5500/api/getdata')
+
+    }
+
+    getdata_db(): Observable<data_db[]>{
+        console.log("service",this.http.get<data_db>('http://127.0.0.1:5500/api/getcor'))
+        return this.http.get<data_db[]>('http://127.0.0.1:5500/api/getcor')
+    }
+
+    getdata_sta(): Observable<data_sta[]>{
+        console.log("service",this.http.get<data_sta[]>('http://127.0.0.1:5500/locat/station'))
+        return this.http.get<data_sta[]>('http://127.0.0.1:5500/locat/station')
+    }
 
 }
