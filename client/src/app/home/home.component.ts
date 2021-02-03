@@ -1,9 +1,18 @@
 import { Component, OnInit,ViewChild, AfterViewInit  } from '@angular/core';
 import {FormGroup, FormControl,Validators} from '@angular/forms';
 import {NgbDate, NgbCalendar, NgbDateParserFormatter} from '@ng-bootstrap/ng-bootstrap';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { TempService } from 'src/app/services/temp.service';
+import * as $ from 'jquery'
 
+declare interface RouteInfo {
+  path: string;
+  class: string;
+}
+
+export const ROUTES: RouteInfo[] = [ 
+  { path: '/station', class: '' },
+ ];
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -12,6 +21,7 @@ import { TempService } from 'src/app/services/temp.service';
   
 })
 export class HomeComponent implements OnInit {
+  menuItems: any[];
 
   hoveredDate: NgbDate | null = null;
   fromDate: NgbDate;
@@ -23,48 +33,92 @@ export class HomeComponent implements OnInit {
   public startyear;
   public startmonth;
   public stopyear;
-  public stopmonth;
+  public stopmonth;CRU
   public lenght_y;
   public verb;
-
+  infile = '';
+  model: any;
+ 
   dataset_name:Array<Object> = [
     {id:'CRU', name:'CRU TS'},
-    // {id:'station',name:'Stations in Thailand'}
+    {id:'TMD', name:'TMD'},
+    {id:'EC', name:'EC-Earth'},
+    // {id:'hadex', name:'Hadex2'}
   ];
 
-  filename = [{id:'mean',name:'Temperature mean'},
-               {id:'min',name:'Temperature min'},
-               {id:'max',name:'Temperature max'},
-               {id:'pre',name:'Preciptipation'}]
+  filename = [{id:'mean',name:'Averange Temperature'},
+               {id:'min',name:'Minimum Temperature'},
+               {id:'max',name:'Maximum Temperature'},
+               {id:'pre',name:'Preciptipation'},
+              //  {id:'CDD',name:'H2_CDD'},
+               {id:'ec', name:'Surface Air Temperature'}]
 
-  constructor(private calendar: NgbCalendar,public formatter:NgbDateParserFormatter,private router: Router,private tempService: TempService) {
-    this.fromDate = calendar.getToday();
-    this.toDate = calendar.getNext(calendar.getToday(), 'd', 10);
+  constructor(private router: Router, private route: ActivatedRoute,private calendar: NgbCalendar,public formatter:NgbDateParserFormatter,private tempService: TempService) {
+    // this.fromDate = calendar.getToday();
+    // this.toDate = calendar.getNext(calendar.getToday(), 'd', 10);
    }
 
   choosedataset = new FormGroup({
-    set: new FormControl('', Validators.required)
+    set: new FormControl()
   });
 
   choosefile = new FormGroup({
-    file: new FormControl('', Validators.required)
+    file: new FormControl(),
+    
   });
 
   select;
+  per;
   // selectGrid;
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    console.log("select",this.choosefile.controls['file'].value)
+    console.log("select set: ",this.choosedataset.controls['set'].value)   
+    $(document).ready(function () {
+
+      $('#sidebarCollapse').on('click', function () {
+          $('#sidebar').toggleClass('active');
+      });  
+  });
+
+  var dropdown = document.getElementsByClassName("dropdown-toggle");
+  var i;
+
+  for (i = 0; i < dropdown.length; i++) {
+    dropdown[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var dropdownContent = this.nextElementSibling;
+    if (dropdownContent.style.display === "block") {
+    dropdownContent.style.display = "none";
+    } else {
+    dropdownContent.style.display = "block";
+    }
+    });
+  }
+  }
+
+  clearSelect(){
+    this.select = "";
+  }
 
   Map(){
+    // this.router.navigate(['/nc'], {state :this.choosedataset.value});
     console.log("start",this.fromDate.year)
     console.log("end",this.toDate.year)
+    console.log("set",this.choosedataset.controls['set'].value)
     console.log("sent",this.choosefile.controls['file'].value)
     this.select = "Map"
+    this.per = "no"
     console.log(this.select)
   }
 
-  grid(){
-    this.select = "Grid"
+  station_thai(){
+    this.select = "station"
+  }
+
+  percent(){
+    this.select = "percent"
+    this.per = "yes"
   }
   
   checktrue_values(){

@@ -1,20 +1,20 @@
-<head>
+<!-- <head>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
         integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
 
-</head>
+</head> -->
+<!-- <div style="height: 220px; padding-top: 10px; background-color: rgb(181, 246, 255);">
 <div class="selectzone">
     <form [formGroup]="choosedataset">
         <div class="form-group row">
-            <label for="file" class="control-label col-sm-2">Select Dataset &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;
-                &nbsp;&nbsp;: </label>
+            <label for="set" class="control-label col-sm-2">Select a Dataset &nbsp; &nbsp; &nbsp;: </label>
             <div class="col-sm-10">
-                <select formControlName="set" style="max-width:120%;" class="form-control">
+                <select formControlName="set" style="max-width:120%;" class="form-control" >
                     <option>None</option>
-                    <option *ngFor="let f of dataset_name">{{f.name}}</option>
+                    <option *ngFor="let f of dataset_name" [value]="f.name">{{f.name}}</option>
                 </select>
             </div>
         </div>
@@ -24,19 +24,16 @@
             <label for="file" class="control-label col-sm-2">Select Index &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;
                 &nbsp;&nbsp;: </label>
             <div class="col-sm-10">
-                <select formControlName="file" style="max-width:120%;" class="form-control">
-                    <option>None</option>
-                    <option *ngFor="let f of filename">{{f.name}}</option>
+                <select formControlName="file" style="max-width:120%;" class="form-control" [(ngModel)]="infile">
+                    <option selected>None</option>
+                    <option *ngFor="let f of filename" [value]="f.id">{{f.name}}</option>
                 </select>
-                <!-- <select formControlName="file" style="max-width:120%;" [(ngModel)]="selectedDataset" (change)="selected()" >
-                    <option *ngFor="let item of filename" [ngValue]="item">{{item.name}}</option>
-                </select> -->
             </div>
         </div>
-    </form>
+    </form> -->
 
-    <div class="form-group row">
-        <label class="control-label col-sm-2">Selct Date &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;:
+    <!-- <div class="form-group row">
+        <label class="control-label col-sm-2">Select Date &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :
         </label>
         <div class="form-group hidden">
             <div class="input-group">
@@ -80,22 +77,178 @@
     </div>
     <i class="bi bi-map"></i>
     <div class="btn-group" role="group" aria-label="Basic example">
-        <button type="button" class="btn btn-primary" (click)="Map()"><span class="cil-contrast btn-icon mr-2"></span>
-            Map</button>
-        <button type="button" class="btn btn-secondary" (click)="grid()">Grid</button>
+        <button type="button" class="btn btn-primary" (click)="Map()" id="multiselect-disable-TMD">Grid</button>
+        <button type="button" class="btn btn-primary" (click)="percent()">Different</button>
+        <button type="button" class="btn btn-primary" (click)="grid()" [disabled]="infile === ''">Station</button>
     </div>
 </div>
+</div> -->
 
-<!-- <div style="height: 500px; background-color: royalblue;"></div> -->
 
-<div *ngIf="select == 'Map'">
-    <app-netcdf [data]="choosedataset.controls['set'].value"
-                [file]="choosefile.controls['file'].value" 
-                [startyear]="this.fromDate.year"
-                [stopyear]="this.toDate.year"
-                [startmonth]="this.fromDate.month"
-                [stopmonth]="this.toDate.month"></app-netcdf>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Collapsible sidebar using Bootstrap 4</title>
+
+    <!-- Bootstrap CSS CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <!-- Our Custom CSS -->
+    <!-- <link rel="stylesheet" href="style4.css"> -->
+
+    <!-- Font Awesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js" integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY" crossorigin="anonymous"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- input -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+        integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+
+</head>
+
+<body>
+    <div class="header">
+        <h1>Climate Visualization</h1>
+    </div>
+    <div class="wrapper">
+        <!-- Sidebar  -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h4>Climate Input</h4>
+                <!-- <strong style="font-size:1.2em;">CI</strong> -->
+            </div>
+
+            <ul class="list-unstyled components">
+                <li>
+                    <a data-toggle="collapse" aria-expanded="false"  role="button" class="dropdown-toggle" >
+                        <i class="fas fa-globe-americas"></i>
+                        World Map
+                    </a>
+                    <div class="collapse multi-collapse" id="map1">
+                        <form [formGroup]="choosedataset">
+                            <label>Datatset :</label>
+                            <select formControlName="set" style="max-width:100%;" class="form-control" >
+                                <option [ngValue]="null" disabled>None</option>
+                                <option *ngFor="let f of dataset_name" [value]="f.name">{{f.name}}</option>
+                            </select> 
+                        </form>      
+                        <form [formGroup]="choosefile">
+                            <label>Index :</label>         
+                            <select formControlName="file" style="max-width:100%;" class="form-control">
+                                <option [ngValue]="null" disabled>None</option>
+                                <option *ngFor="let f of filename" [value]="f.id">{{f.name}}</option>
+                            </select>
+                        </form>
+                        <div class="form-group hidden">
+                            <div class="input-group">
+                                <input name="datepicker" id="datepicker" class="form-control1" ngbDatepicker #datepicker="ngbDatepicker"
+                                    [autoClose]="'outside'" (dateSelect)="onDateSelection($event)" [displayMonths]="2" [dayTemplate]="t"
+                                    outsideDays="hidden" [minDate]="{year: 1901, month: 1, day: 1}" >
+                                <ng-template #t let-date let-focused="focused">
+                                    <span class="custom-day" [class.focused]="focused" [class.range]="isRange(date)"
+                                        [class.faded]="isHovered(date) || isInside(date)" (mouseenter)="hoveredDate = date"
+                                        (mouseleave)="hoveredDate = null">
+                                        {{ date.day }}
+                                    </span>
+                                </ng-template>
+                            </div>
+                        </div>
+                        <label>start : </label>
+                        <div class="input-group">
+                            <input #dpFromDate class="form-control" placeholder="yyyy-mm-dd" name="dpFromDate"
+                                [value]="formatter.format(fromDate)"
+                                (input)="fromDate = validateInput(fromDate, dpFromDate.value)">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary calendar" (click)="datepicker.toggle(); clearSelect()"
+                                    type="button" style="background-color: rgb(255, 255, 255);"><i class="far fa-calendar-alt"></i></button>
+                            </div>
+                        </div>
+                        <label>stop :</label>
+                        <div class="input-group">
+                            
+                            <input #dpToDate class="form-control" placeholder="yyyy-mm-dd" name="dpToDate"
+                                [value]="formatter.format(toDate)" (input)="toDate = validateInput(toDate, dpToDate.value)">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary calendar" (click)="datepicker.toggle()"
+                                    type="button" style="background-color: rgb(255, 255, 255);"><i class="far fa-calendar-alt"></i></button>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="btn-group" style="margin-left: 5mm;" role="group" aria-label="Basic example">
+                            <button type="button" class="btn btn-secondary" (click)="Map()"><i class="fas fa-map-marked-alt"></i><br>Grid</button>
+                            <button type="button" class="btn btn-secondary" (click)="percent()">Different</button>
+                            <button type="button" class="btn btn-secondary" (click)="station_thai()"><i class="fas fa-map-marker-alt"></i><br>Station</button>
+                        </div>    
+                        <a [routerLink] = "''">
+                            Go to Products List
+                        </a>      
+                    </div>
+                </li>
+                <li>
+                    <a data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" >
+                        <i class="fas fa-map-marked-alt"></i>
+                        Pages
+                    </a>
+                    <ul class="collapse list-unstyled" >
+                        <li>
+                            <a >Page 1</a>
+                        </li>
+                        <li>
+                            <a>Page 2</a>
+                        </li>
+                        <li>
+                            <a>Page 3</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <div *ngIf="select == 'Map'">
+            <app-netcdf [data]="choosedataset.controls['set'].value"
+                        [file]="choosefile.controls['file'].value" 
+                        [startyear]="this.fromDate.year"
+                        [stopyear]="this.toDate.year"
+                        [startmonth]="this.fromDate.month"
+                        [stopmonth]="this.toDate.month"
+                        [per] = "per"></app-netcdf>
+        </div>
+        <div *ngIf="select == 'station'">
+            <app-map  [file]="choosefile.controls['file'].value" ></app-map>
+        </div>
+        <router-outlet ></router-outlet>           
+    </div>
+
+
+    <!-- jQuery CDN - Slim version (=without AJAX) -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <!-- Popper.JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+
+</body>
+
+</html>
+
+
+
+<!-- <div *ngIf="select == 'Grid'">
+    <app-map></app-map>
+</div> -->
+
+<div *ngIf="select == 'percent'">
+    <app-netcdf [file]="choosefile.controls['file'].value"
+                [per] = "per"></app-netcdf>
 </div>
-<div *ngIf="select == 'Grid'">
-    <app-mock></app-mock>
-</div>
+
