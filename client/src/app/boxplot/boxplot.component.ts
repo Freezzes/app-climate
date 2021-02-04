@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit , OnChanges, Input} from '@angular/core';
 import { TempService } from '../services/temp.service';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import {NgbDate, NgbCalendar, NgbDateParserFormatter} from '@ng-bootstrap/ng-bootstrap';
@@ -23,6 +23,13 @@ HighchartsMore(Highcharts);
   providers:[TempService]
 })
 export class BoxplotComponent implements OnInit {
+  @Input() file: string;
+  @Input() startyear : String;
+  @Input() startmonth : String;
+  @Input() startday : String;
+  @Input() stopyear : String;
+  @Input() stopmonth : String;
+  @Input() stopday : String;
 
   hoveredDate: NgbDate | null = null;
 
@@ -45,6 +52,7 @@ export class BoxplotComponent implements OnInit {
   public anomalyyear = []
   public checkbar = ''
   public st;
+  public stationan = [];
   checkbox = "";
   checkmiss = "";
   dat:any;
@@ -75,9 +83,9 @@ export class BoxplotComponent implements OnInit {
     1975,1976,1977,1978,1979,1980,1981,1982,1983,1984,1985,1986,1987,1988,1989,1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,
     2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018]
 
-  filename = [{id:'mean',name:'Temperature mean'},
-    {id:'min',name:'Temperature min'},
-    {id:'max',name:'Temperature max'},
+  filename = [{id:'mean',name:' Average Temperature'},
+    {id:'min',name:'Minimum Temperature'},
+    {id:'max',name:'Maximum Temperature'},
     {id:'pre',name:'Preciptipation'}]
 
   typename = [{id:'month',name:'รายเดือน'},
@@ -94,10 +102,6 @@ export class BoxplotComponent implements OnInit {
   dropdownSettings: any = {};
   public dataplotcsv = [];
   public TempData;
-  public startyear;
-  public stopyear;
-  public startmonth;
-  public stopmonth;
   public stationmiss;
   public missdata = [];
   public missingval = [];
@@ -123,165 +127,11 @@ export class BoxplotComponent implements OnInit {
     }
   }
 
-  isHovered(date: NgbDate) {
-    return this.fromDate && !this.toDate && this.hoveredDate && date.after(this.fromDate) && date.before(this.hoveredDate);
-  }
-
-  isInside(date: NgbDate) {
-    return this.toDate && date.after(this.fromDate) && date.before(this.toDate);
-  }
-
-  isRange(date: NgbDate) {
-    return date.equals(this.fromDate) || (this.toDate && date.equals(this.toDate)) || this.isInside(date) || this.isHovered(date);
-  }
-  validateInput(currentValue: NgbDate | null, input: string): NgbDate | null {
-    const parsed = this.formatter.parse(input);
-    return parsed && this.calendar.isValid(NgbDate.from(parsed)) ? NgbDate.from(parsed) : currentValue;
-  }
   getstation = new FormGroup({
     station: new FormControl('', Validators.required)
   });
-  async getstationcode(){
-    // GET STATION CODE
-    this.selectstationid = [];
-    const selectValueList = this.myForm.get("city").value;
-    selectValueList.map( item => {
-       this.selectstationid.push(item.id);
-    });
-
-    let fi = this.choosefile.value
-    let fil = ''
-    for (let v of Object.values(fi)){
-       if(String(v) == String('Temperature mean')){
-          fil = 'mean'
-       }
-       if(String(v) == String('Temperature min')){
-          fil = 'min'
-       }
-       if(String(v) == String('Temperature max')){
-          fil = 'max'
-       }
-       if(String(v) == String('Preciptipation')){
-          fil = 'pre'
-       }
-       console.log("key",fil)
-    }
-    let typeshow = this.choosetype.value
-    let ts = ''
-    console.log("typeshow : ",typeshow)
-    for (let v of Object.values(typeshow)){
-      console.log("v : ",v)
-      if(String(v) == String('รายเดือน')){
-         ts = 'month'
-      }
-      else if(String(v) == String('รายฤดู')){
-        ts = 'season'
-     }else if(String(v) == String('รายปี')){
-       ts = 'year'
-     }else if(String(v) == String('ราย 10 ปี')){
-      ts = 'era'
-    }
-     console.log("type : ",ts)
-    }
-
-    this.dat = this.testdata1(this.selectstationid,fil,ts)
-    return this.dat
-  }
-
-  async testdata1(st,fil,ts){
-    this.checkbox = ''
-    let startyear = String(this.fromDate.year)
-    let startmonth = String(this.fromDate.month)
-    let startday = String(this.fromDate.day)
-    let stopyear = String(this.toDate.year)
-    let stopmonth = String(this.toDate.month)
-    let stopday = String(this.toDate.day)
-    if(startday.length == 1){
-      startday = '0'+startday
-    }
-    if(startmonth.length == 1){
-      startmonth = '0'+startmonth
-    }
-    this.start_date = String(startyear+'-'+startmonth+'-'+startday)
-    if(stopday.length == 1){
-      stopday = '0'+stopday
-    }
-    if(stopmonth.length == 1){
-      stopmonth = '0'+stopmonth
-    }
-    this.end_date = String(stopyear+'-'+stopmonth+'-'+stopday)
-    this.stationyear = st
-    this.plotbox = []
-    this.plotname = []
-    this.plotout = []
-    this.boxval.length = 0;
-    this.nameval.length = 0;
-    this.outval.length = 0;
-    // console.log("file : ", fil)
-    await this.tempService.getboxvalue(fil,ts,this.stationyear,this.start_date,this.end_date).then(data => data.subscribe(
-      res => { 
-        // console.log("get data : ", res)
-        console.log("boxplot value : ",res[0])
-        // console.log("outliers value : ", res[2])
-        // console.log("res1 : ",res[1])
-        this.plotbox.push(res[0])
-        this.plotname.push(res[1])
-        this.plotout.push(res[2])
-      this.plotbox.map(u=>{
-        u.map(v=>{
-        for (let i in v){
-            if(String(v[i]) == String('-')){
-              v[i] = null
-            }
-          // console.log("i in v[i] : ",v[i])
-        }
-        this.boxval.push(v)
-        this.checkbox = 'check';          
-        })
-      })
-      // console.log("boxval : ",this.boxval)
-      this.plotname.map(v=>{
-        for(let i of v){
-          this.nameval.push(i)
-        }
-        this.checkbox = 'check';
-       })
-
-       this.plotout.map(u=>{
-         console.log
-         u.map(v=>{
-        //  console.log("v out : ",v)
-         for (let i in v){
-          // console.log("v[i] : ",v[i])
-          for (let j in v[i]){
-            // console.log("v[ij] : ", v[i][j] ,v[i][j])
-            for (let k in v[i][j]){
-              for(let l in v[i][j][k]){
-                  console.log("change val : ",v[i][j][k][l])      
-
-                if(String(v[i][j][k][l]) == String('-')){
-                  v[i][j][k][l] = null
-                }          
-              }
-
-            console.log("v[ijk] : ",v[i][j][k])
-            this.outval.push(v[i][j][k])
-            }
-
-            
-          }
-          console.log("out get v : ",this.outval)
-       }
-        this.checkbox = 'check';
-      })
-    })
-    }))
-    console.log("out : ",this.outval)
-    return this.boxval
-  }
 
   async ngOnInit() {    
-    this.missingval = await this.tempService.getMissed();
     this.selectedItems = [];
     this.dropdownSettings = {
         singleSelection: false,
@@ -295,7 +145,6 @@ export class BoxplotComponent implements OnInit {
     this.myForm = this.fb.group({
         city: [this.selectedItems]
     });
-    
     }
     onItemSelect(item: any) {
       //  this.selectstationid = []
@@ -329,6 +178,138 @@ export class BoxplotComponent implements OnInit {
       season:new FormControl('',Validators.required),
       year:new FormControl('',Validators.required)
     });
+ 
+
+    async getstationcode(){
+      // GET STATION CODE
+      this.selectstationid = [];
+      const selectValueList = this.myForm.get("city").value;
+      selectValueList.map( item => {
+         this.selectstationid.push(item.id);
+      });
+      // let fil = ''
+      let fil = this.file
+         if(fil == String('Average Temperature')){
+            fil = 'mean'
+         }
+         if(fil == String('Minimum Temperature')){
+            fil = 'min'
+         }
+         if(fil == String('Maximum Temperature')){
+            fil = 'max'
+         }
+         if(fil == String('Preciptipation')){
+            fil = 'pre'
+         }
+         console.log("key",fil)
+
+      let typeshow = this.choosetype.value
+      let ts = ''
+      console.log("typeshow : ",typeshow)
+      for (let v of Object.values(typeshow)){
+        console.log("v : ",v)
+        if(String(v) == String('รายเดือน')){
+           ts = 'month'
+        }
+        else if(String(v) == String('รายฤดู')){
+          ts = 'season'
+       }else if(String(v) == String('รายปี')){
+         ts = 'year'
+       }else if(String(v) == String('ราย 10 ปี')){
+        ts = 'era'
+      }
+       console.log("type : ",ts)
+      }
+  
+      this.dat = this.testdata1(this.selectstationid,fil,ts)
+      return this.dat
+    }
+  
+    async testdata1(st,fil,ts){
+      this.checkbox = ''
+      if(this.startday.length == 1){
+        this.startday = '0'+this.startday
+      }
+      if(this.startmonth.length == 1){
+        this.startmonth = '0'+this.startmonth
+      }
+      this.start_date = String(this.startyear+'-'+this.startmonth+'-'+this.startday)
+      if(this.stopday.length == 1){
+        this.stopday = '0'+this.stopday
+      }
+      if(this.stopmonth.length == 1){
+        this.stopmonth = '0'+this.stopmonth
+      }
+      this.end_date = String(this.stopyear+'-'+this.stopmonth+'-'+this.stopday)
+      this.stationyear = st
+      this.plotbox = []
+      this.plotname = []
+      this.plotout = []
+      this.boxval.length = 0;
+      this.nameval.length = 0;
+      this.outval.length = 0;
+      // console.log("file : ", fil)
+      await this.tempService.getboxvalue(fil,ts,this.stationyear,this.start_date,this.end_date).then(data => data.subscribe(
+        res => { 
+          // console.log("get data : ", res)
+          console.log("boxplot value : ",res[0])
+          // console.log("outliers value : ", res[2])
+          // console.log("res1 : ",res[1])
+          this.plotbox.push(res[0])
+          this.plotname.push(res[1])
+          this.plotout.push(res[2])
+        this.plotbox.map(u=>{
+          u.map(v=>{
+          for (let i in v){
+              if(String(v[i]) == String('-')){
+                v[i] = null
+              }
+            // console.log("i in v[i] : ",v[i])
+          }
+          this.boxval.push(v)
+          this.checkbox = 'check';          
+          })
+        })
+        // console.log("boxval : ",this.boxval)
+        this.plotname.map(v=>{
+          for(let i of v){
+            this.nameval.push(i)
+          }
+          this.checkbox = 'check';
+         })
+  
+         this.plotout.map(u=>{
+           console.log
+           u.map(v=>{
+          //  console.log("v out : ",v)
+           for (let i in v){
+            // console.log("v[i] : ",v[i])
+            for (let j in v[i]){
+              // console.log("v[ij] : ", v[i][j] ,v[i][j])
+              for (let k in v[i][j]){
+                for(let l in v[i][j][k]){
+                    console.log("change val : ",v[i][j][k][l])      
+  
+                  if(String(v[i][j][k][l]) == String('-')){
+                    v[i][j][k][l] = null
+                  }          
+                }
+  
+              console.log("v[ijk] : ",v[i][j][k])
+              this.outval.push(v[i][j][k])
+              }
+  
+              
+            }
+            console.log("out get v : ",this.outval)
+         }
+          this.checkbox = 'check';
+        })
+      })
+      }))
+      console.log("out : ",this.outval)
+      return this.boxval
+    }
   
     async selectmiss(){
       this.checkmiss = ''
@@ -338,32 +319,30 @@ export class BoxplotComponent implements OnInit {
          this.selectstationid.push(item.id);
       });
       console.log("station id: ", this.selectstationid)
-      let fi = this.choosefile.value
-      let fil = ''
-      for (let v of Object.values(fi)){
-         if(String(v) == String('Temperature mean')){
+      let fil = this.file
+         if(fil == String('Average Temperature')){
             fil = 'mean'
          }
-         if(String(v) == String('Temperature min')){
+         if(fil == String('Minimum Temperature')){
             fil = 'min'
          }
-         if(String(v) == String('Temperature max')){
+         if(fil == String('Maximum Temperature')){
             fil = 'max'
          }
-         if(String(v) == String('Preciptipation')){
+         if(fil == String('Preciptipation')){
             fil = 'pre'
          }
          console.log("key",fil)
-      }
 
       this.stationmiss = this.selectstationid
-      this.startyear = Number(this.fromDate.year)
-      this.stopyear = Number(this.toDate.year)
+      
+      let startyear = String(this.startyear)
+      let stopyear = String(this.stopyear)
       console.log("start year : ", this.startyear)
       console.log("stop year : ", this.stopyear)
       let per=[];
       this.percentplot.length = 0
-      await this.tempService.getmissing(this.stationmiss,this.startyear,this.stopyear,fil).then(data => data.subscribe(
+      await this.tempService.getmissing(this.stationmiss,startyear,stopyear,fil).then(data => data.subscribe(
         res => { 
         this.missdata = [];
           this.missdata.push(res)
@@ -410,28 +389,29 @@ export class BoxplotComponent implements OnInit {
      async plotbar(){
         this.checkbar = ''
         this.selectstationid = [];
+        this.stationan.length = 0;
         const selectValueList = this.myForm.get("city").value;
         selectValueList.map( item => {
            this.selectstationid.push(item.id);
         });
         this.st = String(this.selectstationid)
-        let fi = this.choosefile.value
-        let fil = ''
-        for (let v of Object.values(fi)){
-           if(String(v) == String('Temperature mean')){
-              fil = 'mean'
-           }
-           if(String(v) == String('Temperature min')){
-              fil = 'min'
-           }
-           if(String(v) == String('Temperature max')){
-              fil = 'max'
-           }
-           if(String(v) == String('Preciptipation')){
-              fil = 'pre'
-           }
-          }  
+        let fil = this.file
+        if(fil == String('Average Temperature')){
+           fil = 'mean'
+        }
+        if(fil == String('Minimum Temperature')){
+           fil = 'min'
+        }
+        if(fil == String('Maximum Temperature')){
+           fil = 'max'
+        }
+        if(fil == String('Preciptipation')){
+           fil = 'pre'
+        }
+        console.log("key",fil)
+
         console.log("st : ",this.st)
+        this.stationan.push(this.st)
         this.anomaly = []
         this.anomaly_year = []
         this.anomaly_name.length = 0;
@@ -628,7 +608,7 @@ export class BoxplotComponent implements OnInit {
       },     
       series: [
          {
-            name: this.anomaly_name,
+            name: this.stationan,
             data: this.anomalydata,
             zones: [{
                 value: -0,

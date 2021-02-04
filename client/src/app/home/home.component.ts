@@ -29,17 +29,14 @@ export class HomeComponent implements OnInit {
 
   dataset_name:Array<Object> = [
     {id:'CRU', name:'CRU TS'},
-    // {id:'station',name:'Stations in Thailand'}
+    {id:'station',name:'Stations in Thailand'}
   ];
 
-  filename = [{id:'mean',name:'Temperature mean'},
-               {id:'min',name:'Temperature min'},
-               {id:'max',name:'Temperature max'},
-               {id:'pre',name:'Preciptipation'}]
-
+  filename = [{id:'mean',name:' Average Temperature'},
+    {id:'min',name:'Minimum Temperature'},
+    {id:'max',name:'Maximum Temperature'},
+    {id:'pre',name:'Preciptipation'}]
   constructor(private calendar: NgbCalendar,public formatter:NgbDateParserFormatter,private router: Router,private tempService: TempService) {
-    this.fromDate = calendar.getToday();
-    this.toDate = calendar.getNext(calendar.getToday(), 'd', 10);
    }
 
   choosedataset = new FormGroup({
@@ -64,7 +61,8 @@ export class HomeComponent implements OnInit {
   }
 
   grid(){
-    this.select = "Grid"
+    console.log("sent",this.choosefile.controls['file'].value)
+    this.select = "station"
   }
   
   checktrue_values(){

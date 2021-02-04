@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core'
 import { HttpClient, HttpClientModule } from '@angular/common/http'
 import { Observable } from 'rxjs'
 import { Temp, Plot, meanplot, station5, st, Missing, Boxplotval } from '../interfaces/temp.interface'
-
+import { from } from 'rxjs'
+import { data_test, data_db,data_sta} from '../interfaces/temp.interface'
 @Injectable()
 export class TempService {
     constructor(private http: HttpClient) { }
@@ -88,9 +89,9 @@ export class TempService {
                         `/selectmissing?sta=${sta}&startyear=${startyear}&stopyear=${stopyear}&dff=${dff}`
         )}
 
-    async getanomaly(station:string,df:string){
+    async getanomaly(station:string,dff:string){
         return this.http.get('http://127.0.0.1:5500'+
-                            `/api/line?station=${station}&df=${df}`
+                            `/api/line?station=${station}&dff=${dff}`
         )
     }
 
@@ -108,6 +109,10 @@ export class TempService {
         `/nc_Avg?df_f=${df_f}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`);
     }
 
+    getdata_sta(): Observable<data_sta[]>{
+        console.log("service",this.http.get<data_sta[]>('http://127.0.0.1:5500/locat/station'))
+        return this.http.get<data_sta[]>('http://127.0.0.1:5500/locat/station')
+    }
 
 
 

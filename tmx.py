@@ -12,6 +12,7 @@ import matplotlib.dates as mdates
 import  netCDF4
 import datetime
 from itertools import groupby
+# from netCDF4 import Dataset
 
 app = Flask(__name__)
 
@@ -49,7 +50,7 @@ def meantem():
 def plot():
     df = pd.read_csv('C:/Users/ice/Documents/climate/TMD_DATA/TMD_DATA/clean_data/tmean_2012-2015_d.csv', index_col=-1, parse_dates=True)
     new_df = df.iloc[:, 0:7]
-        # print(new_df)
+        
     pt = pd.pivot_table(new_df, index=new_df.index.month, columns=new_df.index.year, aggfunc='mean')
     
     pt.columns = pt.columns.droplevel() # remove the double header (0) as pivot creates a multiindex.
@@ -83,7 +84,6 @@ def getmonthrange():
     # year = []
     l = []
     for post in mongo.db.tmean.find({"year": {"$gte": from_date, "$lt": to_date}  } ):
-        print(post)
         l.append(post[station])
     return jsonify(l)  
 
@@ -103,7 +103,7 @@ def getvalueselect():
     for data in mongo.db.tmean.find({"date":{'$gte': datetime.datetime(startyear,startmonth,startday, 0, 0),
                                               '$lt': datetime.datetime(endyear,endmonth,endday, 0, 0) }},
                                     {station:1}):
-        print(data)
+        
         l.append(data[station])
 
     for i in range(len(l)):
@@ -111,7 +111,7 @@ def getvalueselect():
             collect.append("-")
         else :
             collect.append(l[i])
-    print(len(l))
+    
     return jsonify(collect)  
 
 
@@ -282,7 +282,7 @@ misrain = pd.read_csv('C:/Users/ice/Documents/climate/plot/climate/missingrain.c
 def getm( startyear,stopyear,station,dff):
     d = {}
     list_dict = []
-    print("dff f",dff)
+    
     mask = (dff['y'] >= startyear) & (dff['y'] <= stopyear)
     dat = dff.loc[mask]
     for i in station:
@@ -357,8 +357,7 @@ def filter_by_station2(station,data,Upper,lower):
             o.append([c,i["value"]])
         c+=1
         outd.append({'month':k,'value':o})
-        print(k)
-        print(o)
+
         # o=[]
 
     data_return = [{"station":int(station),"value":o}]
@@ -430,9 +429,8 @@ def byear(df,station,start_date,end_date):
             for r in j:
                 if str(i['station']) == str(r['station']):
                     for v in r['value']:
-                        print(r['station'],v['value'])
                         outbox.append(v['value'])
-                    print(outbox)
+                    
                     i['outliers']= outbox
                     outbox = []
     
@@ -479,8 +477,7 @@ def filteryear_by_station(station,data,Upper,lower):
             o.append([c,i["value"]])
         c+=1
         outd.append({'year':k,'value':o})
-#         print(k)
-#         print(o)
+
 #         # o=[]
 
     data_return = [{"station":int(station),"value":o}]
@@ -848,7 +845,7 @@ def selectboxplot2():
         b = boxplotseason(df,res,start_date,end_date)
     elif showtype =='era':
         b = boxplotera(df,res,start_date,end_date)
-    print("station : ", station)
+
     return jsonify(b)
 
 #--------------------------------------------------------------------
@@ -896,8 +893,7 @@ def filter_by_station(station,data,Upper,lower):
             o.append([c,i["value"]])
         c+=1
         outd.append({'month':k,'value':o})
-        print(k)
-        print(o)
+
         o=[]
 
     data_return = [{"station":int(station),"value":outd}]
@@ -978,9 +974,8 @@ def boxplot(df,station,start_date,end_date):
             for r in j:
                 if str(i['station']) == str(r['station']):
                     for v in r['value']:
-                        print(r['station'],v['value'])
                         outbox.append(v['value'])
-                    print(outbox)
+                    
                     i['outliers']= outbox
                     outbox = []
     
@@ -1003,56 +998,90 @@ def selectboxplot():
     elif df == 'pre':
         df = rain
     b = boxplot(df,res,start_date,end_date)
-    print("station : ", station)
+
     return jsonify(b)
 
 # ------- LINE ANOMALY -------------------------------------------------------------
 @app.route('/api/line',methods=["GET"])
-def lineplot():
-    df = str(request.args.get("df"))
-    if df == 'mean':
-        df = tmean
-    elif df == 'min':
-        df = tmin
-    elif df == 'max':
-        df = tmax
-    elif df == 'pre':
-        df = rain
-
-    group_year = df.groupby('year')
-    year = list(set(df['year']))
+def anomalyplot():    
+    dff = str(request.args.get("dff"))
     station = str(request.args.get("station"))
-    print( "station ::::: ", station, type(station))
-    # res = station.strip('][').split(',')
-    dt = df[[station,'year']]
-    group_year = dt.groupby('year')
-    grouplist = []
-    for i in year:
-        m = group_year.get_group(i).mean()
-        grouplist.append(m[0])
-    mask = (dt['year'] >= 1970) & (df['year'] <= 1999)
-    baseline = dt.loc[mask]
-    bs = baseline[station].mean()
-    anamol = []
-    for i in range(len(grouplist)):
-        a = grouplist[i]-bs
-        if str(a)=='nan':
-            anamol.append('-')
-        else:
-            anamol.append(float("%.2f"% a))
-    ana = {station:anamol}
-    year = {'year':year}
-    # listplot = []
-    # anomaly = {}
-    # for i in range(len(year)):
-    #     anomaly['year'] = year[i]
-    #     if str(anamol[i])== str('nan'):
-    #         anomaly['value'] = '-'
-    #     else:
-    #         anomaly['value'] = anamol[i]
-    #     listplot.append(anomaly)
-    #     anomaly = {}
+    region = pd.read_csv('C:/Users/ice/Documents/climate/data/station_Thailand_region.csv')
+    station_region = ''
+    for i in region:
+        for j in region[i] :
+            if str(station) == str(j):
+                station_region = region.loc[region['id']== int(station)]['region']
+    if dff =='mean' and station_region.values == 'North':
+        df = pd.read_csv('C:/Users/ice/Documents/climate/data/tmean_station_north_Thailand.csv')
+    elif dff =='mean' and station_region.values == 'Northeast':
+        df = pd.read_csv('C:/Users/ice/Documents/climate/data/tmean_station_northest_Thailand.csv')
+    elif dff =='mean' and station_region.values == 'Central' :
+        df = pd.read_csv('C:/Users/ice/Documents/climate/data/tmean_station_central_Thailand.csv')
+    elif dff =='mean' and station_region.values == 'Eastern' :
+        df = pd.read_csv('C:/Users/ice/Documents/climate/data/tmean_station_eastern_Thailand.csv')
+    elif dff =='mean' and station_region.values == 'South' :
+        df = pd.read_csv('C:/Users/ice/Documents/climate/data/tmean_station_south_Thailand.csv')
+    elif dff =='min' and station_region.values == 'North':
+        df = pd.read_csv('C:/Users/ice/Documents/climate/data/tmin_station_north_Thailand.csv')
+    elif dff =='min' and station_region.values == 'Northeast':
+        df = pd.read_csv('C:/Users/ice/Documents/climate/data/tmin_station_northest_Thailand.csv')
+    elif dff =='min' and station_region.values == 'Central' :
+        df = pd.read_csv('C:/Users/ice/Documents/climate/data/tmin_station_central_Thailand.csv')
+    elif dff =='min' and station_region.values == 'Eastern' :
+        df = pd.read_csv('C:/Users/ice/Documents/climate/data/tmin_station_eastern_Thailand.csv')
+    elif dff =='min' and station_region.values == 'South' :
+        df = pd.read_csv('C:/Users/ice/Documents/climate/data/tmin_station_south_Thailand.csv')
+    elif dff =='max' and station_region.values == 'North':
+        df = pd.read_csv('C:/Users/ice/Documents/climate/data/tmax_station_north_Thailand.csv')
+    elif dff =='max' and station_region.values == 'Northeast':
+        df = pd.read_csv('C:/Users/ice/Documents/climate/data/tmax_station_northest_Thailand.csv')
+    elif dff =='max' and station_region.values == 'Central' :
+        df = pd.read_csv('C:/Users/ice/Documents/climate/data/tmax_station_central_Thailand.csv')
+    elif dff =='max' and station_region.values == 'Eastern' :
+        df = pd.read_csv('C:/Users/ice/Documents/climate/data/tmax_station_eastern_Thailand.csv')
+    elif dff =='max' and station_region.values == 'South' :
+        df = pd.read_csv('C:/Users/ice/Documents/climate/data/tmax_station_south_Thailand.csv')
+    elif dff =='pre' and station_region.values == 'North':
+        df = pd.read_csv('C:/Users/ice/Documents/climate/data/pre_station_north_Thailand.csv')
+    elif dff =='pre' and station_region.values == 'Northeast':
+        df = pd.read_csv('C:/Users/ice/Documents/climate/data/pre_station_northest_Thailand.csv')
+    elif dff =='pre' and station_region.values == 'Central' :
+        df = pd.read_csv('C:/Users/ice/Documents/climate/data/pre_station_central_Thailand.csv')
+    elif dff =='pre' and station_region.values == 'Eastern' :
+        df = pd.read_csv('C:/Users/ice/Documents/climate/data/pre_station_eastern_Thailand.csv')
+    elif dff =='pre' and station_region.values == 'South' :
+        df = pd.read_csv('C:/Users/ice/Documents/climate/data/pre_station_south_Thailand.csv')
+
+    mask = (df['year'] >= 1961) & (df['year'] <= 1980)
+    baseline = df.loc[mask]
+    bs = baseline.drop(columns=['date','day', 'month','year'])
+    count = 0
+    val = 0
+    for i in bs:
+        for j in bs[i]:
+            if str(j) == str("nan"):
+                pass
+            else:
+                val += j
+                count +=1
+    baseline_val = float("%.2f"% (val/count))
+    group_year = df.groupby('year').mean()
+    group_year = group_year.drop(columns=['day', 'month'])
+    group_year['mean'] = group_year.mean(axis=1)
+    index = 'mean'
+    anomaly = group_year[index] - baseline_val
+    a = anomaly.values.round(2)
+    anomallist = []
+    for i in range(len(a)) :
+        if str(a[i])== str('nan'):
+            anomallist.append('-')
+        else :
+            anomallist.append(a[i])
+    ana = {str(station_region):anomallist}
+    year = {'year':list(anomaly.index)}
     return jsonify(ana,year)
+
 #----------------------------map-------------------------------------
 @app.route("/nc_csv",methods=["GET"])
 def get_tomap():
@@ -1060,12 +1089,12 @@ def get_tomap():
     stopyear = int(request.args.get("stopyear"))
     startmonth = int(request.args.get("startmonth"))
     stopmonth = int(request.args.get("stopmonth"))
-    print("year",startyear)
+
     ds = pd.read_csv("C:/Users/ice/Documents/climate/data/tmp_01-19_resize.csv")
     df1 = ds.query('{} <= year <= {} &  {} <=month<= {}'.format(startyear,stopyear,startmonth,stopmonth))
     select = df1[['lat','lon','values']].to_json(orient='records')
     select = json.loads(select)
-    print (select[0])
+
     return jsonify(select)
 
 # ----------------------------------- NC plot color --------------------------------------
@@ -1076,13 +1105,13 @@ ds_p = pd.read_csv("C:/Users/ice/Documents/climate/data/pre1901-10_resize.csv")
 # h = pd.read_csv("C:/Mew/Project/hadex2/hadex2_Jan.csv")
 @app.route("/nc_Avg",methods=["GET"])
 def get_Avgmap():
-    start = time.time()
+    # start = time.time()
     df_f = str(request.args.get("df_f"))
     startyear = int(request.args.get("startyear"))
     stopyear = int(request.args.get("stopyear"))
     startmonth = int(request.args.get("startmonth"))
     stopmonth = int(request.args.get("stopmonth"))
-    print("year",startyear)
+
     if df_f == 'mean':
         color_map = 'cool_warm'
         if startyear <= 1910:
@@ -1113,14 +1142,21 @@ def get_Avgmap():
     N_data['values'] = list(n_val)
     select = N_data[['lat','lon','values']].to_json(orient='records')
     select = json.loads(select)
-    end = time.time()
-    print(end-start)
-    print (select[0])
+    # end = time.time()
+
     # df1 = ds.query('{} <= year <= {} &  {} <=month<= {}'.format(startyear,stopyear,startmonth,stopmonth))
     # select = df1[['lat','lon','values']].to_json(orient='records')
     # select = json.loads(select)
 
     return jsonify(color_map,select)
+
+#--------------------------------station---------------------------------------
+@app.route('/locat/station',methods=['GET'])
+def locat():
+    ds = pd.read_csv("C:/Users/ice/Documents/climate/station/station_ThailandTMD.csv")
+    select = ds[['id','name','latitude','longitude']].to_json(orient='records')
+    select = json.loads(select)
+    return jsonify(select)
 #----------------------------------------------------------------------
 if __name__ == '__main__':
     app.run(debug=True, port= 5500)

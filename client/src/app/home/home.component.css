@@ -87,3 +87,17 @@
   .custom-day.faded {
     background-color: rgba(2, 117, 216, 0.5);
   }
+
+.right
+{
+	float:right;
+  width:70%;
+  padding: 20px;
+  background-color: deepskyblue;
+}
+.left
+{
+	float:left;
+  width:30%;
+  background-color: tomato;
+}

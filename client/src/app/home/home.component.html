@@ -82,7 +82,7 @@
     <div class="btn-group" role="group" aria-label="Basic example">
         <button type="button" class="btn btn-primary" (click)="Map()"><span class="cil-contrast btn-icon mr-2"></span>
             Map</button>
-        <button type="button" class="btn btn-secondary" (click)="grid()">Grid</button>
+        <button type="button" class="btn btn-secondary" (click)="grid()">Station</button>
     </div>
 </div>
 
@@ -96,6 +96,15 @@
                 [startmonth]="this.fromDate.month"
                 [stopmonth]="this.toDate.month"></app-netcdf>
 </div>
-<div *ngIf="select == 'Grid'">
-    <app-mock></app-mock>
+<div class="left" *ngIf="select == 'station'">
+    <app-map></app-map>
+</div>
+<div class="right" *ngIf="select == 'station'">
+    <app-boxplot    [file]="choosefile.controls['file'].value" 
+                    [startyear]="this.fromDate.year"
+                    [stopyear]="this.toDate.year"
+                    [startmonth]="this.fromDate.month"
+                    [stopmonth]="this.toDate.month"
+                    [startday]="this.fromDate.day"
+                    [stopday]="this.toDate.day"></app-boxplot>
 </div>
