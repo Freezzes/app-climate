@@ -1,20 +1,25 @@
 import 'ol/ol.css';
 import * as ol from 'openlayers';
+import * as d3 from 'C:/Users/Mewkk/app-climate/client/src/assets/d3/d3.js';
+import { Router, ActivatedRoute } from '@angular/router';
+
 
 export function map_sta(loca){
     console.log("sent",loca)
     var test = loca[0]
     console.log("sent",Object.values(test))
     var locations = [];
-    for (i=0; i< loca.length; i++){
-        locations.push(Object.values(loca[i]))
+    for (i=0; i< loca[0].length; i++){
+        locations.push(Object.values(loca[0][i]))
     }
     console.log("lo",locations)
 
     var container = document.getElementById('popup');
     var content = document.getElementById('popup-content');
     var closer = document.getElementById('popup-closer');
-    
+
+    var colors = []; 
+    var colorScale;
     
     /**
      * Add a click handler to hide the popup.
@@ -38,19 +43,55 @@ export function map_sta(loca){
         // }
     });
     
-    
     var features = [];
+    var value_ = []
+   
     for (var i = 0; i < locations.length; i++) {
-        features.push(coloredSvgMarker([locations[i][2], locations[i][1]], locations[i][3], locations[i][0]));
+        if (locations[i][0] == null){
+            console.log("null",locations[i][0])
+        } 
+        else{
+            features.push(coloredSvgMarker([locations[i][3], locations[i][2]], locations[i][4], locations[i][1], locations[i][0]));
+            value_.push(locations[i][0])
+        }
     }
-    console.log("fea",features)
+    // console.log("fea",features)
+    var max = Math.max.apply(null, value_);
+    var min = Math.min.apply(null, value_);
+
+    var color_map = loca[1]
+    console.log("color",color_map)
+    if (color_map == 'cool_warm') {
+        colors = ['#bd1726', '#d42d27', '#e34933', '#f16640', '#f7844e', '#fca55d', '#fdbf71', '#fed687', '#fee99d', '#fff7b3', '#f7fcce', '#e9f6e8', '#d6eef5', '#bde2ee', '#a3d3e6', '#87bdd9', '#6ea6ce', '#588cc0', '#4471b2', '#3a54a4'].reverse()
+        colorScale = d3.scaleQuantile([min, max], colors)
+    } else if (color_map == 'dry_wet') {
+        colors = ['#6e4007', '#894f0a', '#a16518', '#b97b29', '#ca9849', '#dbb972', '#e7cf94', '#f1e1b5', '#f6ecd1', '#f5f2e8', '#edf2f5', '#dbeaf2', '#c5dfec', '#a7d0e4', '#87beda', '#5fa5cd', '#3f8ec0', '#2f79b5', '#1f63a8', '#124984']
+        colorScale = d3.scaleQuantile([min, max], colors)
+    }    
+
+    var markstyle = function (feature) {
+        var pop = feature.getProperties().value
+        // console.log("pop",pop)
+        var rgb = d3.rgb(colorScale(pop));
+
+        if (isNaN(pop)) {return}
+        return [
+            new ol.style.Style({
+                image: new ol.style.Circle({
+                    radius: 4,
+                    fill: new ol.style.Fill({color:[rgb.r, rgb.g, rgb.b, 1]}),
+                }),
+            })
+        ]
+    }
     
     var vectorSource = new ol.source.Vector({ // VectorSource({
         features: features
     });
     
     var vectorLayer = new ol.layer.Vector({ // VectorLayer({
-        source: vectorSource
+        source: vectorSource,
+        style : markstyle
     });
 
     var vectorLayermap = new ol.layer.Vector({
@@ -94,11 +135,15 @@ export function map_sta(loca){
         var _id = map.forEachFeatureAtPixel(evt.pixel, function(feature) {
             return feature.get('_id');
         })
+
+        var value = map.forEachFeatureAtPixel(evt.pixel, function(feature) {
+            return feature.get('value');
+        })
         console.log("id",_id)
         if (names) {
             container.style.display = "block";
             var coordinate = evt.coordinate;
-                content.innerHTML = names,_id;
+                content.innerHTML = names + "(" + _id + ")" + '<br/>' + value;
                 overlay.setPosition(coordinate);
         } else if(_id){
             container.style.display = "block";
@@ -113,32 +158,57 @@ export function map_sta(loca){
     map.on('pointermove', function(evt) {
         map.getTargetElement().style.cursor = map.hasFeatureAtPixel(evt.pixel) ? 'pointer' : '';
     });
+
+    map.on('dblclick', function (evt) {
+        var element = popup.getElement();
+        var coordinate = evt.coordinate;
+        var hdms = toStringHDMS(toLonLat(coordinate));
+      
+        // $(element).popover('dispose');
+        // popup.setPosition(coordinate);
+        $(element).popover({
+          container: element,
+          placement: 'top',
+          animation: false,
+          html: true,
+          content: '<p>The location you clicked was:</p><code>' + hdms + '</code>',
+        });
+        $(element).popover('show');
+      });
+
+    // map.on('dblclick', function(evt) {
+    //     var names = map.forEachFeatureAtPixel(evt.pixel, function(feature) {
+    //         return feature.get('names');
+    //     })
+    //     // this.ngZone.runOutsideAngular(() => {
+    //     //   const feature = this.map.forEachFeatureAtPixel(evt.pixel, (feat, layer) => {
+    //     //     // you can add a condition on layer to restrict the listener
+    //     //     return feat;
+    //     //   });
     
-    
-    function coloredSvgMarker(lonLat, name,id) {
-        // if (!color) color = 'red';
-        // if (!circleFill) circleFill = 'white';
+    //     //   if (feature) {
+    //     //     this.router.navigateByUrl('/mock');
+    //     //   }
+    //     // });
+    //     if (names) {
+    //         Router.navigateByUrl('/mock');
+    //     }
+    //   });
+
+    function coloredSvgMarker(lonLat, name,id,val) {
         console.log("lonlat",lonLat)
         console.log("name",name)
         console.log("id",id)
-
+        console.log("val",val) 
+      
         var feature = new ol.Feature({
             geometry: new ol.geom.Point(ol.proj.fromLonLat(lonLat)),
             names: name,
-            _id:id
+            _id:id,
+            value: val
         });
-        // var svg = '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="20px" height="20px" viewBox="0 0 30 30" enable-background="new 0 0 30 30" xml:space="preserve">' +
-        //     '<path fill="' + color + '" d="M22.906,10.438c0,4.367-6.281,14.312-7.906,17.031c-1.719-2.75-7.906-12.665-7.906-17.031S10.634,2.531,15,2.531S22.906,6.071,22.906,10.438z"/>' +
-        //     '<circle fill="' + circleFill + '" cx="15" cy="10.677" r="3.291"/></svg>';
-    
-        feature.setStyle(
-            new ol.style.Style({
-                image: new ol.style.Circle({
-                    radius: 4,
-                    fill: new ol.style.Fill({color: 'red'}),
-                }),
-            })
-        );
         return feature;
     }
+  
+
 }

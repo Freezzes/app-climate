@@ -1,4 +1,4 @@
-import { Component, OnInit ,AfterViewInit} from '@angular/core';
+import { Component, OnInit , Input} from '@angular/core';
 import { TempService } from '../services/temp.service';
 import 'ol/ol.css';
 import * as MapLib from './lib/mapthai.js';
@@ -9,9 +9,7 @@ import {OSM, Vector as VectorSource} from 'ol/source';
 import {Point} from 'ol/geom';
 import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
 import {useGeographic} from 'ol/proj';
-import * as $ from 'jquery'
-import * as L from 'leaflet';
-import {latLng, MapOptions, tileLayer} from 'leaflet';
+import { Router, ActivatedRoute } from '@angular/router';
 
 
 useGeographic();
@@ -24,24 +22,51 @@ useGeographic();
 })
 
 export class MapComponent implements OnInit {
-
+  @Input() file: string;
+  @Input() startyear: string;
+  @Input() stopyear: string;
+  @Input() startmonth: string;
+  @Input() stopmonth: string;
   map: any;
   popup: any;
-  datas
 
-  constructor(private tempService: TempService) {
+  constructor(private tempService: TempService,private router: Router) {
   }
 
   capitals: string = '../../assets/station_input.geojson';
 
-  ngOnInit() {
+  async ngOnInit() {
     console.log("on")
+    console.log("file",this.file)
     // MapLib.mapthai()
-    this.tempService.getdata_sta().subscribe(res => {
-      MapLib2.map_sta(res)
+    // await this.tempService.getdata_sta(this.data).then(res => {
+    //   // MapLib2.map_sta(res)
+    //   console.log("map",res)
+    await this.tempService.getdata_sta(this.file,this.startyear,this.stopyear,
+      this.startmonth,this.stopmonth).then(res => {
+      res.subscribe(datas => {
+        // console.log(datas)
+        this.map = MapLib2.map_sta(datas)
+        
+      })
+     
+   })
 
-  })
-}
+  //  this.map.on('dblclick', (evt) => {
+  //     // const feature = this.map.forEachFeatureAtPixel(evt.pixel, (feat, layer) => {
+  //     //   // you can add a condition on layer to restrict the listener
+  //     //   return feat;
+  //     // });
+  //     console.log("dbclick")
+  //     var names = this.map.forEachFeatureAtPixel(evt.pixel, function(feature) {
+  //       return feature.get('names');
+  //     })
+
+  //     if (names) {
+  //       this.router.navigateByUrl('/mock');
+  //     }
+  //   });
+  }
  
 }
 

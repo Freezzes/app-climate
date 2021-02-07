@@ -12,11 +12,16 @@ import matplotlib.dates as mdates
 import  netCDF4
 from netCDF4 import Dataset
 import datetime
+import pymongo
 
 app = Flask(__name__)
 
 app.config['MONGO_DBNAME'] = 'tmean','rain5','rain','tmax','test'
 app.config['MONGO_URI'] = 'mongodb://localhost:27017/Project'
+
+client = pymongo.MongoClient('mongodb://localhost:27017/')
+db = client['test']
+database = "test"
 
 mongo = PyMongo(app)
 CORS(app)
@@ -362,44 +367,6 @@ e = pd.read_csv("C:/Mew/Project/EC-Earth3/pr_1980-1.csv")
 E = pd.read_csv("C:/Mew/Project/EC-Earth3/tas_1994.csv")
 h = pd.read_csv("C:/Mew/Project/hadex2/hadex2_Jan.csv")
 
-@app.route("/nc_csv",methods=["GET"])
-def get_tomap():
-    start = time.time()
-    df_f = str(request.args.get("df_f"))
-    startyear = int(request.args.get("startyear"))
-    stopyear = int(request.args.get("stopyear"))
-    startmonth = int(request.args.get("startmonth"))
-    stopmonth = int(request.args.get("stopmonth"))
-    print("year",startyear)
-    if df_f == 'mean':
-        color_map = 'cool_warm'
-        stepsize = int(1)
-        if startyear <= 1910:
-            ds = ds1
-        elif startyear > 1910 and startyear <= 1920:
-            ds = ds2
-        elif startyear > 1920 and startyear <= 1930:
-            ds = ds3
-    elif df_f == 'pre':
-        color_map = 'dry_wet'
-        ds = ds_p
-    elif df_f == 'hadex2':
-        ds = h
-        color_map = 'cool_warm'
-    elif df_f == 'EC':
-        ds = e
-        color_map = 'cool_warm'
-        stepsize = float(0.703125)
-        
-    
-    # ds = pd.read_csv("C:/Mew/Project/tmp_01-19_resize1.csv")
-    df1 = ds.query('{} <= year <= {} &  {} <=month<= {}'.format(startyear,stopyear,startmonth,stopmonth))
-    select = df1[['lat','lon','values']].to_json(orient='records')
-    select = json.loads(select)
-    end = time.time()
-    print(end-start)
-    # print (select[0])
-    return jsonify(color_map,stepsize,select)
 #---------------------------------------nc defer--------------------------------------------
 # nc1 = Dataset("C:/Mew/Project/cru_ts4.04.1901.2019.tmp.dat.nc")
 
@@ -504,7 +471,6 @@ def nc_per():
     end = time.time()
     print(end-start)
     return jsonify(color_map,lon_step,lat_step,select)
-
 
 #---------------------------------------------map----------------------------------------------------
 # @app.route("/nc_Avg",methods=["GET"])
@@ -643,24 +609,63 @@ def selectNC():
 @app.route('/locat/station',methods=['GET'])
 def locat():
     df_f = str(request.args.get("df_f"))
+    startyear = int(request.args.get("startyear"))
+    stopyear = int(request.args.get("stopyear"))
+    startmonth = int(request.args.get("startmonth"))
+    stopmonth = int(request.args.get("stopmonth"))
     if df_f == 'mean':
         ds = pd.read_csv("C:\Mew\Project\Tmean_Station_2012_2015.csv")
+        color_map = 'cool_warm'
     elif df_f == 'pre':
-        ds = ds_p
+        ds = pd.read_csv("C:\Mew\Project\Pr_Station_1951_2011.csv")
+        color_map = 'dry_wet'
     elif df_f == 'ec':
         ds = E
         
     df = pd.read_csv("C:\Mew\Project\data_station\station.csv")
     df['Avg_val'] = "" 
+    ds['date'] = pd.to_datetime(ds['date'] , format='%Y-%m-%d')
     col = ds.columns[3:-1]
     for i in range(len(col)):
-        df['Avg_val'][i] = ds.loc[ds['year'] == 2015, col[i]].mean(skipna = True)
+        df['Avg_val'][i] = ds.loc[(ds['date'].dt.year >= startyear) & (ds['date'].dt.year <= stopyear) & (ds['date'].dt.month >= startmonth) & (ds['date'].dt.month <= stopmonth), col[i]].mean(skipna = True)
     select = df[['id','name','latitude','longitude','Avg_val']].to_json(orient='records')
     select = json.loads(select)
     # print(select)
-    return jsonify(select)
+    return jsonify(select,color_map)
 
-# -------------------------------anomaly---------------------------------------
+# -------------------------------db---------------------------------------
+@app.route("/api/get_db", methods=['GET'])
+def get_db():
+    start = time.time()
+    output = []
+    dataset = str(request.args.get("dataset"))
+    index = str(request.args.get("index"))
+    startyear = int(request.args.get("startyear"))
+    startmonth = int(request.args.get("startmonth"))
+
+    # directory = "./{}_{}/".format(dataset, index)
+    # collection = db[f"{dataset}_{index}"]
+    collection = db['test_pre']
+    
+    for d in collection.find({'year':startyear,'month':startmonth}, {'_id':0}):
+        output.append({'values':d['data']})
+    # print(output)
+    end = time.time()
+    print("get_data:",end-start)
+    return jsonify(output)
+
+@app.route("/api/get_grid", methods=['GET'])
+def get_grid():
+    start = time.time()
+    output = []
+    dataset1 = str(request.args.get("dataset"))
+    collection = db['dataset']
+    for d in collection.find({'dataset':'test'}, {'_id':0}):
+        print(d['gridsize']['lon_step'])
+        output.append({'geojson_gridcenter': d['geojson_gridcenter'],'lon_step':d['gridsize']['lon_step'],'lat_step':d['gridsize']['lat_step']})
+    end = time.time()
+    print("get_grid:",end-start)
+    return jsonify(output)
 
 
 if __name__ == '__main__':
