@@ -28,7 +28,7 @@ export class MapComponent implements OnInit {
 
   map: any;
   popup: any;
-  datas
+  datas = ''
 
   constructor(private tempService: TempService) {
   }
@@ -39,10 +39,15 @@ export class MapComponent implements OnInit {
     console.log("on")
     // MapLib.mapthai()
     this.tempService.getdata_sta().subscribe(res => {
-      MapLib2.map_sta(res)
-
+      console.log(MapLib2.map_sta(res))
+      console.log("test ka",MapLib2.station_id);
       console.log("map result : ",res)
+      // console.log("get id station : ", res)
   })
 }
+  test1(){
+    console.log("testttttttttttttt")
+      console.log("test ka",MapLib2.station_id);
+  }
  
 }

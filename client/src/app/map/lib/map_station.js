@@ -1,15 +1,18 @@
 import 'ol/ol.css';
 import * as ol from 'openlayers';
 
+export var station_id = '';
+
 export function map_sta(loca){
-    console.log("sent",loca)
+    let testt = "test"
+    console.log("test : ",testt)
     var test = loca[0]
-    console.log("sent",Object.values(test))
+    // console.log("sent",Object.values(test))
     var locations = [];
     for (i=0; i< loca.length; i++){
         locations.push(Object.values(loca[i]))
     }
-    console.log("lo",locations)
+    // console.log("lo",locations)
 
     var container = document.getElementById('popup');
     var content = document.getElementById('popup-content');
@@ -43,7 +46,7 @@ export function map_sta(loca){
     for (var i = 0; i < locations.length; i++) {
         features.push(coloredSvgMarker([locations[i][2], locations[i][1]], locations[i][3], locations[i][0]));
     }
-    console.log("fea",features)
+    // console.log("fea",features)
     
     var vectorSource = new ol.source.Vector({ // VectorSource({
         features: features
@@ -94,6 +97,7 @@ export function map_sta(loca){
         var _id = map.forEachFeatureAtPixel(evt.pixel, function(feature) {
             return feature.get('_id');
         })
+        station_id = _id;
         console.log("id",_id)
         if (names) {
             container.style.display = "block";
@@ -118,9 +122,9 @@ export function map_sta(loca){
     function coloredSvgMarker(lonLat, name,id) {
         // if (!color) color = 'red';
         // if (!circleFill) circleFill = 'white';
-        console.log("lonlat",lonLat)
-        console.log("name",name)
-        console.log("id",id)
+        // console.log("lonlat",lonLat)
+        // console.log("name",name)
+        // console.log("id",id)
 
         var feature = new ol.Feature({
             geometry: new ol.geom.Point(ol.proj.fromLonLat(lonLat)),
@@ -142,3 +146,4 @@ export function map_sta(loca){
         return feature
     }
 }
+

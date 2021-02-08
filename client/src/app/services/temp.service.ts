@@ -110,8 +110,9 @@ export class TempService {
     }
 
     getdata_sta(): Observable<data_sta[]>{
-        console.log("service",this.http.get<data_sta[]>('http://127.0.0.1:5500/locat/station'))
-        return this.http.get<data_sta[]>('http://127.0.0.1:5500/locat/station')
+        const response = this.http.get<data_sta[]>('http://127.0.0.1:5500/locat/station');
+        console.log("service",response);
+        return response;
     }
 
 

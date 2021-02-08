@@ -24,6 +24,7 @@ import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { NetcdfComponent } from './netcdf/netcdf.component';
 import {MatRadioModule} from '@angular/material/radio';
 import { HomeComponent } from './home/home.component';
+import { NetcdfgraphComponent } from './netcdfgraph/netcdfgraph.component';
 PlotlyModule.plotlyjs = PlotlyJS;
 
 @NgModule({
@@ -36,7 +37,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     MissingvalueComponent,
     BoxplotComponent,
     NetcdfComponent,
-    HomeComponent
+    HomeComponent,
+    NetcdfgraphComponent
   ],
   imports: [
     BrowserModule,
