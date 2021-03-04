@@ -21,14 +21,21 @@
     margin-bottom: 20px;
   }
   .header {
-    background-image: url('/assets/img/bg1.jpg') ;
+    background-color: #0a61a3 ;
     background-repeat:no-repeat;
-    padding: 50px;
+    margin-left: 20%;
+    padding: 3px;
     text-align: center;
-    width: 100%;
-    color: rgb(0, 0, 0);
+    font-size: 15px;
+    height: 50px;
+    width: 80%;
+    color: rgb(255, 255, 255);
   }
   
+  .header h1{
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 600;
+  }
   .backgr{
     background-color: lightcyan;
   }
@@ -39,11 +46,7 @@
     /* margin-left: 20px; */
     padding: 20px;
   }
-  canvas {
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
-  }
+
   .chart-wrapper {
     width: 500px;
     height: 500px;
@@ -65,7 +68,7 @@ select{
   width: 2rem;
 }
 .custom-day.focused {
-  background-color: #e6e6e6;
+  background-color: #ffffff;
 }
 .custom-day.range, .custom-day:hover {
   background-color: rgb(2, 117, 216);
@@ -92,7 +95,7 @@ select{
     width: 2rem;
   }
   .custom-day.focused {
-    background-color: #e6e6e6;
+    background-color: #da0606;
   }
   .custom-day.range, .custom-day:hover {
     background-color: rgb(2, 117, 216);
@@ -106,13 +109,16 @@ select{
   display: flex;
   align-items: stretch;
   height: 200%;
-  background-color:rgb(233, 233, 233);
+  background-color:rgb(255, 255, 255);
 }
 
 #sidebar {
   width: 250px;
+  position: fixed;
   /* max-width: 250px; */
-  /* height: 100%; */
+  height: 100%;
+  width: 20%;
+  top: 0px;
 }
 
 
@@ -126,13 +132,13 @@ a[data-toggle="collapse"] {
   position: relative;
 }
 
-.dropdown-toggle::after {
-  display: block;
+/* .dropdown-toggle::after { */
+  /* display: block;
   position: absolute;
   top: 50%;
   right: 20px;
-  transform: translateY(-50%);
-}
+  transform: translateY(-50%); */
+/* } */
 
 @import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
 
@@ -160,20 +166,22 @@ a, a:hover, a:focus {
 
 #sidebar {
     /* don't forget to add all the previously mentioned styles here too */
-    background: #4d93d4;
+    background: #d5e4f3;
     color: #fff;
     transition: all 0.3s;
-    /* height: auto; */
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 #sidebar .sidebar-header {
-    padding: 15px;
-    background:#3c80be;
+    background:#5997d1;
+    text-align: center;
+
 }
 
 #sidebar ul.components {
     padding: 20px 0;
-    border-bottom: 1px solid#4d93d4;
+    border-bottom: 1px solid#5492cd;
 }
 
 #sidebar ul p {
@@ -182,10 +190,11 @@ a, a:hover, a:focus {
 }
 
 #sidebar ul li a {
-    padding: 10px;
+    /* padding: 10px; */
     font-size: 1.1em;
     display: block;
     text-align: left;
+    color: midnightblue;
 }
 #sidebar ul li a:hover {
     color:#4d93d4;
@@ -255,15 +264,18 @@ ul ul a {
   left: 0;
   background-color: #111;
   overflow-x: hidden;
-  padding-top: 20px;
+  /* padding-top: 3px; */
 }
 .sidenav a, .dropdown-btn {
   padding: 6px 8px 6px 16px;
   text-decoration: none;
   font-size: 20px;
-  color: #ffffff;
+  /* color: #ffffff; */
   display: block;
-  border: none;
+  color: coral;
+  border-color: blueviolet;
+  border-width: thick;
+  border-width: thick,100px;
   background: none;
   width: 100%;
   text-align: left;
@@ -278,6 +290,71 @@ ul ul a {
   background:#4d93d4;
   padding-left: 8px;
 } 
+button.buttongrid{
+  color: rgb(255, 255, 255);
+  border-color: rgb(201, 216, 245);
+  background-color: #0a61a3;
+  text-align: center;
+  size: 250px;
+  display: inline-block;
+  border-radius: 5px;
+  transition: all;
+  width: 75px;
+  }
+.buttongrid:hover {
+    background-color:#bababb ;
+    }
+/* .buttongrid:active {
+    background-color:#bababb ;
+    } */
+
+.buttongrid:focus {
+  background-color:#bababb ;
+  }
+
+.active{
+  background-color: #bababb;
+}
+/* #test{
+  background-color: black;
+}
+#test:hover, #test:active, #test:focus {
+  background-color: red;
+}
+
+.green {
+  background-color: green;
+}
+
+.red {
+  background-color: red;
+} */
+
+button.buttongridselect{
+    color: rgb(255, 255, 255);
+    border-color: rgb(201, 216, 245);
+    background-color: #9fa1a3;
+    text-align: center;
+    size: 250px;
+    display: inline-block;
+    border-radius: 5px;
+    transition: all;
+    width: 75px;
+    }  
+
+.rightworld{
+  float:right;
+  width:40%;
+  padding-left: 13px;
+  padding-bottom: 30px;
+  padding-right: 8px;
+}
+.leftworld{
+  float: left;
+  width: 60%;
+  padding-left: 10px;
+  padding-bottom: 20px;
+}
 .right
 {
 	float:right;
@@ -288,4 +365,17 @@ ul ul a {
 {
 	float:left;
   width:30%;
+}
+
+.space{
+  margin-top: 5px;
+  float: left;
+  width: 100%;
+}
+.up
+{
+	float:left;
+  clear: both;
+	width:100%;
+	background-color:#bff00e;
 }
