@@ -1,0 +1,16 @@
+
+<div style="flex-direction: row;display: flex;flex-wrap: nowrap;margin-top: 40px;">
+  <div class="showdata">
+    <h1> average value per year </h1>
+  </div>
+
+<div class="space">
+  <div *ngIf="checkbar=='check'">
+    <highcharts-chart
+      [Highcharts]="highchartsbar" 
+      [options] = "chartOptionsbar" 
+      >
+    </highcharts-chart>
+  </div>
+</div>
+</div>

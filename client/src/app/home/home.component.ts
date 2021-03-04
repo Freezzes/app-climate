@@ -40,6 +40,10 @@ export class HomeComponent implements OnInit {
   public verb;
   infile = '';
   model: any;
+  public start_date;
+  public stop_date;
+
+  public checkmap = '';
 
   dataset_name:Array<Object> = [
     {id:'CRU', name:'CRU TS'},
@@ -64,11 +68,34 @@ export class HomeComponent implements OnInit {
     file: new FormControl()
   });
 
+  North = new FormGroup({
+    file: new FormControl()
+  });
+  West = new FormGroup({
+    file: new FormControl()
+  });
+  East = new FormGroup({
+    file: new FormControl()
+  });
+  South = new FormGroup({
+    file: new FormControl()
+  });
+
   select;
   per;
-  // selectGrid;
+  selectGrid;
+
+  // public toggle = false;
+  // public status = 'Enable'; 
+  
+  // enableDisableRule() {
+  //   this.toggle = !this.toggle;
+  //   this.status = this.toggle ? 'Enable' : 'Disable';
+  //   console.log(this.status)
+  // }
 
   ngOnInit(): void {
+    // this.enableDisableRule()
     console.log("select",this.choosefile.controls['file'].value)
     console.log("select set: ",this.choosedataset.controls['set'].value)   
     $(document).ready(function () {
@@ -98,11 +125,10 @@ export class HomeComponent implements OnInit {
     this.select = "";
   }
 
+
   Map(){
-    console.log("start",this.fromDate.year)
-    console.log("end",this.toDate.year)
-    console.log("set",this.choosedataset.controls['set'].value)
-    console.log("sent",this.choosefile.controls['file'].value)
+    this.checkmap = ''
+    this.checkmap = 'check'
     this.select = "Map"
     this.per = "no"
     console.log(this.select)
@@ -113,6 +139,31 @@ export class HomeComponent implements OnInit {
     console.log("end",this.toDate.year)
     console.log("set",this.choosedataset.controls['set'].value)
     console.log("sent",this.choosefile.controls['file'].value)
+    let from_date = new Date(this.fromDate.year,this.fromDate.month,this.fromDate.day)
+    let end_date = new Date(this.toDate.year,this.toDate.month,this.toDate.day)
+    let startyear = String(this.fromDate.year)
+    let startmonth = String(this.fromDate.month)
+    let startday = String(this.fromDate.day)
+    let stopyear = String(this.toDate.year)
+    let stopmonth = String(this.toDate.month)
+    let stopday = String(this.toDate.day)
+    if(startday.length == 1){
+      startday = '0'+startday
+    }
+    if(startmonth.length == 1){
+      startmonth = '0'+startmonth
+    }
+    this.start_date = String(startyear+'-'+startmonth+'-'+startday)
+    if(stopday.length == 1){
+      stopday = '0'+stopday
+    }
+    if(stopmonth.length == 1){
+      stopmonth = '0'+stopmonth
+    }
+    this.stop_date = String(stopyear+'-'+stopmonth+'-'+stopday)
+    console.log("f date : ",this.fromDate.year,this.fromDate.month,startday)
+    console.log("begin : ", from_date,end_date)
+    console.log("sent date : ", this.start_date,this.stop_date)
     this.select = "station"
   }
 
@@ -157,4 +208,6 @@ export class HomeComponent implements OnInit {
     const parsed = this.formatter.parse(input);
     return parsed && this.calendar.isValid(NgbDate.from(parsed)) ? NgbDate.from(parsed) : currentValue;
   }
+
+
 }

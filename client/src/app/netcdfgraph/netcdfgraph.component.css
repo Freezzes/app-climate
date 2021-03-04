@@ -1,0 +1,33 @@
+.space {
+    /* float: right; */
+    /* margin-left: 10px; */
+    width: 400px;
+    height: 400px;
+    background-color: #e1eef7;
+    border-style: solid;
+    border-color: rgb(137, 169, 238);
+    border-radius: 10px;
+    /* margin-left: 10px; */
+    /* padding-top: 10px;
+    padding-left: 2px;
+    padding-right: 2px; */
+    color: #0a61a3;
+    /* justify-content: end; */
+}
+
+.showdata{
+    /* float: left; */
+    /* margin: 40px; */
+    width: 400px;
+    height: 400px;
+    background-color: #e1eef7;
+    border-style: solid;
+    border-color: rgb(137, 169, 238);
+    border-radius: 10px;
+    /* margin-right: 40px; */
+    /* padding-top: 10px;
+    padding-left: 2px;
+    padding-right: 2px; */
+    color: #0a61a3;
+    font-family:'Open Sans', sans-serif;
+  }

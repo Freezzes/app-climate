@@ -11,7 +11,6 @@
     <!-- Bootstrap CSS CDN -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
     <!-- Our Custom CSS -->
-    <!-- <link rel="stylesheet" href="style4.css"> -->
 
     <!-- Font Awesome JS -->
     <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
@@ -142,9 +141,11 @@
                 </li>
             </ul>
         </nav>
-   
-        <div style="margin-bottom: 5%;margin-left: 20%;">
-            <div  *ngIf="select == 'Map'">
+    </div>
+    <div>
+        <div style="flex-direction: column; display: flex; flex-wrap: nowrap;align-items: stretch;justify-content: end;margin-left: 20%;">
+        <div style="flex-direction: column; display: flex;">
+            <div  *ngIf="select == 'Map'" style="float: center;">
                 <app-netcdf [data]="choosedataset.controls['set'].value"
                             [file]="choosefile.controls['file'].value" 
                             [startyear]="this.fromDate.year"
@@ -153,11 +154,13 @@
                             [stopmonth]="this.toDate.month"
                             [per] = "per"></app-netcdf>
             </div>
-            <div  *ngIf="select == 'Map'">
-                <app-netcdfgraph [file]="choosefile.controls['file'].value">
-                </app-netcdfgraph>
-            </div>
+
         </div>
+        <div *ngIf="select == 'Map'" style="margin-top: 31%;margin-left: 0;flex-direction: row; display: flex; flex-wrap: nowrap;width: 100%;">
+            <app-netcdfgraph [file]="choosefile.controls['file'].value">
+            </app-netcdfgraph>
+        </div>
+    </div>
     
         <div class="left" *ngIf="select == 'station'">
             <app-map [file]="choosefile.controls['file'].value" 
