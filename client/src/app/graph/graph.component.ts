@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,Input } from '@angular/core';
 import { TempService } from '../services/temp.service';
-import * as CanvasJS from 'C:/Users/Mewkk/Downloads/canvasjs-3.2.6/canvasjs.min';
+import * as CanvasJS from 'C:/Users/Mewkk/Downloads/canvasjs-3.2.8/canvasjs.min';
 import { ClassGetter } from '@angular/compiler/src/output/output_ast';
 import { map } from 'rxjs/operators';
 import { Chart } from 'chart.js';
 import { from, range } from 'rxjs';
+import * as $ from 'jquery';
 
 @Component({
   selector: 'app-graph',
@@ -13,146 +14,137 @@ import { from, range } from 'rxjs';
   providers: [TempService]
 })
 export class GraphComponent implements OnInit {
+  @Input() data: string;
+  @Input() file: string;
+  @Input() startyear: string;
+  @Input() start_date: string;
+  @Input() stop_date: string
+  @Input() stopyear: string;
+  @Input() startmonth: string;
+  @Input() stopmonth: string;
 
   constructor(
     private tempService: TempService
   ) { }
-
+  
+  public get;
+  public Data;
+  public value_avg;
   public dataTemp;
   public dataMean;
   public dataMeanDB;
   public name = ['Jan','Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov','Dec'];
 
   async ngOnInit() {
-    this.dataTemp = await this.tempService.getTemp();
-    this.dataMean = await this.tempService.getMean();
-    this.dataMeanDB = await this.tempService.getMeanDB();
+    await this.tempService.global_avg(this.data, this.file, this.startyear, this.startmonth, this.stopyear, this.stopmonth)
+    .then(data => data.subscribe(res => {
+      console.log("global",res)
+      var data = Number(this.stopyear)- Number(this.startyear)
+      console.log("dddddd",data)
+      var start = Number(this.startyear)
+      for (var i =0; i<= data; i++){
+        this.Data.dataPoints.push(
+          {x: new Date(start, 0), y: res[0][i]},
+       
+        )
+        start+=1
+      }
+      console.log("point",this.Data.dataPoints)
+      this.plotMean(res[1],res[2])
+    }))
+
+    this.Data = {
+      value:[],
+      dataPoints : []
+    }
+
+    // await this.plotMean()
+    
   }
 
   //---------------------------------------------------------------------------------------------------
 
-  async plotMean() {
-    let dataPoints1 = []
-    let dataPoints2 = []
-    let dataPoints3 = []
-    let dataPoints4 = []
-    this.dataMean.map(u => {
-      u.map( v => {
-        dataPoints1.push({
-          y: v.y2012
-        }),
-        dataPoints2.push({
-          y: v.y2013
-        }),
-        dataPoints3.push({
-          y: v.y2014
-        }),
-        dataPoints4.push({
-          y: v.y2015
-        })
-      })
-    })
-
-    let chart = new CanvasJS.Chart("linechartContainer", {
-      zoomEnabled: true,
-      animationEnabled: true,
-      exportEnabled: true,
-      title: {
-        text: "Averange Temperature of 300201"
+  async plotMean(Avg,unit) {
+    var chart = new CanvasJS.Chart("chartContainer", {
+      animationEnabled: true,  
+      title:{
+        text: "Area averange time series"
       },
-    
-      data: [
-        {
-          type: "line",
-          name: "2012",
-          showInLegend: true,
-          dataPoints: dataPoints1
-        },
-        {
-          type: "line",
-          name: "2013",
-          showInLegend: true,
-          dataPoints: dataPoints2
-        },
-        {
-          type: "line",
-          name: "2014",
-          showInLegend: true,
-          dataPoints: dataPoints3
-        },
-        {
-          type: "line",
-          name: "2015",
-          showInLegend: true,
-          dataPoints: dataPoints4
+      axisY: {
+        title: "Averange temperature",
+        // valueFormatString: "#,,.",
+        suffix: unit,
+        stripLines: [{
+          value: Avg,
+          label: "Average"
         }]
+      },
+      data: [{
+        yValueFormatString: "#.### "+ unit,
+        xValueFormatString: "YYYY",
+        showInLegend: true,
+        type: "line",
+        dataPoints: this.Data.dataPoints
+      }]
     });
     chart.render();
   }
 
-  async plotBar(){
-    let s300201 = [];
-    let s432301 = [];
-    let s583201 = [];
-    await this.dataMeanDB.map(data=>{
-      for ( var station in data) {
-          if(String(station)=="300201"){
-            for (var index in data[300201]) {
-              s300201.push({
-                y:data[300201][index]
-              })
-            }
-          }
-          if(String(station)=="432301"){
-            for (var index2 in data[432301]) {
-              s432301.push({y:data[432301][index2]})
-            }
-          }
-          if(String(station)=="583201"){
-            for (var index3 in data[583201]) {
-              s583201.push({y:data[583201][index3]})
-            }
-          }
+  async datapoint(){
+    await this.tempService.global_avg(this.data, this.file, this.startyear, this.startmonth, this.stopyear, this.stopmonth)
+    .then(data => data.subscribe(res => {
+      console.log("global",res)
+      var data = Number(this.stopyear)- Number(this.startyear)
+      console.log("dddddd",data)
+      for (var i =0; i< data; i++){
+        this.Data.dataPoints.push(
+          {x: new Date(data[i], 0), y: res[0][i]},
+        )
       }
-    })
-    console.log("300201",s300201)
-    console.log("432301",s432301)
-    console.log("583201",s583201)
-    let chart = new CanvasJS.Chart("chartContainer", {
-      zoomEnabled: true,
-      animationEnabled: true,
-      exportEnabled: true,
-      title: {
-        text: "Averange Temperature of 300201"
-      },
-      subtitles: [{
-        text: "Average temperature from 2012 to 2015"
-      }], 
-      axisX: {
-        title: "Month"
-      },
-      data: [
-        {
-          type: "column",
-          name: "2012-2015",
-          dataPoints: s300201,
-          label: s300201,
-        }]
-        // {
-        //   type: "column",
-        //   name: "432301",
-        //   showInLegend: true,
-        //   dataPoints: s432301
-        // },
-        // {
-        //   type: "column",
-        //   name: "583201",
-        //   showInLegend: true,
-        //   dataPoints: s583201
-        // }]
-    });
-    console.log("val", s300201)
-    chart.render();
+    }))
+
+    this.Data = {
+      value:[],
+      dataPoints : []
+    }
+    
+    // function range(start, stop, step) {
+    //   if (typeof stop == 'undefined') {
+    //     // one param defined
+    //     stop = start;
+    //     start = 0;
+    //   }
+    //   if (typeof step == 'undefined') {
+    //     step = 1;
+    //   }
+    //   if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) {
+    //     return [];
+    //   }
+
+    //   var result = [];
+    //   for (var i = start; step > 0 ? i < stop : i > stop; i += step) {
+    //     result.push(i);
+    //   }
+
+    //   return result;
+    // };
+
+    // var data = range(this.startyear, this.stopyear, 1)
+    // var values = [2798000,3386000,6944000,6026000]
+    // var total = 0;
+    // for(var i = 0; i < values.length; i++) {
+    //     total += values[i];
+    // }
+    // var avg = total / values.length;
+    // for (var i =0; i< data.length; i++){
+    //   this.Data.dataPoints.push(
+    //     {x: new Date(data[i], 0), y: values[i]},
+    //   )
+    // }
+    // this.Data.value.push(avg)
+    // console.log("range",data)
+    console.log("datapoints",this.Data.dataPoints)
+    // console.log("Avg",this.Data.value)
   }
 
 }

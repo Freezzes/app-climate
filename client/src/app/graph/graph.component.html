@@ -1,4 +1,4 @@
-<div class="selectzone">
+<!-- <div class="selectzone">
     <div class="pad">
     <select id="file">
         <option value="tmean" selected>Average temperature </option>
@@ -15,7 +15,7 @@
     </select>
     </div>
    <button (click)= "plotMean(); plotBar();"> PLOT </button>
-</div>
+</div> -->
 
 
 
@@ -23,13 +23,15 @@
 <!-- <button (click)=""> PLOT </button> -->
 <!-- <div id="chartContainer" style="height: 370px; width: 50%;"></div> -->
 
-
-<div >
-    <div >
-        <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-        <div id="linechartContainer" style="width: 45%; height: 300px;display: inline-block;"></div> 
-        <div id="chartContainer" style="width: 45%; height: 300px;display: inline-block;"></div>
-
+<div class="main-content">
+    <div class="container-fluid" style="height: inherit;">
+      <div class="col-mb-12">
+        <div class="card" style="margin-top: 1em;width: 40pc">
+            <div class="card-body" style="background-color: rgb(255, 255, 255);"></div>
+                <div id="chartContainer" style="height: 370px; width: 100%; margin-left:auto;margin-right:auto;"></div>
+            </div>
+        </div>
     </div>
-  </div>
+</div>
+
 
