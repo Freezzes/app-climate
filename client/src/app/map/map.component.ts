@@ -1,4 +1,4 @@
-import { Component, OnInit ,AfterViewInit } from '@angular/core';
+import { Component, OnInit ,AfterViewInit, Input } from '@angular/core';
 import { TempService } from '../services/temp.service';
 import { HttpClient, HttpClientModule } from '@angular/common/http'
 import * as L from 'leaflet';
@@ -14,6 +14,7 @@ import {Point} from 'ol/geom';
 import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
 import {useGeographic} from 'ol/proj';
 import * as $ from 'jquery'
+import { Router, ActivatedRoute } from '@angular/router';
 
 useGeographic();
 
@@ -29,25 +30,30 @@ export class MapComponent implements OnInit {
   map: any;
   popup: any;
   datas = ''
+  public checkplot = '';
 
-  constructor(private tempService: TempService) {
+  @Input() file: string;
+  @Input() start_date : String;
+  @Input() stop_date : String;
+ 
+
+  constructor(private tempService: TempService, private router: Router) {
   }
 
   capitals: string = '../../assets/station_input.geojson';
 
-  ngOnInit() {
+  async ngOnInit() {
+    // this.checkplot = 'check'
     console.log("on")
-    // MapLib.mapthai()
-    this.tempService.getdata_sta().subscribe(res => {
-      console.log(MapLib2.map_sta(res))
-      console.log("test ka",MapLib2.station_id);
-      console.log("map result : ",res)
-      // console.log("get id station : ", res)
+    console.log("file : ",this.file)
+    console.log("DATE : ",this.start_date, this.stop_date)
+    await this.tempService.getdata_sta(this.file,String(this.start_date),String(this.stop_date)).then(res => {
+        res.subscribe(datas => {
+          
+          this.map = MapLib2.map_sta(datas)
+        })
   })
+  // this.checkplot = ''
 }
-  test1(){
-    console.log("testttttttttttttt")
-      console.log("test ka",MapLib2.station_id);
-  }
  
 }

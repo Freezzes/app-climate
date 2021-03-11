@@ -3,6 +3,7 @@ import {FormGroup, FormControl,Validators} from '@angular/forms';
 import {NgbDate, NgbCalendar, NgbDateParserFormatter} from '@ng-bootstrap/ng-bootstrap';
 import { Router ,ActivatedRoute} from '@angular/router';
 import { TempService } from 'src/app/services/temp.service';
+// import { RecieveDataService } from './data.service';
 import * as $ from 'jquery';
 
 declare interface RouteInfo {
@@ -40,24 +41,45 @@ export class HomeComponent implements OnInit {
   public verb;
   infile = '';
   model: any;
+  filename = [];
+
   public start_date;
   public stop_date;
 
   public checkmap = '';
 
   dataset_name:Array<Object> = [
-    {id:'CRU', name:'CRU TS'},
-    {id:'station',name:'Stations in Thailand'},
-    {id:'TMD', name:'TMD'},
-    {id:'EC', name:'EC-Earth'},
+    {id:'cru-ts', name:'CRU TS'},
+    {id:'station', name:'TMD'},
+    { id: 'ec-earth3', name: 'EC-Earth' },
+    { id: 'cnrm-esm2-1', name: 'CNRM-ESM2-1' },
+    { id: 'mpi-esm1-2-lr', name: 'MPI-ESM1-2-LR' }
   ];
 
-  filename = [{id:'mean',name:' Average Temperature'},
-    {id:'min',name:'Minimum Temperature'},
-    {id:'max',name:'Maximum Temperature'},
-    {id:'pre',name:'Preciptipation'},
-    {id:'ec', name:'Surface Air Temperature'}]
-  constructor(private router: Router, private route: ActivatedRoute,private calendar: NgbCalendar,public formatter:NgbDateParserFormatter,private tempService: TempService) {
+  filename_cru = [{ id: 'tas', name: 'Averange Temperature' },
+    { id: 'tasmin', name: 'Minimum Temperature' },
+    { id: 'tasmax', name: 'Maximum Temperature' },
+    { id: 'pr', name: 'Preciptipation' }
+  ];
+
+  filename_ec = [{ id: 'pr', name: 'Preciptipation' },
+    { id: 'ps', name: 'surface pressure' },
+    { id: 'ta', name: 'Air Temperature' },
+    { id: 'tas', name: '2m Temperature' },
+    { id: 'tasmin', name: 'daily min 2m Temperature' },
+    { id: 'ua', name: 'eastward wind' },
+    { id: 'va', name: 'northward wind' },
+    { id: 'vas', name: '10V wind' }
+  ];
+
+  constructor(
+    private router: Router, 
+    private route: ActivatedRoute,
+    private calendar: NgbCalendar,
+    public formatter:NgbDateParserFormatter,
+    private tempService: TempService,
+    // private recieveDataService: RecieveDataService
+    ){
    }
 
   choosedataset = new FormGroup({
@@ -68,18 +90,10 @@ export class HomeComponent implements OnInit {
     file: new FormControl()
   });
 
-  North = new FormGroup({
-    file: new FormControl()
-  });
-  West = new FormGroup({
-    file: new FormControl()
-  });
-  East = new FormGroup({
-    file: new FormControl()
-  });
-  South = new FormGroup({
-    file: new FormControl()
-  });
+  North = new FormControl('90', Validators.required);
+  South = new FormControl('-90', Validators.required);
+  West = new FormControl('-180', Validators.required);
+  East = new FormControl('180', Validators.required);
 
   select;
   per;
@@ -128,6 +142,11 @@ export class HomeComponent implements OnInit {
 
   Map(){
     this.checkmap = ''
+    let from_date = String(this.fromDate.year + '-' + this.fromDate.month + '-' + this.fromDate.day)
+    let end_date = new Date(this.toDate.year, this.toDate.month, this.toDate.day)
+    this.start_date = JSON.stringify(this.fromDate)
+    this.stop_date = JSON.stringify(end_date)
+    this.stop_date = this.stop_date.slice(1, 11)
     this.checkmap = 'check'
     this.select = "Map"
     this.per = "no"

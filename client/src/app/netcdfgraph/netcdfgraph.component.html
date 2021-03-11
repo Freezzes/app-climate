@@ -1,16 +1,39 @@
 
-<div style="flex-direction: row;display: flex;flex-wrap: nowrap;margin-top: 40px;">
-  <div class="showdata">
-    <h1> average value per year </h1>
+<div style="display: flex;flex-direction: row;flex-wrap: nowrap;justify-content: center;">
+  <div style="flex-direction: row;display: flex;flex-wrap: nowrap;width: 588px;"> 
+    <div class="main-content">
+      <div class="container-fluid">
+        <div class="col-mb-12">
+          <div class="card" style="width: 580px">
+            <div class="card-body" style="background-color: rgb(255, 255, 255);">
+            </div>
+            <div id="chartContainer" style="height: 400px; width: 500px;">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-<div class="space">
-  <div *ngIf="checkbar=='check'">
-    <highcharts-chart
-      [Highcharts]="highchartsbar" 
-      [options] = "chartOptionsbar" 
-      >
-    </highcharts-chart>
+  <div style="flex-direction: row;display: flex;flex-wrap: nowrap;width: 588px;"> 
+    <div class="main-content">
+        <div class="container-fluid">
+          <div class="col-mb-12">
+            <div class="card" style="width: 580px;">
+              <div class="card-body" style="background-color: rgb(255, 255, 255);">
+              </div>
+                <div *ngIf="checkbar=='check'" style="height: 400px; width: 550px;justify-content: center;">
+                  <highcharts-chart
+                    [Highcharts]="highchartsbar" 
+                    [options] = "chartOptionsbar"
+                    style = "width: 550px; height: 400px; display: block;" 
+                    >
+                  </highcharts-chart>
+                </div>
+            </div>
+          </div>
+        </div>
+    </div>
   </div>
-</div>
+
 </div>

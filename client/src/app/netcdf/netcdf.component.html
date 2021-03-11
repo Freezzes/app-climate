@@ -6,82 +6,224 @@
 
 </head>
 
-<!-- <div class="container-fluid back">
-<div class="selectzone">
-<h3> World map </h3>
-<form role="form" class="form-inline">
-  <form [formGroup]="choosefile"> 
-    <div class="form-group">
-      <label for="file" >Select dataset : </label>
-      <div class="col-sm-5">
-        <select formControlName="file" class="form-control">
-          <option >None</option>
-          <option *ngFor="let f of filename">{{f.name}}</option>
-        </select>
-      </div>
-    </div>
-    </form>
-  </form>
-  <br/>
-  <form class="form-inline">
-    <div class="input-group">  
-      <label >Select Date &nbsp;&nbsp;&nbsp; : </label>
-      <input name="datepicker" id="datepicker" class="form-control1" ngbDatepicker #datepicker="ngbDatepicker"
-        [autoClose]="'outside'" (dateSelect)="onDateSelection($event)" [displayMonths]="2" [dayTemplate]="t"
-        outsideDays="hidden" [minDate]="{year: 1901, month: 1, day: 1}" [startDate]="fromDate!">
-        <ng-template #t let-date let-focused="focused">
-          <span class="custom-day" [class.focused]="focused" [class.range]="isRange(date)"
-            [class.faded]="isHovered(date) || isInside(date)" (mouseenter)="hoveredDate = date"
-            (mouseleave)="hoveredDate = null">
-            {{ date.day }}
-          </span>
-        </ng-template>
-      <div class="form-group col-md-4">
-        <div class="input-group">
-          <input #dpFromDate class="form-control" placeholder="yyyy-mm-dd" name="dpFromDate"
-              [value]="formatter.format(fromDate)" (input)="fromDate = validateInput(fromDate, dpFromDate.value)">
-          <div class="input-group-append">
-              <button class="btn btn-outline-secondary calendar" (click)="datepicker.toggle()" type="button"></button>
+<body>
+  <div *ngIf="per == 'yes'" style="display: flex;flex-direction: row;justify-content: center;">
+    <!-- select year difference-->
+    <div style="display:flex;flex-direction: column; border-color: #0a61a3;border-radius: 4px;border-width: 2px;">
+      <label for="year" style="display: flex;flex-direction: row;">Range year 1</label>
+      <div class="form-group row">
+        <div class="col-sm-6">
+          <div [formGroup]="chooseyear1">
+            <select formControlName="fromyear1" style="max-width:120%;width: 200px;" class="form-control">
+              <option selected>from year</option>
+              <option *ngFor="let f of lists">{{f}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div [formGroup]="chooseyear1">
+            <select formControlName="toyear1" style="max-width:120%;width: 200px" class="form-control">
+              <option selected>to year</option>
+              <option *ngFor="let f of lists">{{f}}</option>
+            </select>
           </div>
         </div>
       </div>
-      <div class="form-group col-md-4">
-        <div class="input-group">
-          <input #dpToDate class="form-control" placeholder="yyyy-mm-dd" name="dpToDate"
-              [value]="formatter.format(toDate)" (input)="toDate = validateInput(toDate, dpToDate.value)">
-          <div class="input-group-append">
-              <button class="btn btn-outline-secondary calendar" (click)="datepicker.toggle()" type="button"></button>
+      <label for="year" style="display: flex;flex-direction: row;">Range year 2</label>
+      <div class="form-group row">
+        <div class="col-sm-6">
+          <div [formGroup]="chooseyear2">
+            <select formControlName="fromyear2" style="max-width:120%;width: 200px" class="form-control">
+              <option selected>from year</option>
+              <option *ngFor="let f of lists">{{f}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div [formGroup]="chooseyear2">
+            <select formControlName="toyear2" style="max-width:120%;width: 200px" class="form-control">
+              <option selected>to year</option>
+              <option *ngFor="let f of lists">{{f}}</option>
+            </select>
           </div>
         </div>
       </div>
-      <button (click)="plotmap();" type="button" class="btn btn-primary">Plot</button>
+      <button type="button" class="btn btn-secondary" (click)="plot_per()"><i class="fas fa-map-marked-alt"></i>        
+        Plot
+      </button>
     </div>
-  </form>
-</div>
-</div> -->
-<!-- <app-home></app-home> -->
-<!-- <div class="selectzone">
-  <p><B>{{input_ds}} {{lenght_y}} {{years}}</B></p>
-</div> -->
 
-<!-- <p>{{input_ds}}{{verb}} {{lenght_y}} </p> -->
-<div class="form-group row">
-<div class="col-sm-8">
-  <div id="map" class="map" ></div>
-  <div class="selectzone">
-    <div class="info">
-      <svg class="legend" width="600" height="30"></svg>
+
+  </div>
+
+  <!-- per -->
+<div *ngIf="per == 'yes'">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-globe-americas"></i>
+          Year {{start1}}-{{stop1}}
+          <br>
+          <div class="small text-muted">Metadat</div>
+        </div>
+        <div class="card-body" style="background-color: rgb(255, 255, 255);">
+          <div class="row">
+            <!-- <div class="col-sm-8"> -->
+              <div id="map1" class="map_per"></div>
+              <!-- <div class="info" style="opacity: 0.8;">
+                <svg class="legend" width="1000" height="30" style="margin-top: 1em;"></svg>
+              </div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-globe-americas"></i>
+          Year {{start2}}-{{stop2}}
+          <br>
+          <div class="small text-muted">Metadat</div>
+        </div>
+        <div class="card-body" style="background-color: rgb(255, 255, 255);">
+          <div class="row">
+            <!-- <div class="col-sm-8"> -->
+              <div id="map2" class="map_per"></div>
+              <!-- <div class="info" style="opacity: 0.8;">
+                <svg class="legend" width="1000" height="30" style="margin-top: 1em;"></svg>
+              </div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <div class="row row-cols-1 row-cols-md-2">
+    <div class="col-md-8">
+      <div class="card" >
+        <div class="card-header">
+          <i class="fas fa-globe-americas"></i>
+          Percent Different 
+          <br>
+        </div>
+        <div class="card-body" style="background-color: rgb(255, 255, 255);">
+          <div class="row">
+            <div id="per" class="map"></div>
+            <div class="info" style="opacity: 0.8;">
+              <svg class="legend" width="1000" height="30" style="margin-top: 1em;"></svg>
+            </div>
+            <!-- </div> -->
+            <div class="col-sm-2 my-auto" style="margin-left: 2%;" *ngIf="type=='per'">
+              <svg id="my_dataviz3" height=300 width=450></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+    <div class="col-md-4">
+      <div class="card" >
+        <div class="card-header">
+          <i class="fas fa-globe-americas"></i>
+          Dataset & Index Detail
+        </div>
+        <div class="card-body" style="background-color: rgb(255, 255, 255);">
+          <h6><B>Dataset &nbsp; &nbsp; &nbsp;&nbsp; : </B>{{data}}</h6>
+          <h6><B>long name &nbsp; :</B> {{long_name}}</h6>
+          <h6><B>description &nbsp;:</B> {{difinition}}</h6>
+          <h6><B>unit &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :</B> {{unit}}</h6>
+          <h6><B>Year &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;:</B> {{year}}</h6>
+        </div>
+      </div>
     </div>
   </div>
 </div>
-  <div class="dat">
-    <p><B> Selected Country: </B><span id="selectedCountryName" style="color:rgb(255, 168, 7);font-weight:bold"></span> </p> 
-    <p><B>Minimum {{input_ds}}: </B> <span id="selectedCountryMin" style="color:blue;font-weight:bold"></span> </p>
-    <p><B>Maximum {{input_ds}}: </B> <span id="selectedCountryMax" style="color:red;font-weight:bold"></span> </p>
+
+  <div *ngIf="per == 'no'">
+    <div class="h1">
+      <!-- <h1> {{data}} Index Range year</h1> -->
+    </div>
+
+    <div style="display: flex;flex-direction: row;justify-content: center;height: 500px;">
+      <div style="display: flex; flex-wrap: nowrap;align-items: stretch;justify-content: flex-start;">
+        <div class="col-mb-12">
+          <div class="card" style="margin-top: 1em;">
+            <div class="card-header">
+              <i class="fas fa-globe-americas"></i>
+              Map
+            </div>
+            <div class="card-body" style="background-color: rgb(255, 255, 255);">
+              <div id="map" class="map" style="flex-direction: column; display: flex;">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <div style="display: flex;flex-direction: column;">
+    <div style="display: flex;flex-direction: column;flex-wrap: nowrap;justify-content: flex-start;" >
+      <div style="flex-direction: column; display: flex;flex-wrap: nowrap;width: 30vw;">
+        <div class="col-mb-12">
+          <div class="card" style="margin-top: 1em;">
+            <div class="card-header">
+              <i class="fas fa-info"></i>
+              Dataset & Index Detials
+            </div>
+            <div class="card-body">
+              <div>
+                <h5><B>Dataset :&nbsp;</B>{{data}}</h5>
+                <h6><B>long name &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;:</B> {{long_name}}</h6>
+                <h6><B>description &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;:</B> {{difinition}}</h6>
+                <h6><B>unit &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;:</B> {{unit}}</h6>
+                <h6><B>Year &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;:</B> {{year}}</h6>
+              </div>
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="flex-direction: column; display: flex;flex-wrap: nowrap;justify-content: flex-end;">
+          <div class="col-mb-12">
+            <div class="card" style="margin-top: 1em;">
+              <div class="card-header">
+                <i class="fas fa-info"></i>
+                Selected Country Details
+              </div>
+                <div>
+
+                  <div>
+                    <div class="h6 mb-0 text-warning" >Country:   
+                        <span class="small text-muted" id="selectedCountryName" style="color:rgb(255, 168, 7);font-weight:bold"></span>             
+
+                    </div>
+                    <hr>
+                    <div class="h6 mb-0 text-success">Minimum : 
+                      <div class="small text-muted">
+                        <span id="selectedCountryMin" style="color:blue;font-weight:bold"></span> 
+                      </div>
+                    </div>
+                    
+                    <div class="h6 mb-0 text-success">Maximum : 
+                      <div class="small text-muted">
+                        <span id="selectedCountryMax" style="color:red;font-weight:bold"></span>
+                      </div> 
+                    </div>
+    
+                  </div>              
+                </div>
+              </div>
+              </div>
+            </div>
+      
+    </div>
+
+
+
+    </div>
   </div>
+ 
+</body>
 
-</div>
 
-<div>
-{{file}}
-</div>

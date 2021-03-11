@@ -179,7 +179,6 @@ a, a:hover, a:focus {
 
 #sidebar ul.components {
     padding: 20px 0;
-    border-bottom: 1px solid#5492cd;
 }
 
 #sidebar ul p {
@@ -263,8 +262,6 @@ ul ul a {
   left: 0;
   bottom: 0;
   background-color: #111;
-  /* overflow-x: hidden; */
-  /* padding-top: 3px; */
 }
 .sidenav a, .dropdown-btn {
   padding: 6px 8px 6px 16px;
@@ -277,7 +274,7 @@ ul ul a {
   border-width: thick;
   border-width: thick,100px;
   background: none;
-  width: 100%;
+  /* width: 100%; */
   text-align: left;
   cursor: pointer;
   outline: none;
@@ -292,11 +289,9 @@ ul ul a {
 } 
 button.buttongrid{
   color: rgb(255, 255, 255);
-  border-color: rgb(201, 216, 245);
-  background-color: #0a61a3;
+  border-color: #0a61a3;
+  background-color: #0a61a3f8;
   text-align: center;
-  size: 600px;
-  display: inline-block;
   border-radius: 5px;
   transition: all;
   width: 75px;
@@ -366,11 +361,59 @@ button.buttongridselect{
 	float:left;
   width:30%;
 }
+.flex-container{
+  display: flex;
+  flex-direction: column; 
+  height:100%;
+  border: darkred ,2px;
+  align-items: stretch;
+  justify-content: space-around;
+}
+.child-container { 
+  display: flex; 
+  flex-direction: row; 
+  align-items: stretch;
+  background-color: khaki;
+  
+}
+.menu { 
+  display: flex;
+  flex-grow: 0; 
+  padding: 10px;
+  background-color: #d5e4f3;
+  flex-direction: column;
+  width: 250px;
+  color: #0a61a3;
+  z-index: 1;
+  top: 0;
+  bottom: 0;
+  min-height: 100vh;
+  position: relative;
+} 
+.center{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  font-family: 'Open Sans', sans-serif;
+  color: #0a61a3;
+  font-weight: bold;
+  font-size: x-large;
+}
+.justify-content{
+  justify-content: start;
+  align-items: stretch;
+  display: flex;
+  flex-wrap: nowrap;
 
-.up
-{
-	float:left;
-  clear: both;
-	width:100%;
-	background-color:#bff00e;
+}
+.label{
+  display: flex;
+  align-items: flex-start;
+  background-color: lightgreen;
+}
+.content {    
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; 
+  justify-content: center;
 }

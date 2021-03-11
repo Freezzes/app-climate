@@ -1,57 +1,14 @@
 import { Injectable } from '@angular/core'
 import { HttpClient, HttpClientModule } from '@angular/common/http'
 import { Observable } from 'rxjs'
-import { Temp, Plot, meanplot, station5, st, Missing, Boxplotval } from '../interfaces/temp.interface'
+import { Temp, Plot, meanplot, station5, st, Missing, Boxplotval, data_test, data_db,data_sta, grid } from '../interfaces/temp.interface'
 import { from } from 'rxjs'
-import { data_test, data_db,data_sta} from '../interfaces/temp.interface'
 @Injectable()
 export class TempService {
     constructor(private http: HttpClient) { }
 
-    async getTemp(): Promise<Temp[]> {
-        let result = [];
-        this.http.get<Temp[]>('http://127.0.0.1:5500/api/tmean')
-            .subscribe(res => {
-                result.push(res);
-            })
-        return result;
-    }
 
-    async getMean(): Promise<Plot[]> {
-        let result = [];
-        this.http.get<Plot[]>('http://127.0.0.1:5500/api/plot')
-            .subscribe(res => {
-                result.push(res);
-            })
-        return result;
-    }
 
-    async getMeanDB(): Promise<meanplot[]> {
-        let result = [];
-        this.http.get<meanplot[]>('http://127.0.0.1:5500/api/meantem')
-            .subscribe(res => {
-                result.push(res);
-            })
-        return result;
-    }
-
-    async getrain(): Promise<station5[]> {
-        let result = [];
-        this.http.get<station5[]>('http://127.0.0.1:5500/api/rain')
-            .subscribe(res => {
-                result.push(res);
-            })
-        return result;
-    }
-
-    async getstation(): Promise<st[]> {
-        let result = [];
-        this.http.get<st[]>('http://127.0.0.1:5500/api/station')
-            .subscribe(res => {
-                result.push(res);
-            })
-        return result;
-    }
 
     async getrangeyear(station:string,startyear:string,endyear:string,startmonth:string,endmonth:string,startday:string,endday:string):Promise<Observable<any>> {   
         return this.http.get('http://127.0.0.1:5500/api' +
@@ -95,26 +52,68 @@ export class TempService {
         )
     }
 
+    async getanomalync(filename:string){
+        return this.http.get('http://127.0.0.1:5500' +
+                            `/api/anomalyNC?filename=${filename}`)
+    }
+
     getData(){
         return this.http.get('http://127.0.0.1:5500/api/missing')
     }
 
-    async get_testnc_csv(df_f:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string):Promise<Observable<any>> {
+
+    async nc_defer(df_f:string,start1:string,stop1:string,start2:string,stop2:string):Promise<Observable<any>> {
         return this.http.get('http://127.0.0.1:5500' +
-        `/nc_csv?df_f=${df_f}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`);
+        `/nc_defer?df_f=${df_f}&start1=${start1}&stop1=${stop1}&start2=${start2}&stop2=${stop2}`);
     }
 
-    async get_Avgcsv(df_f:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string):Promise<Observable<any>> {
+    async nc_per(ncfile:string,df_f:string,start1:string,stop1:string,start2:string,stop2:string):Promise<Observable<any>> {
         return this.http.get('http://127.0.0.1:5500' +
-        `/nc_Avg?df_f=${df_f}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`);
+        `/nc_per?ncfile=${ncfile}&df_f=${df_f}&start1=${start1}&stop1=${stop1}&start2=${start2}&stop2=${stop2}`
+        ,{responseType:"text"});
     }
 
-    getdata_sta(): Observable<data_sta[]>{
-        const response = this.http.get<data_sta[]>('http://127.0.0.1:5500/locat/station');
-        console.log("service",response);
-        return response;
+    async get_Avgcsv(ncfile:string,df_f:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string){
+        const response = this.http.get('http://127.0.0.1:5500' +
+        `/nc_avg?ncfile=${ncfile}&df_f=${df_f}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`
+        ,{responseType:"text"});
+        return response
+    }
+    async getdata_sta(df_f:string,startdate:string,stopdate:string): Promise<Observable<any>>{
+        return this.http.get('http://127.0.0.1:5500'+ `/locat/station?df_f=${df_f}&startdate=${startdate}&stopdate=${stopdate}`)
     }
 
+    async get_detail(dataset:string,index:string){
+        const response = this.http.get('http://127.0.0.1:5500/'+`api/detail_index?dataset=${dataset}&index=${index}`,{responseType:"text"})
+        // console.log("service_detail", response)
+        return response
+    }
+    async get_data_flask(dataset:string,index:string,startyear:string,startmonth:string,stopyear:string,stopmonth:string){
+        const response = this.http.get('http://127.0.0.1:5500/'+
+            `/api/data_avg?dataset=${dataset}&index=${index}&startyear=${startyear}&startmonth=${startmonth}&stopyear=${stopyear}&stopmonth=${stopmonth}`
+            ,{responseType:"text"}
+            )
+        return response
+    }
+    async data_dif(dataset:string,index:string,start1:string,stop1:string,start2:string,stop2:string):Promise<Observable<any>> {
+        return this.http.get('http://127.0.0.1:5500' +
+        `/api/data_dif?dataset=${dataset}&index=${index}&start1=${start1}&stop1=${stop1}&start2=${start2}&stop2=${stop2}`);
+    }
+    async get_hire(ncfile:string,df_f:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string){
+        const response = this.http.get('http://127.0.0.1:5500' +
+        `/nc_avg_hire?ncfile=${ncfile}&df_f=${df_f}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`
+        ,{responseType:"text"});
+        return response
+    }
 
+    async global_avg(dataset:string,index:string,startyear:string,startmonth:string,stopyear:string,stopmonth:string){
+        const response = this.http.get('http://127.0.0.1:5500' + 
+        `/api/global_avg?dataset=${dataset}&index=${index}&startyear=${startyear}&startmonth=${startmonth}&stopyear=${stopyear}&stopmonth=${stopmonth}`)
+        return response
+    }
 
+    async detail(dataset:string,index:string):Promise<Observable<any>> {
+        return this.http.get('http://127.0.0.1:5500' +
+        `/api/detail?dataset=${dataset}&index=${index}`);
+    }
 }

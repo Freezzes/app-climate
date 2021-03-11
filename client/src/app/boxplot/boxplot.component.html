@@ -1,119 +1,47 @@
 <head>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
-  <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
-<style>
-.up
-{
-	float:center;
-	width:300px;
-	background-color:#bff00e;
-}
-.right
-{
-	float:right;
-	width:20%;
-}
-.left
-{
-	float:left;
-	width:80%;
-}
-</style>
 </head>
 <body>
-  <!-- <form [formGroup]="myForm">
-    <ng-multiselect-dropdown
-        name="city"
-        [placeholder]="'Select Station'"
-        [settings]="dropdownSettings"
-        [data]="station"
-        formControlName="city"
-        [disabled]="disabled"
-        (onSelect)="onItemSelect($event)"
-        (onSelectAll)="onSelectAll($event)">
-    </ng-multiselect-dropdown>
-  </form> -->
 
-<!-- <div class="form-group hidden">
-  <div class="input-group" style="margin-top: 3em;">
-      <label >Select Date : </label>
-      <input name="datepicker" id="datepicker" class="form-control1" ngbDatepicker #datepicker="ngbDatepicker"
-          [autoClose]="'outside'" (dateSelect)="onDateSelection($event)" [displayMonths]="2" [dayTemplate]="t"
-          outsideDays="hidden" [minDate]="{year: 1951, month: 1, day: 1}" [startDate]="fromDate!">
-      <ng-template #t let-date let-focused="focused">
-          <span class="custom-day" [class.focused]="focused" [class.range]="isRange(date)"
-              [class.faded]="isHovered(date) || isInside(date)" (mouseenter)="hoveredDate = date"
-              (mouseleave)="hoveredDate = null">
-              {{ date.day }}
-          </span>
-      </ng-template>
-  </div>
-</div>
-<form class="form-inline">
-  
-  <div class="form-group">
-      <div class="input-group">
-          <input #dpFromDate class="form-control" placeholder="yyyy-mm-dd" name="dpFromDate"
-              [value]="formatter.format(fromDate)" (input)="fromDate = validateInput(fromDate, dpFromDate.value)">
-          <div class="input-group-append">
-              <button class="btn btn-outline-secondary calendar" (click)="datepicker.toggle()" type="button"></button>
-          </div>
-      </div>
-  </div>
-  <div class="form-group ml-2">
-      <div class="input-group">
-          <input #dpToDate class="form-control" placeholder="yyyy-mm-dd" name="dpToDate"
-              [value]="formatter.format(toDate)" (input)="toDate = validateInput(toDate, dpToDate.value)">
-          <div class="input-group-append">
-              <button class="btn btn-outline-secondary calendar" (click)="datepicker.toggle()" type="button"></button>
-          </div>
-      </div>
-  </div>
-</form> -->
-
-<form [formGroup]="choosetype"> 
-  <div class="form-group">
-    <label for="type">How to show boxplot : </label>
-    <select formControlName="type" class="form-control">
-      <option >-</option>
-      <option *ngFor="let t of typename">{{t.name}}</option>
-    </select>
-  </div>
-  </form>
-
-<br>
+  <div style="flex-direction: column; display: flex;flex-wrap: wrap;align-items: stretch;">
+  <form [formGroup]="choosetype"> 
+    <div class="form-group">
+      <label for="type">How to show boxplot : </label>
+      <select formControlName="type" class="form-control">
+        <option >-</option>
+        <option *ngFor="let t of typename">{{t.name}}</option>
+      </select>
+    </div>
+    </form>
 
   <div class="space">
     <button type="button" (click)="getstationcode();selectmiss();plotbar();">PLOT</button>
   </div>
 
-  <!-- <div class="space">
-    <button type="button" (click)="testget();">TEST</button>
-  </div> -->
+    <div style="flex-direction:row;display: flex;flex-wrap: nowrap;height: 300px;" *ngIf="checkbox=='check'">
+        <highcharts-chart
+          [Highcharts]="highcharts" 
+          [options] = "chartOptions">
+        </highcharts-chart>
+    </div>
 
-  <div class="left" *ngIf="checkbox=='check'">
+    <div style="flex-direction:row;display: flex;flex-wrap: nowrap;align-items: stretch;height: 300px;" *ngIf="checkbar=='check'">
       <highcharts-chart
-        [Highcharts]="highcharts" 
-        [options] = "chartOptions" 
+        [Highcharts]="highchartsbar" 
+        [options] = "chartOptionsbar">
+      </highcharts-chart>
+    </div>
+  </div>
+
+
+    <div *ngIf="checkmiss=='check'">
+      <highcharts-chart
+        [Highcharts]="highcharts1" 
+        [options] = "chartOptions1" 
         style = "width: 100%; height: 500px; display: block;">
       </highcharts-chart>
-  </div>
+    </div>
 
-  <div class="right" *ngIf="checkmiss=='check'">
-    <highcharts-chart
-      [Highcharts]="highcharts1" 
-      [options] = "chartOptions1" 
-      style = "width: 100%; height: 500px; display: block;">
-    </highcharts-chart>
-</div>
-
-  <div class="space" *ngIf="checkbar=='check'">
-    <highcharts-chart
-      [Highcharts]="highchartsbar" 
-      [options] = "chartOptionsbar" 
-      style = "width: 100%; height: 500px; display: block;">
-    </highcharts-chart>
-  </div>
 
 
 </body>

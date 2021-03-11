@@ -195,6 +195,20 @@ export interface Boxplotval{
     value : any
     outliers : any
 }
+export interface NC_csv{
+    lat : any
+    lon : any
+    temp : any
+    year : any
+    month : any
+}
+export interface NC_Avg{
+    lat : any
+    lon : any
+    temp : any
+    year : any
+    month : any
+}
 export interface NC_ec{
     lat : any
     lon : any
@@ -209,10 +223,7 @@ export interface data_test{
 }
 
 export interface data_db{
-    dataset : string
-    grid : number
-    year : number
-    geo: any
+    values : any
 }
 
 export interface data_sta{
@@ -220,4 +231,11 @@ export interface data_sta{
     name : string
     lat : number
     lon: number
+}
+
+export interface grid{
+    geo : any
+    lon : number
+    lat : number
+    size: number
 }

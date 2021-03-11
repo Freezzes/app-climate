@@ -14,7 +14,7 @@ import Plotly from 'plotly.js-dist'
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import * as MapLib2 from '../map/lib/map_station';
 
-highheat(Highcharts);
+// highheat(Highcharts);
 HighchartsMore(Highcharts);
 
 @Component({
@@ -89,8 +89,7 @@ export class BoxplotComponent implements OnInit {
   //   {id:'max',name:'Maximum Temperature'},
   //   {id:'pre',name:'Preciptipation'}]
 
-  typename = [{id:'month',name:'รายเดือน'},
-    {id:'season',name:'รายฤดู'},
+  typename = [{id:'season',name:'รายฤดู'},
     {id:'year',name:'รายปี'},
     {id: 'era',name:'ราย 10 ปี'}]
 
@@ -404,11 +403,12 @@ export class BoxplotComponent implements OnInit {
         res => { 
           this.anomaly.push(res[0])
           this.anomaly_year.push(res[1])
+          this.anomaly_name.push(res[2])
           this.anomaly.map(u=>{
             
             for (let v in u){
-              this.anomaly_name.push(v)
-              console.log(v,"v")
+              // this.anomaly_name.push(v.slice(2,10))
+              console.log("v name ",v.split(" "))
               for (let i in u[v]){
                 if(String(u[v][i]) == String("-")){
                     u[v][i] = null
@@ -514,7 +514,7 @@ export class BoxplotComponent implements OnInit {
            rotation: -90,
           step:1,
            style: {
-               fontSize:'10px'
+               fontSize:'13px'
             }
         }
      },
@@ -574,7 +574,7 @@ export class BoxplotComponent implements OnInit {
       },     
       series: [
          {
-            name: this.stationan,
+            name: this.anomaly_name,
             data: this.anomalydata,
             zones: [{
                 value: -0,

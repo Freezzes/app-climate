@@ -72,25 +72,23 @@ export class SelectplotComponent implements OnInit {
   ];
 
     async ngOnInit() {
-      this.dataTemp = await this.tempService.getTemp();
-      this.dataMean = await this.tempService.getMean();
-      this.dataMeanDB = await this.tempService.getMeanDB();
+
     }
 
-    async showcsv(){
-      this.startyear = String(this.fromDate.year)
-      this.startmonth = String(this.fromDate.month)
-      this.stationyear = this.stationselected
-      this.stopyear = String(this.toDate.year)
-      this.stopmonth = String(this.toDate.month)
-      await this.tempService.getrangecsv(this.stationyear,this.startyear,this.stopyear,this.startmonth,this.stopmonth).then(data => data.subscribe(
-        res => { 
-        this.dataplotcsv = [];
-          this.dataplotcsv.push(res)
-        }
-      ))
-      console.log("start: ",this.dataplotcsv,this.stationyear)
-    }
+    // async showcsv(){
+    //   this.startyear = String(this.fromDate.year)
+    //   this.startmonth = String(this.fromDate.month)
+    //   this.stationyear = this.stationselected
+    //   this.stopyear = String(this.toDate.year)
+    //   this.stopmonth = String(this.toDate.month)
+    //   await this.tempService.getrangecsv(this.stationyear,this.startyear,this.stopyear,this.startmonth,this.stopmonth).then(data => data.subscribe(
+    //     res => { 
+    //     this.dataplotcsv = [];
+    //       this.dataplotcsv.push(res)
+    //     }
+    //   ))
+    //   console.log("start: ",this.dataplotcsv,this.stationyear)
+    // }
   
     onDateSelection(date: NgbDate) {
       if (!this.fromDate && !this.toDate) {
