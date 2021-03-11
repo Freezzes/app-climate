@@ -9,6 +9,10 @@
     background-color: #a4e5ff;
     /* background-size: 10cm; */
   }
+  .map_per{
+    width: 40vw;
+    height: auto;
+  }
   .map{
     width: 52vw;
     height: 60vh;
@@ -84,4 +88,8 @@
     height: 100%;
     width: 100%;
   }
+
+  /* .cards-container {
+    column-count: 2;
+  } */
   

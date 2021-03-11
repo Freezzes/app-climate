@@ -95,6 +95,8 @@ export function select_country(targetMap, mode) {
     if (layers.get('name') === 'lowres_data') {
       features = layers.getSource().getFeatures()
       console.log("fea",features)
+    } else if (layers.get('name') === 'datalayer'){
+      features = layers.getSource().getFeatures()
     } else if (layers.get('name') === 'baseLayer') {
       baselayer = layers
       console.log("base",baselayer)
@@ -125,6 +127,7 @@ export function select_country(targetMap, mode) {
   select.on('select', function(e) {
     var selectedCountry = e.selected[0];
     var poly = e.selected[0].getGeometry()
+    console.log("geometry",poly)
     var valueArr = [];
 
     if (selectedCountry != undefined){
@@ -201,6 +204,7 @@ export function genGridData(geojson, min, max, color_map, lon_step,lat_step,type
   console.log("min",min)
   console.log("max",max)
   console.log("color", color_map)
+  console.log(geojson)
 
   if (color_map == 'cool_warm') {
     if(type == 'main'){
@@ -597,5 +601,24 @@ export function setResolution(map,North,South, West, East){
   });
 }
 
+export function setzoom(map){
+  // console.log(map.getLayers())
+  // console.log(map.getView())
+  // console.log("-----",West,East,North,South)
+  map.getLayers().forEach(function (layer) {
+    if (layer.get('name') == 'lowres_data') {
+      console.log("<<<<<<<Low>>>>>>>>>>")
+      layer.set('minZoom', 0.001)
+      layer.set('zoom',0.001)
+      layer.set('maxZoom', 4)
+      map.getView().setZoom(1);
+      // layer.set('extent', [Number(West),Number(North),Number(East),Number(South)])
+      // map.getView().setCenter([((Number(West) + Number(East))/2),((Number(North)+Number(South))/2)])
+      // layer.set('extent', [West,North,East,South])
+      // layer.set('center', [((Number(West) + Number(East))/2),((Number(North)+Number(South))/2)])
+    }
+
+  });
+}
 
 

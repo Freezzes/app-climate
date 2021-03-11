@@ -61,100 +61,147 @@
           </div>
         </div>
       </div>
-      <button type="button" class="btn btn-secondary" (click)="different()"><i class="fas fa-map-marked-alt"></i>
+      <button type="button" class="btn btn-secondary" (click)="plot_per()"><i class="fas fa-map-marked-alt"></i>
         Plot</button>
     </div>
   </div>
 </div>
 
-
-
-<div class="main-content">
-  <div class="container-fluid" style="height: inherit;">
-    <div class="col-mb-12">
-      <div class="card" style="margin-top: 1em;width:68%">
-        <!-- map -->
+<!-- per -->
+<div *ngIf="per == 'yes'">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card">
         <div class="card-header">
           <i class="fas fa-globe-americas"></i>
-          World Map
+          Year {{start1}}-{{stop1}}
           <br>
           <div class="small text-muted">Metadat</div>
         </div>
         <div class="card-body" style="background-color: rgb(255, 255, 255);">
           <div class="row">
             <!-- <div class="col-sm-8"> -->
-              <div id="map" class="map"></div>
-              <div class="info" style="opacity: 0.8;">
+              <div id="map1" class="map_per"></div>
+              <!-- <div class="info" style="opacity: 0.8;">
                 <svg class="legend" width="1000" height="30" style="margin-top: 1em;"></svg>
-              </div>
+              </div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-globe-americas"></i>
+          Year {{start2}}-{{stop2}}
+          <br>
+          <div class="small text-muted">Metadat</div>
+        </div>
+        <div class="card-body" style="background-color: rgb(255, 255, 255);">
+          <div class="row">
+            <!-- <div class="col-sm-8"> -->
+              <div id="map2" class="map_per"></div>
+              <!-- <div class="info" style="opacity: 0.8;">
+                <svg class="legend" width="1000" height="30" style="margin-top: 1em;"></svg>
+              </div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <div class="row row-cols-1 row-cols-md-2">
+    <div class="col-md-8">
+      <div class="card" >
+        <div class="card-header">
+          <i class="fas fa-globe-americas"></i>
+          Percent Different 
+          <br>
+        </div>
+        <div class="card-body" style="background-color: rgb(255, 255, 255);">
+          <div class="row">
+            <div id="per" class="map"></div>
+            <div class="info" style="opacity: 0.8;">
+              <svg class="legend" width="1000" height="30" style="margin-top: 1em;"></svg>
+            </div>
             <!-- </div> -->
             <div class="col-sm-2 my-auto" style="margin-left: 2%;" *ngIf="type=='per'">
               <svg id="my_dataviz3" height=300 width=450></svg>
             </div>
-            <div class="col-sm-4 text-muted my-auto">
-                <div class="h6 mb-0 text-primary">
-                  <h5><B>Dataset :&nbsp;</B>{{data}}</h5>
-                  <h6><B>long name &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;:</B> {{long_name}}</h6>
-                  <h6><B>description &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;:</B> {{difinition}}</h6>
-                  <h6><B>unit &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;:</B> {{unit}}</h6>
-                  <h6><B>Year &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;:</B> {{year}}</h6>
-                </div>
-                <hr>
-                <div class="h6 mb-0 text-warning" >Country:   </div>
-                  <span class="small text-muted" id="selectedCountryName" style="color:rgb(255, 168, 7);font-weight:bold"></span>             
-                <hr>
-                <div class="h6 mb-0 text-success">Minimum : </div>
-                <div class="small text-muted">
-                  <span id="selectedCountryMin" style="color:blue;font-weight:bold"></span> 
-                </div>
-                
-                <div class="h6 mb-0 text-success">Maximum : </div>
-                <div class="small text-muted">
-                  <span id="selectedCountryMax" style="color:red;font-weight:bold"></span>
-                </div>                
-              </div>
           </div>
         </div>
       </div>
-      <!-- anomaly -->
-      <!-- <div *ngIf="per != 'yes'">
-        <div class="card" style="margin-top: 1em;width: 61.5rem;">
+    </div>
+    <br>
+    <div class="col-md-4">
+      <div class="card" >
+        <div class="card-header">
+          <i class="fas fa-globe-americas"></i>
+          Dataset & Index Detail
+        </div>
+        <div class="card-body" style="background-color: rgb(255, 255, 255);">
+          <h6><B>Dataset &nbsp; &nbsp; &nbsp;&nbsp; : </B>{{data}}</h6>
+          <h6><B>long name &nbsp; :</B> {{long_name}}</h6>
+          <h6><B>description &nbsp;:</B> {{difinition}}</h6>
+          <h6><B>unit &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :</B> {{unit}}</h6>
+          <h6><B>Year &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;:</B> {{year}}</h6>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="per != 'yes'">
+  <div class="main-content">
+    <div class="container-fluid" style="height: inherit;">
+      <div class="col-mb-12">
+        <div class="card" style="margin-top: 1em;width:68%">
+          <!-- map -->
           <div class="card-header">
-            <i class="fas fa-globe-americas"></i> 
-              Anomaly
+            <i class="fas fa-globe-americas"></i>
+            World Map
             <br>
-            <div class="small text-muted">Metadat</div>
           </div>
           <div class="card-body" style="background-color: rgb(255, 255, 255);">
             <div class="row">
-              <div class="col-sm-8">
-                <div id="map" class="map" ></div>
+              <!-- <div class="col-sm-8"> -->
+                <div id="map" class="map"></div>
+                <div class="info" style="opacity: 0.8;">
+                  <svg class="legend" width="1000" height="30" style="margin-top: 1em;"></svg>
+                </div>
+              <!-- </div> -->
+              <div class="col-sm-2 my-auto" style="margin-left: 2%;" *ngIf="type=='per'">
+                <svg id="my_dataviz3" height=300 width=450></svg>
               </div>
               <div class="col-sm-4 text-muted my-auto">
-                <div class="h6 mb-0 text-primary">
-                  <h5><B>Dataset :&nbsp;</B>{{data}}</h5>
-                  <h6><B>Year &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;:</B> {{range_y}}</h6>
+                  <div class="h6 mb-0 text-primary">
+                    <h5><B>Dataset :&nbsp;</B>{{data}}</h5>
+                    <h6><B>long name &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;:</B> {{long_name}}</h6>
+                    <h6><B>description &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;:</B> {{difinition}}</h6>
+                    <h6><B>unit &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;:</B> {{unit}}</h6>
+                    <h6><B>Year &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;:</B> {{year}}</h6>
+                  </div>
+                  <hr>
+                  <div class="h6 mb-0 text-warning" >Country:   </div>
+                    <span class="small text-muted" id="selectedCountryName" style="color:rgb(255, 168, 7);font-weight:bold"></span>             
+                  <hr>
+                  <div class="h6 mb-0 text-success">Minimum : </div>
+                  <div class="small text-muted">
+                    <span id="selectedCountryMin" style="color:blue;font-weight:bold"></span> 
+                  </div>
+                  
+                  <div class="h6 mb-0 text-success">Maximum : </div>
+                  <div class="small text-muted">
+                    <span id="selectedCountryMax" style="color:red;font-weight:bold"></span>
+                  </div>                
                 </div>
-                <hr>
-                <div class="h6 mb-0 text-warning" >Country:   </div>
-                  <span class="small text-muted" id="selectedCountryName" style="color:rgb(255, 168, 7);font-weight:bold"></span>                
-                <hr>
-                <div class="h6 mb-0 text-success">Minimum {{input_ds}}: </div>
-                <div class="small text-muted">
-                  <span id="selectedCountryMin" style="color:blue;font-weight:bold"></span> 
-                </div>
-                
-                <div class="h6 mb-0 text-success">Maximum {{input_ds}}: </div>
-                <div class="small text-muted">
-                  <span id="selectedCountryMax" style="color:red;font-weight:bold"></span>
-                </div>                
-              </div>
-            </div>  
+            </div>
           </div>
         </div>
-      </div> -->
+      </div>
     </div>
   </div>
+</div>
 
   <!-- <div class="showmap">
   <div class="form-group row">

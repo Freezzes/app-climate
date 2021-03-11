@@ -70,7 +70,8 @@ def nc_per():
         val = np.mean(val, axis = 0)#.flatten()
         V.append(val)
     res = np.nanmean(V[:], axis = 0)#.flatten()
-    # resp = np.where(np.isnan(res), None, res)
+    range1 = res.flatten()
+    val1 = np.where(np.isnan(range1), None, range1)
 
     V1 = []
     for i in range(len(f[1])):
@@ -79,7 +80,9 @@ def nc_per():
         val = np.mean(val, axis = 0)#.flatten()
         V1.append(val)
     res1 = np.nanmean(V1[:], axis = 0)#.flatten()
-    # resp1 = np.where(np.isnan(res), None, res)
+    range2 = res1.flatten()
+    val2 = np.where(np.isnan(range2), None, range2)
+
     print(res.shape)
     print("type",type(res))
     dif = np.subtract(res1,res)
@@ -87,7 +90,10 @@ def nc_per():
     per1 = np.where(np.isnan(per), None, per)
     
     print(per.shape)
-    Min , Max = range_boxplot(per)
+    Min , Max = range_boxplot(per,index)
+    Min1 , Max1 = range_boxplot(range1,index)
+    Min2 , Max2 = range_boxplot(range2,index)
+    print(type(Min1))
 
     x = np.repeat(ds['lat'], ds['lon'].shape[0])
     y = np.tile(ds['lon'], ds['lat'].shape[0])
@@ -100,7 +106,8 @@ def nc_per():
         color = 'cool_warm'
 
     
-    return jsonify(y.tolist(),x.tolist(),per1.tolist(),Min,Max,lon_step,lat_step,color)
+    return jsonify(y.tolist(),x.tolist(),per1.tolist(),Min,Max,lon_step,lat_step,color,
+    val1.tolist(),np.float64(Min1),np.float64(Max1),val2.tolist(),np.float64(Min2),np.float64(Max2))
 
 # ---------------------------------------------map----------------------------------------------------
 
