@@ -78,4 +78,9 @@ export class TempService {
         `/api/global_avg?dataset=${dataset}&index=${index}&startyear=${startyear}&startmonth=${startmonth}&stopyear=${stopyear}&stopmonth=${stopmonth}`)
         return response
     }
+
+    async detail(dataset:string,index:string):Promise<Observable<any>> {
+        return this.http.get('http://127.0.0.1:5500' +
+        `/api/detail?dataset=${dataset}&index=${index}`);
+    }
 }

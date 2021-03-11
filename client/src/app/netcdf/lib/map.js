@@ -23,11 +23,11 @@ export function draw_map(target) {
   
   var style = new ol.style.Style({
     fill: new ol.style.Fill({
-      color: 'rgba(255, 255, 255, 1)'
+      color: 'rgba(255, 255, 255, 0)'
     }),
     stroke: new ol.style.Stroke({
-      color: '#000000',
-      width: 1.5
+      color: '#242121',
+      width: 0.5
     }),
   });
 
@@ -54,15 +54,17 @@ export function draw_map(target) {
     ],
     view: new ol.View({
       projection: 'EPSG:4326',
-      center: [50, 0],
-      // zoom: 2,
+      center: [0, 0],
+      // zoom: 4,
       zoom: 1.7,
-      minZoom: 1.7,
+      // minZoom: 1.7,
       // maxZoom:12,
+      extent: [-180, -90, 180, 90],
     })
     
   });
 
+  console.log("Mapppppppppppppppppp",map.getView())
   // var zoomh = document.getElementById('zoomh');
   // zoomh.addEventListener(
   //   'click',
@@ -73,6 +75,15 @@ export function draw_map(target) {
   //   },
   //   false
   // );
+
+  function onMoveEnd(evt) {
+    console.log("workkkkkkkkk")
+    var map = evt.map;
+    var extent = map.getView().calculateExtent(map.getSize());
+    console.log("extent",extent)
+  }
+  
+  map.on('moveend', onMoveEnd);
   
   return map
 }
@@ -81,7 +92,7 @@ export function draw_map(target) {
 export function select_country(targetMap, mode) {
   var features, baselayer ;
   targetMap.getLayers().forEach(function(layers) {
-    if (layers.get('name') === 'dataLayer') {
+    if (layers.get('name') === 'lowres_data') {
       features = layers.getSource().getFeatures()
       console.log("fea",features)
     } else if (layers.get('name') === 'baseLayer') {
@@ -185,7 +196,7 @@ export function add_graticule_layer(target) {
 }
 
 //-------------------------Gen grid-----------------------------
-export function genGridData(geojson, min, max, color_map, lon_step,lat_step,type,data) {
+export function genGridData(geojson, min, max, color_map, lon_step,lat_step,type, layername='') {
   var colors = []; var colorScale;
   console.log("min",min)
   console.log("max",max)
@@ -246,10 +257,10 @@ export function genGridData(geojson, min, max, color_map, lon_step,lat_step,type
             fill: new ol.style.Fill({
               color: [rgb.r, rgb.g, rgb.b, 0.9]
             }),
-            // stroke: new ol.style.Stroke({
-            //   color: [0, 0, 0, 0.8],
-            //   width: 0.2,
-            // }),    
+            stroke: new ol.style.Stroke({
+              color: [0, 0, 0, 0.8],
+              width: 0.1,
+            }),    
             geometry: new ol.geom.Polygon([[
               [x,y], [x, y + lat_step], [x + lon_step, y + lat_step], [x + lon_step, y], [x,y]
             ]]),
@@ -268,7 +279,7 @@ export function genGridData(geojson, min, max, color_map, lon_step,lat_step,type
   console.log("grid",grid)
 
   var gridLayer = new ol.layer.Vector({
-    name: "dataLayer",
+    name: layername,
     source: grid,
     style: gridStyle
   });
@@ -559,3 +570,32 @@ export function clearLayers(map){
     console.log("last",layers)
   }
 }
+
+export function setResolution(map,North,South, West, East){
+  console.log(map.getLayers())
+  console.log(map.getView())
+  console.log("-----",West,East,North,South)
+  map.getLayers().forEach(function (layer) {
+    if (layer.get('name') == 'lowres_data') {
+      console.log("<<<<<<<Low>>>>>>>>>>")
+      layer.set('minZoom', 2)
+      layer.set('maxZoom', 6)
+      layer.set('extent', [Number(West),Number(North),Number(East),Number(South)])
+      map.getView().setCenter([((Number(West) + Number(East))/2),((Number(North)+Number(South))/2)])
+      // layer.set('extent', [West,North,East,South])
+      // layer.set('center', [((Number(West) + Number(East))/2),((Number(North)+Number(South))/2)])
+    }
+   
+    else if (layer.get('name') == 'hires_data') {
+      console.log("<<<<<<<Hight>>>>>>>>>>")
+      // layer.set('minZoom', 6)
+      // layer.set('maxZoom', 12)
+      layer.set('extent', [-180,-90,0,50])
+      layer.set('center',[-90,-20])
+    }
+
+  });
+}
+
+
+

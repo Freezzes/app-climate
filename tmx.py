@@ -104,7 +104,65 @@ def nc_per():
 
 # ---------------------------------------------map----------------------------------------------------
 
+def read_folder_h(dataset, index, startyear, stopyear):
+    folder = f"C:/Mew/DB climate/{dataset}_h_file/"
+    l_path = []
+    for _file in os.listdir(folder):
+        for t in range(startyear,stopyear+1):
+            if _file[:-4].split("-")[0] == index and _file[:-4].split("-")[1] == str(t) :
+                path = f'{folder}{_file}'
+                l_path.append(path)
+    return l_path
 
+@app.route('/nc_avg_hire', methods=['GET'])
+def get_Avgmap_h():
+    start = time.time()
+    dataset = str(request.args.get("ncfile"))
+    index = str(request.args.get("df_f"))
+    startyear = int(request.args.get("startyear"))
+    stopyear = int(request.args.get("stopyear"))
+    startmonth = int(request.args.get("startmonth"))
+    stopmonth = int(request.args.get("stopmonth"))
+    f = read_folder_h(dataset, index, startyear, stopyear)
+    print(f)
+    V = []
+    for i in range(len(f)):
+        ds = np.load(f[i])
+        if f[i][:-4].split("-")[1] == str(startyear):
+            val = ds['value'][startmonth-1:12]
+            val = np.mean(val, axis = 0)#.flatten()
+        elif f[i][:-4].split("-")[1] == str(stopyear):
+            val = ds['value'][:stopmonth]
+            val = np.mean(val, axis = 0)
+        else:
+            val = ds['value'][0:12]
+            val = np.mean(val, axis = 0)#.flatten()
+
+        V.append(val)
+        print(len(V))
+    res = np.nanmean(V[:], axis = 0).flatten()
+    print("------------",res.shape)
+    resp = np.where(np.isnan(res), None, res)
+    print(res)
+    max_ = np.round(np.nanmax(res), 4)
+    print(max_)
+
+    Min , Max = range_boxplot(res,index)
+    
+    x = np.repeat(ds['lat'], ds['lon'].shape[0])
+    y = np.tile(ds['lon'], ds['lat'].shape[0])
+    lat_step = ds['lat'][-1] - ds['lat'][-2]
+    lon_step = ds['lon'][-1] - ds['lon'][-2]
+    print(lon_step,lat_step)   
+    if index == 'pr':
+        color = 'dry_wet'
+    else:
+        color = 'cool_warm'
+
+    return jsonify(y.tolist(),x.tolist(),resp.tolist(),np.float64(Min),np.float64(Max),lon_step,lat_step,color)
+
+
+# ------------------------------Low Re-----------------------------------------------------------------
 def read_folder(dataset, index, startyear, stopyear):
     folder = f"C:/Mew/DB climate/{dataset}_l_file/"
     l_path = []
@@ -123,9 +181,9 @@ def get_Avgmap(dataset, index, startyear, stopyear, startmonth, stopmonth):
     V = []
     for i in range(len(f)):
         ds = np.load(f[i])
-        if f[i][:-4].split("-")[1] == str(startyear):
-            val = ds['value'][startmonth-1:12]
-            val = np.mean(val, axis = 0)#.flatten()
+        if f[i][:-4].split("-")[1] == str(startyear): #เช็คชื่อไฟล์ว่าปีตรงกับพี่เริ่ม 
+            val = ds['value'][startmonth-1:12] #เอาค่าตั้งแต่ startmonth ถึง เดือน12
+            val = np.mean(val, axis = 0) #เฉลี่ยทั้งหมด shape (lat,lon)
         elif f[i][:-4].split("-")[1] == str(stopyear):
             val = ds['value'][:stopmonth]
             val = np.mean(val, axis = 0)
@@ -133,9 +191,9 @@ def get_Avgmap(dataset, index, startyear, stopyear, startmonth, stopmonth):
             val = ds['value'][0:12]
             val = np.mean(val, axis = 0)#.flatten()
 
-        V.append(val)
+        V.append(val) 
         print(len(V))
-    res = np.nanmean(V[:], axis = 0).flatten()
+    res = np.nanmean(V[:], axis = 0).flatten() #เฉลี่ยแต่ละจุดของทุกปี shape (จำนวนจุด)
     print("------------",res.shape)
     resp = np.where(np.isnan(res), None, res)
     print(res)
@@ -253,7 +311,7 @@ def get_detail():
     collection = db['index_detail']
     for d in collection.find({'index': index}, {'_id': 0}):
         output.append(
-            {'definition': d['definition'], 'color_map': d['color_map']})
+            {'definition': d['definition'], 'color_map': d['color_map'],'unit':d['unit'],'type':d['type']})
         # print(d['color_map'])
 
     return jsonify(output)
@@ -327,33 +385,18 @@ def avg_global_year():
 
     return jsonify(result, avg, unit)
 
-@app.route('/api/anomalyNC', methods=["GET"])
-def anamalymap():
-    filename = str(request.args.get("filename"))
-    if filename == 'tas':
-        dd = pd.read_csv('C:/Mew/Project/anomaly/tmp_anomaly_1901-2019.csv')
-        name = ["Average Temperature"]
-    elif filename == 'tasmin':
-        dd = pd.read_csv('C:/Mew/Project/anomaly/tmn_anomaly_1901-2019.csv')
-        name = ["Minimum Temperature"]
-    elif filename == 'tasmax':
-        dd = pd.read_csv('C:/Mew/Project/anomaly/tmx_anomaly_1901-2019.csv')
-        name = ["Maximum Temperature"]
-    elif filename == 'pr':
-        dd = pd.read_csv('C:/Mew/Project/anomaly/pre_anomaly_1901-2019.csv')
-        name = ["Preciptipation"]
-
-    an = []
-    for i in dd['value']:
-        an.append(float("%.2f"% i))
-    y = []
-    for i in dd['year']:
-        y.append(i)
-    ano = {'anomaly':an}
-    year = {'year':y}
-    namefile = {'name':name}
-    return jsonify(ano,year,namefile)
-
+@app.route("/api/detail", methods=['GET'])
+def detail():
+    dataset = str(request.args.get("dataset"))
+    index = str(request.args.get("index"))
+    df = pd.read_csv('C:/Mew/Project/index_detail.csv')
+    print(df)
+    query = df.loc[(df['dataset']=='cru_ts')&(df['index']=='tmp')]
+    # res = jsonify(query['long name'][0],query['description'][0],query['unit'][0],query['year'][0])
+    # color = jsonify(query['color_map'][0])
+    select = query[['long name','description','unit','year','color_map']].to_json(orient='records')
+    select = json.loads(select)
+    return select[0]
 
 
 if __name__ == '__main__':

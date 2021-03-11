@@ -48,24 +48,54 @@ export class NetcdfComponent implements OnInit {
   hoveredDate: NgbDate | null = null;
   map: any;
   datalayer: any;
+  lowres_layer: any;
+  hires_layer: any;
+
+  data_lowres: any;
+  data_hires: any;
+  grid_lowres: any;
+  grid_hires: any;
+
+  long_name;
+  difinition;
+  unit;
+  year;
+
   public index;
-  public input_ds;
-  public lenght_y;
-  public verb;
-  public years;
   type;
   percent;
-  selectyear;
-  range_y;
   value_db;
   Max;
   Min;
   color;
-  grid;
   lat_step;
   lon_step;
+
   public recieveData:DataRecieve;
 
+  getDataLayer(data,North,South,West,East,layername) {
+    var lon = data[0]
+    var lat = data[1]
+    var value = data[2]
+    var lon_step = data[5]
+    var lat_step = data[6]
+    var min_ =  data[3]
+    var max_ = data[4]
+    var color = data[7]
+    var geojson = MapLib.merge_data_to_geojson(lon, lat, value, North,South,West,East)
+    var layer = MapLib.genGridData(
+      geojson, min_, max_, color, lon_step, lat_step,'main', layername
+    );
+    // if(data.legend.fix){
+    //   layer = MapLib.genGridData(
+    //     geojson, min_, max_, this.color, lon_step, lat_step,'main', layername
+    //   );
+    // } else {
+    //   layer = MapLib.genGridData(
+    //     geojson, this.Min, this.Max, color, lon_step, lat_step,'main', layername);
+    // }
+    return layer
+  }
 
   constructor(
     private calendar: NgbCalendar,
@@ -111,10 +141,53 @@ export class NetcdfComponent implements OnInit {
 
     this.lists = range(1901, 2019, 1)
     this.index = this.file
+
+    await this.tempService.detail(this.data,this.index).then(data => data.subscribe(
+      res => {
+        console.log("detailllllll",res['color_map'])
+        this.color = res['color_map']
+        this.long_name = res['long name']
+        this.difinition = res['description']
+        this.unit = res['unit']
+        this.year = res['year']
+        }))
     
     if (this.per != 'yes') {
-      this.plot(this.data,this.index)
-    }
+      this.map = MapLib.draw_map('map')
+
+      await this.tempService.get_Avgcsv(this.data, this.index, this.startyear, this.stopyear,
+        this.startmonth, this.stopmonth).then(data => data.subscribe(
+          (res => { 
+            // console.log(">>>>>>>>>>",res)
+            let resp = JSON.parse(res)
+            this.data_lowres = resp
+          // get layer for add to map
+            this.lowres_layer = this.getDataLayer(resp,this.North, this.South, this.West, this.East,'lowres_data')
+            MapLib.clearLayers(this.map);
+            this.map.getLayers().insertAt(0,this.lowres_layer);
+            MapLib.setResolution(this.map,this.North, this.South, this.West, this.East)
+            MapLib.select_country(this.map)
+            // this.map.getView().setCenter([115, 5])
+          })
+        ))
+      
+      await this.tempService.get_hire(this.data, this.index, this.startyear, this.stopyear,
+        this.startmonth, this.stopmonth).then(data => data.subscribe(
+          (res => { 
+            // console.log(">>>>>>>>>>",res)
+            let resp = JSON.parse(res)
+            this.hires_layer = this.getDataLayer(resp,this.North, this.South, this.West, this.East,'hires_data')
+            // this.map.getLayers().insertAt(0,this.hires_layer);
+            // MapLib.setResolution(this.map)
+
+          
+          })
+        ))
+        }
+
+    // if (this.per != 'yes') {
+    //   this.plot(this.data,this.index)
+    // }
   }
 // databaseeeeeee
   async test_ser(dataset, index) {
@@ -201,7 +274,8 @@ export class NetcdfComponent implements OnInit {
           this.datalayer = MapLib.genGridData(geojson, resp[3], resp[4], resp[7], resp[5], resp[6],'main');
           // this.selectgrid = MapLib.gridselect(geojson)
           MapLib.clearLayers(this.map);
-          this.map.addLayer(this.datalayer)
+          this.map.getLayers().insertAt(0,this.datalayer);
+          // this.map.addLayer(this.datalayer)
           MapLib.select_country(this.map)
           // MapLib.select_c(this.map)
           console.log("finish")
