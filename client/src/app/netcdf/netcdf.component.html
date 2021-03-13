@@ -22,8 +22,11 @@
 
 <div *ngIf="per == 'yes'">
   <div class="showmap">
-    <div class="selectzone">
-      <label for="year" class="control-label col-sm-2">Range year 1</label>
+    <!-- <div class="selectzone"> -->
+      <div class="form-group row">
+        <label for="year" class="control-label col-sm-6">Range year 1</label>
+        <label for="year" class="control-label col-sm-6">Range year 2</label>
+      </div>
       <div class="form-group row">
         <div class="col-sm-6">
           <div [formGroup]="chooseyear1">
@@ -34,23 +37,25 @@
           </div>
         </div>
         <div class="col-sm-6">
-          <div [formGroup]="chooseyear1">
-            <select formControlName="toyear1" style="max-width:120%;" class="form-control">
-              <option selected>to year</option>
-              <option *ngFor="let f of lists">{{f}}</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      <label for="year" class="control-label col-sm-2">Range year 2</label>
-      <div class="form-group row">
-        <div class="col-sm-6">
           <div [formGroup]="chooseyear2">
             <select formControlName="fromyear2" style="max-width:120%;" class="form-control">
               <option selected>from year</option>
               <option *ngFor="let f of lists">{{f}}</option>
             </select>
           </div>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col-sm-6">
+          <div [formGroup]="chooseyear1">
+            <select formControlName="toyear1" style="max-width:120%;" class="form-control">
+              <option selected>to year</option>
+              <option *ngFor="let f of lists">{{f}}</option>
+            </select>
+          </div>
+          <br>
+          <button type="button" class="btn btn-secondary" (click)="map_range1()"><i class="fas fa-map-marked-alt"></i>
+            Plot</button>
         </div>
         <div class="col-sm-6">
           <div [formGroup]="chooseyear2">
@@ -59,11 +64,12 @@
               <option *ngFor="let f of lists">{{f}}</option>
             </select>
           </div>
+          <br>
+          <button type="button" class="btn btn-secondary" (click)="map_range2()"><i class="fas fa-map-marked-alt"></i>
+            Plot</button>
         </div>
       </div>
-      <button type="button" class="btn btn-secondary" (click)="plot_per()"><i class="fas fa-map-marked-alt"></i>
-        Plot</button>
-    </div>
+    <!-- </div> -->
   </div>
 </div>
 
@@ -82,9 +88,9 @@
           <div class="row">
             <!-- <div class="col-sm-8"> -->
               <div id="map1" class="map_per"></div>
-              <!-- <div class="info" style="opacity: 0.8;">
+              <div class="info" style="opacity: 0.8;">
                 <svg class="legend" width="1000" height="30" style="margin-top: 1em;"></svg>
-              </div> -->
+              </div>
           </div>
         </div>
       </div>
@@ -101,13 +107,18 @@
           <div class="row">
             <!-- <div class="col-sm-8"> -->
               <div id="map2" class="map_per"></div>
-              <!-- <div class="info" style="opacity: 0.8;">
+              <div class="info" style="opacity: 0.8;">
                 <svg class="legend" width="1000" height="30" style="margin-top: 1em;"></svg>
-              </div> -->
+              </div>
           </div>
         </div>
       </div>
     </div>
+    <br>
+    <button type="button" class="btn btn-secondary" (click)="per_different()"><i class="fas fa-map-marked-alt"></i>
+      Plot Per</button>
+    <button type="button" class="btn btn-secondary" (click)="raw_different()"><i class="fas fa-map-marked-alt"></i>
+      Plot Raw</button>
   </div>
   <br>
   <div class="row row-cols-1 row-cols-md-2">

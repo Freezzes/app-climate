@@ -80,6 +80,11 @@ export class NetcdfComponent implements OnInit {
   start2;
   stop2;
 
+  value1;
+  value2;
+  min1;
+  max1;
+
   public recieveData:DataRecieve;
 
   getDataLayer(data,North,South,West,East,layername) {
@@ -295,15 +300,10 @@ export class NetcdfComponent implements OnInit {
         )))
   }
 // ----------USE!!!!!!------------------------------------------------
-  async plot_per(){
-    this.percent = "work"
-    this.different()
-  }
-  async different(){
+
+  async per_different(){
     this.type = 'per'
     this.map = MapLib.draw_map('per')
-    this.map1 = MapLib.draw_map('map1')
-    this.map2 = MapLib.draw_map('map2')
     // MapLib.add_graticule_layer(this.map)
     console.log("dat", this.index)
     console.log(this.chooseyear1.controls['fromyear1'].value)
@@ -316,21 +316,13 @@ export class NetcdfComponent implements OnInit {
     let v
     let L = []
     console.log("-----",this.index)
-    await this.tempService.nc_per(this.data, this.index,this.start1, this.stop1,this.start2, this.stop2).then(data => data.subscribe(
+    await this.tempService.per_dif(this.data, this.index,this.start1, this.stop1,this.start2, this.stop2).then(data => data.subscribe(
         (res => { 
           // console.log(">>>>>>>>>>",res)
           let resp = JSON.parse(res)
           console.log(">>>>>>>>>",resp)
           // console.log(">>>>>>>>>",resp[3])
           var val = resp[2]
-          var r1 = resp[8]
-          var min1 = resp[9]
-          var max1 = resp[10]
-          var r2 = resp[11]
-          var min2 = resp[12]
-          var max2  = resp[13]
-          console.log("****",r1)
-          console.log(min1,max1)
 
           const geojson = MapLib.merge_data_to_geojson(resp[0],resp[1], val, this.North, this.South, this.West, this.East);
           console.log("geojson",geojson)
@@ -339,21 +331,7 @@ export class NetcdfComponent implements OnInit {
           this.map.getLayers().insertAt(0,this.datalayer);
           MapLib.select_country(this.map)
 
-          const geojson1 = MapLib.merge_data_to_geojson(resp[0],resp[1], r1, this.North, this.South, this.West, this.East);
-          console.log("geojson",geojson1)
-          this.datalayer1 = MapLib.genGridData(geojson1, min1, max1, resp[7], resp[5], resp[6],'main','lowres_data');
-          MapLib.clearLayers(this.map1);
-          this.map1.getLayers().insertAt(0,this.datalayer1);
-          MapLib.select_country(this.map1)
-          MapLib.setzoom(this.map1)
-
-          const geojson2 = MapLib.merge_data_to_geojson(resp[0],resp[1], r2, this.North, this.South, this.West, this.East);
-          console.log("geojson",geojson2)
-          this.datalayer2 = MapLib.genGridData(geojson2, min2, max2, resp[7], resp[5], resp[6],'main','lowres_data');
-          MapLib.clearLayers(this.map2);
-          this.map2.getLayers().insertAt(0,this.datalayer2);
-          MapLib.select_country(this.map2)
-          MapLib.setzoom(this.map2)
+        
 
           console.log("finish")
           console.timeEnd()
@@ -361,4 +339,113 @@ export class NetcdfComponent implements OnInit {
         }
         )))
   }
+
+  async raw_different(){
+    this.type = 'per'
+    this.map = MapLib.draw_map('per')
+    // MapLib.add_graticule_layer(this.map)
+    console.log("dat", this.index)
+    console.log(this.chooseyear1.controls['fromyear1'].value)
+    // this.percent = "Work"
+    console.time()
+    this.start1 = this.chooseyear1.controls['fromyear1'].value
+    this.stop1 = this.chooseyear1.controls['toyear1'].value
+    this.start2 = this.chooseyear2.controls['fromyear2'].value
+    this.stop2 = this.chooseyear2.controls['toyear2'].value
+    let v
+    let L = []
+    console.log("-----",this.index)
+    await this.tempService.raw_dif(this.data, this.index,this.start1, this.stop1,this.start2, this.stop2).then(data => data.subscribe(
+        (res => { 
+          // console.log(">>>>>>>>>>",res)
+          let resp = JSON.parse(res)
+          console.log(">>>>>>>>>",resp)
+          // console.log(">>>>>>>>>",resp[3])
+          var val = resp[2]
+
+          const geojson = MapLib.merge_data_to_geojson(resp[0],resp[1], val, this.North, this.South, this.West, this.East);
+          console.log("geojson",geojson)
+          this.datalayer = MapLib.genGridData(geojson, resp[3], resp[4], resp[7], resp[5], resp[6],'main','lowres_data');
+          MapLib.clearLayers(this.map);
+          this.map.getLayers().insertAt(0,this.datalayer);
+          MapLib.select_country(this.map)
+
+        
+
+          console.log("finish")
+          console.timeEnd()
+
+        }
+        )))
+  }
+
+  async map_range1(){
+    this.type = 'per'
+    this.map1 = MapLib.draw_map('map1')
+
+    this.start1 = this.chooseyear1.controls['fromyear1'].value
+    this.stop1 = this.chooseyear1.controls['toyear1'].value
+    console.log("-----",this.index)
+    await this.tempService.map_range1(this.data, this.index,this.start1, this.stop1).then(data => data.subscribe(
+        (res => { 
+          // console.log(">>>>>>>>>>",res)
+          let resp = JSON.parse(res)
+          console.log(">>>>>>>>>",resp)
+          this.value1 = resp[2]
+          this.min1 = resp[3]
+          this.max1 = resp[4]
+  
+
+          const geojson1 = MapLib.merge_data_to_geojson(resp[0],resp[1], this.value1, this.North, this.South, this.West, this.East);
+          // console.log("geojson",geojson1)
+          this.datalayer1 = MapLib.genGridData(geojson1, this.min1, this.max1, resp[7], resp[5], resp[6],'main','lowres_data');
+          MapLib.clearLayers(this.map1);
+          this.map1.getLayers().insertAt(0,this.datalayer1);
+          MapLib.select_country(this.map1)
+          MapLib.setzoom(this.map1)
+
+          console.log("finish")
+
+        }
+        )))
+  }
+
+  async map_range2(){
+    this.type = 'per'
+    // this.map1 = MapLib.draw_map('map1')
+    this.map2 = MapLib.draw_map('map2')
+    // MapLib.add_graticule_layer(this.map)
+    console.log("dat", this.index)
+
+    // this.percent = "Work"
+
+    this.start1 = this.chooseyear2.controls['fromyear2'].value
+    this.stop1 = this.chooseyear2.controls['toyear2'].value
+  
+    console.log("-----",this.index)
+    await this.tempService.map_range1(this.data, this.index,this.start1, this.stop1).then(data => data.subscribe(
+        (res => { 
+          // console.log(">>>>>>>>>>",res)
+          let resp = JSON.parse(res)
+          console.log(">>>>>>>>>",resp)
+          var value = resp[2]
+          var min1 = resp[3]
+          var max1 = resp[4]
+          // console.log("****",r1)
+          // console.log(min1,max1)
+
+          const geojson2 = MapLib.merge_data_to_geojson(resp[0],resp[1], value, this.North, this.South, this.West, this.East);
+          // console.log("geojson",geojson1)
+          this.datalayer2 = MapLib.genGridData(geojson2, this.min1, this.max1, resp[7], resp[5], resp[6],'main','lowres_data');
+          MapLib.clearLayers(this.map2);
+          this.map2.getLayers().insertAt(0,this.datalayer2);
+          MapLib.select_country(this.map2)
+          MapLib.setzoom(this.map2)
+
+          console.log("finish")
+
+        }
+        )))
+  }
+
 }
