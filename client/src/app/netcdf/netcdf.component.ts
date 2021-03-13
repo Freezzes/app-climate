@@ -174,8 +174,9 @@ export class NetcdfComponent implements OnInit {
             this.lowres_layer = this.getDataLayer(resp,this.North, this.South, this.West, this.East,'lowres_data')
             MapLib.clearLayers(this.map);
             this.map.getLayers().insertAt(0,this.lowres_layer);
-            MapLib.setResolution(this.map,this.North, this.South, this.West, this.East)
+            // MapLib.setResolution(this.map,this.North, this.South, this.West, this.East)
             MapLib.select_country(this.map)
+            // MapLib.hightre(this.map)
             // this.map.getView().setCenter([115, 5])
           })
         ))
@@ -186,8 +187,8 @@ export class NetcdfComponent implements OnInit {
             // console.log(">>>>>>>>>>",res)
             let resp = JSON.parse(res)
             this.hires_layer = this.getDataLayer(resp,this.North, this.South, this.West, this.East,'hires_data')
-            // this.map.getLayers().insertAt(0,this.hires_layer);
-            // MapLib.setResolution(this.map)
+            this.map.getLayers().insertAt(0,this.hires_layer);
+            MapLib.setResolution(this.map)
 
           
           })
