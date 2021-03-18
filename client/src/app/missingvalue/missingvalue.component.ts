@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit , OnChanges, Input} from '@angular/core';
 import {Config, Data, Layout} from 'plotly.js';
 import { Chart,ChartData } from 'chart.js';
 import * as CanvasJS from 'C:/Users/ice/Downloads//cli/canvasjs-3.0.5/canvasjs.min';
@@ -12,7 +12,7 @@ import Plotly from 'plotly.js-dist'
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { FormControl, Validators} from '@angular/forms';
 
-// highheat(Highcharts);
+highheat(Highcharts);
 
 @Component({
   selector: 'app-missingvalue',
@@ -21,6 +21,8 @@ import { FormControl, Validators} from '@angular/forms';
   providers:[TempService]
 })
 export class MissingvalueComponent implements OnInit {
+   @Input() file: string;
+
    StationList = [
       {id: 300201, name: "แม่ฮ่องสอน"},{id: 300202, name: "แม่สะเรียง"},{id: 303201, name: "เชียงราย"},{id: 303301, name: "เชียงราย สกษ."},{id:310201 , name: "พะเยา"}, {id: 327202, name: "ดอยอ่างขาง"},
       {id: 327301, name: "แม่โจ้ สกษ."},{id: 327501, name: "เชียงใหม่"},{id: 328201, name: "ลำปาง"},{id: 328202, name: "เถิน"},{id: 328301, name: "ลำปาง สกษ."},{id: 329201, name: "ลำพูน"},
@@ -47,17 +49,17 @@ export class MissingvalueComponent implements OnInit {
   yearList = [1951,1952,1953,1954,1955,1956,1957,1958,1959,1960,1961,1962,1963,1964,1965,1966,1967,1968,1969,1970,1971,1972,1973,1974,
    1975,1976,1977,1978,1979,1980,1981,1982,1983,1984,1985,1986,1987,1988,1989,1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,
    2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018]
-   filename = [{id:'mean',name:'Temperature mean'},
-               {id:'min',name:'Temperature min'},
-               {id:'max',name:'Temperature max'},
+   filename = [{id:'tas',name:'Temperature mean'},
+               {id:'tasmin',name:'Temperature min'},
+               {id:'tasmax',name:'Temperature max'},
                {id:'pre',name:'Preciptipation'}]
-   myForm:FormGroup;
-   disabled = false;
-   ShowFilter = false;
-   limitSelection = false;
-   cities = [];
-   selectedItems = [];
-   dropdownSettings: any = {};
+   // myForm:FormGroup;
+   // disabled = false;
+   // ShowFilter = false;
+   // limitSelection = false;
+   // cities = [];
+   // selectedItems = [];
+   // dropdownSettings: any = {};
    public dataplotcsv = [];
    public TempData;
    public stationyear;
@@ -118,91 +120,97 @@ export class MissingvalueComponent implements OnInit {
 //   }
 
   async ngOnInit(){ 
-   this.missingval = await this.tempService.getMissed();
-  this.selectedItems = [];
-  this.dropdownSettings = {
-      singleSelection: false,
-      idField: 'id',
-      textField: 'name',
-      selectAllText: 'Select All',
-      unSelectAllText: 'UnSelect All',
-      itemsShowLimit: 10,
-      allowSearchFilter: this.ShowFilter
-  };
-  this.myForm = this.fb.group({
-      city: [this.selectedItems]
-  });
+   this.selectmiss()
+//   this.selectedItems = [];
+//   this.dropdownSettings = {
+//       singleSelection: false,
+//       idField: 'id',
+//       textField: 'name',
+//       selectAllText: 'Select All',
+//       unSelectAllText: 'UnSelect All',
+//       itemsShowLimit: 10,
+//       allowSearchFilter: this.ShowFilter
+//   };
+//   this.myForm = this.fb.group({
+//       city: [this.selectedItems]
+//   });
      
     }  
-    onItemSelect(item: any) {
-      //  this.selectstationid = []
-      console.log('!!!onItemSelect', item);
-  }
-  onSelectAll(items: any) {
-      console.log('onSelectAll', items);
-  }
-  toogleShowFilter() {
-      this.ShowFilter = !this.ShowFilter;
-      this.dropdownSettings = Object.assign({}, this.dropdownSettings, { allowSearchFilter: this.ShowFilter });
-  }
+//     onItemSelect(item: any) {
+//       //  this.selectstationid = []
+//       console.log('!!!onItemSelect', item);
+//   }
+//   onSelectAll(items: any) {
+//       console.log('onSelectAll', items);
+//   }
+//   toogleShowFilter() {
+//       this.ShowFilter = !this.ShowFilter;
+//       this.dropdownSettings = Object.assign({}, this.dropdownSettings, { allowSearchFilter: this.ShowFilter });
+//   }
 
-  handleLimitSelection() {
-      if (this.limitSelection) {
-          this.dropdownSettings = Object.assign({}, this.dropdownSettings, { limitSelection: 2 });
-      } else {
-          this.dropdownSettings = Object.assign({}, this.dropdownSettings, { limitSelection: null });
-      }
-  }
+//   handleLimitSelection() {
+//       if (this.limitSelection) {
+//           this.dropdownSettings = Object.assign({}, this.dropdownSettings, { limitSelection: 2 });
+//       } else {
+//           this.dropdownSettings = Object.assign({}, this.dropdownSettings, { limitSelection: null });
+//       }
+//   }
 
-  choosefile = new FormGroup({
-   file: new FormControl('', Validators.required)
- });
+//   choosefile = new FormGroup({
+//    file: new FormControl('', Validators.required)
+//  });
 
-   sstartyear = new FormGroup({
-   syear: new FormControl('', Validators.required)
- });
-   eendyear = new FormGroup({
-   eyear: new FormControl('', Validators.required)
- });
+//    sstartyear = new FormGroup({
+//    syear: new FormControl('', Validators.required)
+//  });
+//    eendyear = new FormGroup({
+//    eyear: new FormControl('', Validators.required)
+//  });
 
   async selectmiss(){
    this.check = ''
-   this.selectstationid = [];
-   const selectValueList = this.myForm.get("city").value;
-   selectValueList.map( item => {
-      this.selectstationid.push(item.id);
-   });
-   console.log("station id: ", this.selectstationid)
-   let fi = this.choosefile.value
-   let fil = ''
-   for (let v of Object.values(fi)){
-      if(String(v) == String('Temperature mean')){
-         fil = 'mean'
-      }
-      if(String(v) == String('Temperature min')){
-         fil = 'min'
-      }
-      if(String(v) == String('Temperature max')){
-         fil = 'max'
-      }
-      if(String(v) == String('Preciptipation')){
-         fil = 'pre'
-      }
-      console.log("key",fil)
+   this.selectstationid = [300201,300202,303201,303301,310201,327202,327301,327501,328201,328202, 328301, 329201, 
+      330201,331201, 331301, 331401, 331402, 351201,352201, 353201, 353301, 354201, 356201, 356301,357201, 
+      357301, 373201, 373301, 376201, 376202, 376203, 376301, 376401, 378201, 379201,379401, 379402, 380201, 
+      381201, 381301, 383201, 386301, 387401, 388401, 400201, 400301, 402301,403201, 405201,405301, 407301, 
+      407501, 409301,415301, 419301, 423301, 424301, 425201,425301,426201, 426401, 429201,429601, 430201,430401,
+      431201, 431301, 431401,432201, 432301, 432401, 436201, 436401, 440201, 440401, 450201,450401,451301, 
+      455201, 455203, 455301, 455302, 455601,459201, 459202, 459203, 459204, 459205, 465201,478201, 478301, 
+      480201, 480301, 500201, 500202,500301, 501201, 517201, 517301, 532201, 551203, 551301, 551401, 552201, 
+      552202, 552301, 552401,560301, 561201, 564201, 564202, 566201,566202,567201, 568301, 568401, 568501, 568502, 
+      570201, 580201, 581301, 583201];
+   // const selectValueList = this.myForm.get("city").value;
+   // selectValueList.map( item => {
+   //    this.selectstationid.push(item.id);
+   // });
+   // console.log("station id: ", this.selectstationid)
+   let fil = this.file
+   if(fil == String('Average Temperature')){
+      fil = 'mean'
    }
-   let syy = this.sstartyear.value
-   let styear
+   if(fil == String('Minimum Temperature')){
+      fil = 'min'
+   }
+   if(fil == String('Maximum Temperature')){
+      fil = 'max'
+   }
+   if(fil == String('Preciptipation')){
+      fil = 'pre'
+   }
+
+   // let syy = this.sstartyear.value
+   // let styear
    this.station = this.selectstationid
-   for(let v of Object.values(syy)){
-      styear = v
-   }
-   this.startyear = Number(styear)
-   let eey = this.eendyear.value
-   let enyear 
-   for(let v of Object.values(eey)){
-      enyear = v
-   }
-   this.stopyear = Number(enyear)
+   // for(let v of Object.values(syy)){
+   //    styear = v
+   // }
+   this.startyear = Number(1951)
+   // let eey = this.eendyear.value
+   // let enyear 
+   // for(let v of Object.values(eey)){
+   //    enyear = v
+   // }
+   this.stopyear = Number(2018)
    console.log("start year : ", this.startyear)
    let per=[];
    this.percentplot.length = 0
@@ -256,9 +264,12 @@ export class MissingvalueComponent implements OnInit {
          marginBottom: 80,
  
       },
-      title : {
-         text: 'Missing Value'   
-      },
+      title: {
+         text: '',
+         style: {
+             display: 'none'
+         }
+     },
       xAxis : {
          categories: [300201,300202,303201,303301,310201,327202,327301,327501,328201,328202, 328301, 329201, 
           330201,331201, 331301, 331401, 331402, 351201,352201, 353201, 353301, 354201, 356201, 356301,357201, 

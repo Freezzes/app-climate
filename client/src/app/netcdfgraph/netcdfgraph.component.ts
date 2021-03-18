@@ -73,7 +73,7 @@ export class NetcdfgraphComponent implements OnInit {
     var chart = new CanvasJS.Chart("chartContainer", {
       animationEnabled: true,  
       title:{
-        text: "Area averange time series"
+        text: null
       },
       axisY: {
         title: "Averange temperature",
@@ -120,26 +120,14 @@ export class NetcdfgraphComponent implements OnInit {
        
        async plotbar(){
           this.checkbar = ''
-          let fil = 'Average Temperature'//this.file
-          if(fil == String('Average Temperature')){
-             fil = 'mean'
-          }
-          if(fil == String('Minimum Temperature')){
-             fil = 'min'
-          }
-          if(fil == String('Maximum Temperature')){
-             fil = 'max'
-          }
-          if(fil == String('Preciptipation')){
-             fil = 'pre'
-          }
-          console.log("key",fil)
+          let fil = this.file
+
           this.anomaly = []
           this.anomaly_year = []
           this.anomaly_name.length = 0;
           this.anomalydata.length = 0;
           this.anomalyyear.length = 0;
-          await this.tempService.getanomalync(fil).then(data => data.subscribe(
+          await this.tempService.getanomalync(this.file).then(data => data.subscribe(
           res => { 
             this.anomaly.push(res[0])
             this.anomaly_year.push(res[1])
@@ -185,8 +173,11 @@ export class NetcdfgraphComponent implements OnInit {
         type: 'column'
      },
      title: {
-        text: 'Anomaly Temperature 1901 - 2019'
-     },
+      text: '',
+      style: {
+          display: 'none'
+      }
+  },
      xAxis:{
         categories: this.anomalyyear
      },     

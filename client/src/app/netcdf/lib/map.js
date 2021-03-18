@@ -11,9 +11,8 @@ import View from 'ol/View';
 import {DragBox, Select} from 'ol/interaction';
 import {OSM, Vector as VectorSource} from 'ol/source';
 import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
-// import { legendColor } from 'd3-svg-legend'
-// import legend from 'd3-svg-legend'
 import {transformExtent} from 'ol/proj';
+import { extend } from 'ol/extent';
 
 function transform(extent) {
   return transformExtent(extent, 'EPSG:4326', 'EPSG:3857');
@@ -48,31 +47,42 @@ export function draw_map(target) {
   const  map = new ol.Map({
     target: target,
     layers: [
-    //   new ol.layer.Tile({
-    //     source: new ol.source.OSM()
-    // }),
+
       vectorLayer
     ],
     view: new ol.View({
       projection: 'EPSG:4326',
       center: [0, 0],
       zoom: 1.7,
-      // minZoom: 1.7,
+      minZoom: 1.7,
       // maxZoom:12,
       extent: [-180, -90, 180, 90]
     })
   });
   
+  // function onMoveEnd(evt) {
+  //   console.log("workkkkkkkkk")
+  //   var map = evt.map;
+  //   var extent = map.getView().calculateExtent(map.getSize());
+  //   console.log("extent",extent)
+  // }
+
+  // map.on('moveend', onMoveEnd);
+
+  return map
+}
+
+export function hightre(map){
   function onMoveEnd(evt) {
     console.log("workkkkkkkkk")
     var map = evt.map;
     var extent = map.getView().calculateExtent(map.getSize());
     console.log("extent",extent)
+    console.log(extent[0]-extent[2])
   }
-
+  
   map.on('moveend', onMoveEnd);
 
-  return map
 }
 
 //-----------------------Select Country----------------------------------
@@ -166,10 +176,10 @@ export function add_graticule_layer(target) {
     intervals: [20, 20],
     targetSize: 40,
     strokeStyle: new ol.style.Stroke({
-      color: 'rgba(0,88,212,0.5)',
-      width: 1,
+      color: 'rgba(0,88,212,1)',
+      width: 0.5,
     }),
-    showLabels: true
+    showLabels: false
   });
   major_graticule.setMap(target);
 
@@ -268,29 +278,38 @@ export function genGridData(geojson, min, max, color_map, lon_step,lat_step,type
 }
 
 export function setResolution(map,North,South, West, East){
-  console.log(map.getLayers())
-  console.log(map.getView())
-  console.log("-----",West,East,North,South)
-  map.getLayers().forEach(function (layer) {
-    if (layer.get('name') == 'lowres_data') {
-      console.log("<<<<<<<Low>>>>>>>>>>")
-      layer.set('minZoom', 2)
-      layer.set('maxZoom', 6)
-      layer.set('extent', [Number(West),Number(North),Number(East),Number(South)])
-      map.getView().setCenter([((Number(West) + Number(East))/2),((Number(North)+Number(South))/2)])
-      // layer.set('extent', [West,North,East,South])
-      // layer.set('center', [((Number(West) + Number(East))/2),((Number(North)+Number(South))/2)])
-    }
-
-    else if (layer.get('name') == 'hires_data') {
-      console.log("<<<<<<<Hight>>>>>>>>>>")
-      // layer.set('minZoom', 6)
-      // layer.set('maxZoom', 12)
-      layer.set('extent', [-180,-90,0,50])
-      layer.set('center',[-90,-20])
-    }
-
-  });
+  function onMoveEnd(evt) {
+    var map = evt.map;
+    var extent = map.getView().calculateExtent(map.getSize());
+    map.getLayers().forEach(function (layer) {
+      if (layer.get('name') == 'lowres_data') {
+        console.log("<<<<<<<Low>>>>>>>>>>")
+        layer.set('minZoom', 2)
+        layer.set('maxZoom', 6)
+        layer.set('extent', [0,-90,180,90])
+        if (extent[0]-extent[2] > -150){
+          console.log(">150")
+          layer.set('extent', [0,0,0,0])
+        }
+        else if (extent[0]-extent[2] < -150){
+          layer.set('extent', [extent[0],extent[1],extent[2],extent[3]])
+        }
+      }
+      else if (layer.get('name') == 'hires_data') {
+        console.log("<<<<<<<Hight>>>>>>>>>>")
+        layer.set('minZoom', 6)
+        layer.set('maxZoom', 12)
+        if (extent[0]-extent[2] > -150){
+          console.log(">100")
+          layer.set('extent', [-180,-90,180,90])
+        }else if (extent[0]-extent[2] < -150){
+          layer.set('extent', [0,0,0,0])
+        }
+      }
+    })
+  }
+  
+  map.on('moveend', onMoveEnd);
 }
 
 

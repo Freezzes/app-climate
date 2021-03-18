@@ -1,11 +1,12 @@
 .map{
-  width: 40vw;
-  height: 50vh;
+  width: 45vw;
+  height: 55opx;
   border-style: solid;
+  justify-content: center;
 }
 .map_per{
   width: 40vw;
-  height: auto;
+  height: 50vh;
 }
 .h1{
   color: #0a61a3;
@@ -14,4 +15,10 @@
   font-weight: 600;
   font-family:'Open Sans', sans-serif;
   border-color: #0a61a3;
+}
+.text-content{
+  color: #0a61a3;
+  font-size: 20px;
+  font-weight: 400;
+  font-family:'Open Sans', sans-serif;
 }

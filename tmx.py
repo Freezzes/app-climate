@@ -43,7 +43,7 @@ misrain = pd.read_csv('C:/Users/ice/Documents/climate/plot/map/missingrain.csv')
 def getm( startyear,stopyear,station,dff):
     d = {}
     list_dict = []
-    
+    print("missing value : ",dff)
     mask = (dff['y'] >= startyear) & (dff['y'] <= stopyear)
     dat = dff.loc[mask]
     for i in station:
@@ -75,7 +75,7 @@ def selectmissing():
         dff = mistmax
     elif dff == 'pre':
         dff = misrain
-
+    print("missing file : ",dff)
     v = getm( startyear,stopyear,res,dff)
     return jsonify(v)
 
@@ -924,13 +924,13 @@ def anomalyNC():
 @app.route('/api/anomalyNC', methods=["GET"])
 def anamalymap():
     filename = str(request.args.get("filename"))
-    if filename == 'mean':
+    if filename == 'tas':
         dd = pd.read_csv('C:/Users/ice/Documents/climate/manage_nc/tmp_anomaly_1901-2019.csv')
         name = ["Average Temperature"]
-    elif filename == 'min':
+    elif filename == 'tasmin':
         dd = pd.read_csv('C:/Users/ice/Documents/climate/manage_nc/tmn_anomaly_1901-2019.csv')
         name = ["Minimum Temperature"]
-    elif filename == 'max':
+    elif filename == 'tasmax':
         dd = pd.read_csv('C:/Users/ice/Documents/climate/manage_nc/tmx_anomaly_1901-2019.csv')
         name = ["Maximum Temperature"]
     elif filename == 'pre':
@@ -970,6 +970,155 @@ def read_folder_h(dataset, index, startyear, stopyear):
                 path = f'{folder}{_file}'
                 l_path.append(path)
     return l_path
+
+# ----------------------------------map different-----------------------------------------
+@app.route("/map_range1", methods=["GET"])
+def map_range1():
+    
+    dataset = str(request.args.get("dataset"))
+    index = str(request.args.get("index"))
+    print(index)
+    start = int(request.args.get("start"))
+    stop = int(request.args.get("stop"))
+    f = read_folder(dataset, index, start, stop)
+    V = []
+    for i in range(len(f)):
+        ds = np.load(f[i])
+        val = ds['value'][:]
+        val = np.mean(val, axis = 0)#.flatten()
+        V.append(val)
+    res = np.nanmean(V[:], axis = 0)#.flatten()
+    range1 = res.flatten()
+    val1 = np.where(np.isnan(range1), None, range1)
+
+    Min , Max = np.float64(range_boxplot(range1,index))
+
+    x = np.repeat(ds['lat'], ds['lon'].shape[0])
+    y = np.tile(ds['lon'], ds['lat'].shape[0])
+    lat_step = ds['lat'][-1] - ds['lat'][-2]
+    lon_step = ds['lon'][-1] - ds['lon'][-2]
+    # print(lon_step,lat_step)   
+    if index == 'pr':
+        color = 'dry_wet'
+    else:
+        color = 'cool_warm'
+
+    return jsonify(y.tolist(),x.tolist(),val1.tolist(),Min,Max,lon_step,lat_step,color)
+
+@app.route("/map_range1month", methods=["GET"])
+def map_range1month():
+
+    dataset = str(request.args.get("dataset"))
+    index = str(request.args.get("index"))
+    print(index)
+    start = int(request.args.get("start"))
+    stop = int(request.args.get("stop"))
+    month = str(request.args.get("month")) # "[0,1,2,3]"
+    res = month.strip('][').split(',') 
+    selectmonth = []
+    for i in res :
+        selectmonth.append(int(i))
+
+    print("select month : ",month)
+    f = read_folder(dataset, index, start, stop)
+    V = []
+    for i in range(len(f)):
+        ds = np.load(f[i])
+        val = ds['value'][selectmonth]
+        val = np.mean(val, axis = 0)#.flatten()
+        print("val :::::: ",val)
+        V.append(val)
+    res = np.nanmean(V[:], axis = 0)#.flatten()
+    range1 = res.flatten()
+    val1 = np.where(np.isnan(range1), None, range1)
+
+    Min , Max = np.float64(range_boxplot(range1,index))
+
+    x = np.repeat(ds['lat'], ds['lon'].shape[0])
+    y = np.tile(ds['lon'], ds['lat'].shape[0])
+    lat_step = ds['lat'][-1] - ds['lat'][-2]
+    lon_step = ds['lon'][-1] - ds['lon'][-2]
+    # print(lon_step,lat_step)   
+    if index == 'pr':
+        color = 'dry_wet'
+    else:
+        color = 'cool_warm'
+
+    return jsonify(y.tolist(),x.tolist(),val1.tolist(),Min,Max,lon_step,lat_step,color)
+
+
+@app.route("/map_range2", methods=["GET"])
+def map_range2():
+    start = time.time()
+    dataset = str(request.args.get("dataset"))
+    index = str(request.args.get("index"))
+    print(index)
+    start = int(request.args.get("start"))
+    stop = int(request.args.get("stop"))
+    f = read_folder(dataset, index, start, stop)
+    V = []
+    for i in range(len(f)):
+        ds = np.load(f[i])
+        val = ds['value'][:]
+        val = np.mean(val, axis = 0)#.flatten()
+        V.append(val)
+    res = np.nanmean(V[:], axis = 0)#.flatten()
+    range1 = res.flatten()
+    val1 = np.where(np.isnan(range1), None, range1)
+
+    Min , Max = np.float64(range_boxplot(range1,index))
+
+    x = np.repeat(ds['lat'], ds['lon'].shape[0])
+    y = np.tile(ds['lon'], ds['lat'].shape[0])
+    lat_step = ds['lat'][-1] - ds['lat'][-2]
+    lon_step = ds['lon'][-1] - ds['lon'][-2]
+    # print(lon_step,lat_step)   
+    if index == 'pr':
+        color = 'dry_wet'
+    else:
+        color = 'cool_warm'
+
+    return jsonify(y.tolist(),x.tolist(),val1.tolist(),lon_step,lat_step,color)
+
+@app.route("/map_range2month", methods=["GET"])
+def map_range2month():
+
+    dataset = str(request.args.get("dataset"))
+    index = str(request.args.get("index"))
+    print(index)
+    start = int(request.args.get("start"))
+    stop = int(request.args.get("stop"))
+    month = str(request.args.get("month")) # "[0,1,2,3]"
+    res = month.strip('][').split(',') 
+    selectmonth = []
+    for i in res :
+        selectmonth.append(int(i))
+
+    f = read_folder(dataset, index, start, stop)
+    V = []
+    for i in range(len(f)):
+        ds = np.load(f[i])
+        val = ds['value'][selectmonth]
+        val = np.mean(val, axis = 0)#.flatten()
+        V.append(val)
+    res = np.nanmean(V[:], axis = 0)#.flatten()
+    range1 = res.flatten()
+    val1 = np.where(np.isnan(range1), None, range1)
+
+    Min , Max = np.float64(range_boxplot(range1,index))
+
+    x = np.repeat(ds['lat'], ds['lon'].shape[0])
+    y = np.tile(ds['lon'], ds['lat'].shape[0])
+    lat_step = ds['lat'][-1] - ds['lat'][-2]
+    lon_step = ds['lon'][-1] - ds['lon'][-2]
+    # print(lon_step,lat_step)   
+    if index == 'pr':
+        color = 'dry_wet'
+    else:
+        color = 'cool_warm'
+
+    return jsonify(y.tolist(),x.tolist(),val1.tolist(),lon_step,lat_step,color)
+
 
 @app.route('/nc_avg_hire', methods=['GET'])
 def get_Avgmap_h():
@@ -1036,8 +1185,8 @@ def read_folder_dif(dataset, index, start1,stop1, start2,stop2):
                 l_path2.append(path)
     return l_path1,l_path2
 
-@app.route("/nc_per", methods=["GET"])
-def nc_per():
+@app.route("/per_dif", methods=["GET"])
+def per_dif():
     # start = time.time()
     dataset = str(request.args.get("ncfile"))
     index = str(request.args.get("df_f"))
@@ -1090,10 +1239,60 @@ def nc_per():
     else:
         color = 'cool_warm'
 
-    
-    return jsonify(y.tolist(),x.tolist(),per1.tolist(),Min,Max,lon_step,lat_step,color,
-    val1.tolist(),np.float64(Min1),np.float64(Max1),val2.tolist(),np.float64(Min2),np.float64(Max2))
-#----------------------------map-------------------------------------
+    return jsonify(y.tolist(),x.tolist(),per1.tolist(),Min,Max,lon_step,lat_step,color,)
+
+@app.route("/raw_dif", methods=["GET"])
+def raw_dif():
+    start = time.time()
+    dataset = str(request.args.get("ncfile"))
+    index = str(request.args.get("df_f"))
+    start1 = int(request.args.get("start1"))
+    stop1 = int(request.args.get("stop1"))
+    start2 = int(request.args.get("start2"))
+    stop2 = int(request.args.get("stop2"))
+    f = read_folder_dif(dataset, index, start1, stop1,start2,stop2)
+
+    V = []
+    for i in range(len(f[0])):
+        ds = np.load(f[0][i])
+        val = ds['value'][:]
+        val = np.mean(val, axis = 0)#.flatten()
+        V.append(val)
+    res = np.nanmean(V[:], axis = 0)#.flatten()
+    # range1 = res.flatten()
+    # val1 = np.where(np.isnan(range1), None, range1)
+
+    V1 = []
+    for i in range(len(f[1])):
+        ds = np.load(f[1][i])
+        val = ds['value'][:]
+        val = np.mean(val, axis = 0)#.flatten()
+        V1.append(val)
+    res1 = np.nanmean(V1[:], axis = 0)#.flatten()
+    # range2 = res1.flatten()
+    # val2 = np.where(np.isnan(range2), None, range2)
+
+    print(res.shape)
+    print("type",type(res))
+    raw = np.subtract(res1,res).flatten()
+    # per = ((dif/res)*100).flatten()
+    raw1 = np.where(np.isnan(raw), None, raw)
+    Min , Max = range_boxplot(raw,index)
+
+    x = np.repeat(ds['lat'], ds['lon'].shape[0])
+    y = np.tile(ds['lon'], ds['lat'].shape[0])
+    lat_step = ds['lat'][-1] - ds['lat'][-2]
+    lon_step = ds['lon'][-1] - ds['lon'][-2]
+    # print(lon_step,lat_step)   
+    if index == 'pr':
+        color = 'dry_wet'
+    else:
+        color = 'cool_warm'
+
+
+    return jsonify(y.tolist(),x.tolist(),raw1.tolist(),Min,Max,lon_step,lat_step,color,)
+
+# -----------------------------------read folder----------------------------------------------------
 def read_folder(dataset, index, startyear, stopyear):
     folder = f"C:/Users/ice/Documents/managenc/{dataset}_l_file/"
     l_path = []
@@ -1104,6 +1303,50 @@ def read_folder(dataset, index, startyear, stopyear):
                 l_path.append(path)
     return l_path
 
+#-------------------- difference month selected ---------------------
+@app.route("/nc_permonth", methods=["GET"])
+def nc_permonth():
+    dataset = str(request.args.get("dataset"))
+    index = str(request.args.get("index"))
+    print(">>>>>>>>>>>>> data information >>>>>>>>>>>>>")
+    print(dataset)
+    print(index)
+    start1 = int(request.args.get("start1"))
+    stop1 = int(request.args.get("stop1"))
+    month = str(request.args.get("month")) # "[0,1,2,3]"
+    res = month.strip('][').split(',') 
+    selectmonth = []
+    for i in res :
+        selectmonth.append(int(i))
+
+    f = read_folder(dataset, index, start1, stop1)
+    V = []
+    for i in range(len(f)):
+        ds = np.load(f[i])
+        val = ds['value'][selectmonth]
+        val = np.mean(val, axis = 0)#.flatten()
+        V.append(val)
+    res = np.nanmean(V[:], axis = 0)#.flatten()
+    range1 = res.flatten()
+    val1 = np.where(np.isnan(range1), None, range1)
+
+    Min , Max = np.float64(range_boxplot(range1,index))
+
+    x = np.repeat(ds['lat'], ds['lon'].shape[0])
+    y = np.tile(ds['lon'], ds['lat'].shape[0])
+    lat_step = ds['lat'][-1] - ds['lat'][-2]
+    lon_step = ds['lon'][-1] - ds['lon'][-2]
+    # print(lon_step,lat_step)   
+    if index == 'pr':
+        color = 'dry_wet'
+    else:
+        color = 'cool_warm'
+
+    return jsonify(y.tolist(),x.tolist(),val1.tolist(),Min,Max,lon_step,lat_step,color)
+
+
+
+#----------------------------map-------------------------------------
 
 def get_Avgmap(dataset, index, startyear, stopyear, startmonth, stopmonth):
     # start = time.time()

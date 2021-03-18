@@ -1,19 +1,6 @@
-.space {
-    margin-top: 2px;
-    
-}
-select{
-    font-size: 18px;
-    display: block;
-    width: 326px;
-  }
-
-
 .form-control1{
 display: none;
 }
-.mat-radio-button ~ .mat-radio-button {
-  margin-left: 16px;
-}
+
 
   

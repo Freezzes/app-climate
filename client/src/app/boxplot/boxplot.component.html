@@ -2,46 +2,46 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
 </head>
 <body>
+    <div class="col-mb-12">
+      <div class="card" style="margin-top: 1em;width: 615px;">
+          <div class="card-header" style="width: 615px;">
+            <i class="fas fa-map-marker-alt"></i> Graph Plot
+          </div>
+          <div class="card-body" style="background-color: rgb(255, 255, 255);width: 615px;">
+            <div style="flex-direction: column; display: flex;flex-wrap: wrap;align-items: stretch;width: 600px;">
+              <form [formGroup]="choosetype" style="width: 580px;"> 
+                <div class="form-group">
+                  <label for="type">How to show boxplot : </label>
+                  <select formControlName="type" class="form-control">
+                    <option >-</option>
+                    <option *ngFor="let t of typename">{{t.name}}</option>
+                  </select>
+                </div>
+                </form>
+                <div style="display: flex;justify-content: center;width: fit-content;">
+                  <button type="button" (click)="getstationcode();plotbar();">PLOT</button>
+                </div>
 
-  <div style="flex-direction: column; display: flex;flex-wrap: wrap;align-items: stretch;">
-  <form [formGroup]="choosetype"> 
-    <div class="form-group">
-      <label for="type">How to show boxplot : </label>
-      <select formControlName="type" class="form-control">
-        <option >-</option>
-        <option *ngFor="let t of typename">{{t.name}}</option>
-      </select>
-    </div>
-    </form>
+                  <div style="flex-direction:row;display: flex;flex-wrap: nowrap;height: 300px;align-items: center;justify-content: center;" *ngIf="checkbox=='check'">
+                      <highcharts-chart
+                        [Highcharts]="highcharts" 
+                        [options] = "chartOptions"
+                        style = "width: 588px; height: 300px;">
+                      </highcharts-chart>
+                  </div>
 
-  <div class="space">
-    <button type="button" (click)="getstationcode();selectmiss();plotbar();">PLOT</button>
+                  <div style="flex-direction:row;display: flex;flex-wrap: nowrap;align-items: center;height: 300px;justify-content: center;" *ngIf="checkbar=='check'">
+                    <highcharts-chart
+                      [Highcharts]="highchartsbar" 
+                      [options] = "chartOptionsbar"
+                      style = "width: 588px; height: 300px;">
+                    </highcharts-chart>
+                  </div>            
+          </div>
+
+      </div>
   </div>
 
-    <div style="flex-direction:row;display: flex;flex-wrap: nowrap;height: 300px;" *ngIf="checkbox=='check'">
-        <highcharts-chart
-          [Highcharts]="highcharts" 
-          [options] = "chartOptions">
-        </highcharts-chart>
-    </div>
 
-    <div style="flex-direction:row;display: flex;flex-wrap: nowrap;align-items: stretch;height: 300px;" *ngIf="checkbar=='check'">
-      <highcharts-chart
-        [Highcharts]="highchartsbar" 
-        [options] = "chartOptionsbar">
-      </highcharts-chart>
-    </div>
   </div>
-
-
-    <div *ngIf="checkmiss=='check'">
-      <highcharts-chart
-        [Highcharts]="highcharts1" 
-        [options] = "chartOptions1" 
-        style = "width: 100%; height: 500px; display: block;">
-      </highcharts-chart>
-    </div>
-
-
-
 </body>

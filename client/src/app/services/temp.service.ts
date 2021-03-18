@@ -67,12 +67,11 @@ export class TempService {
         `/nc_defer?df_f=${df_f}&start1=${start1}&stop1=${stop1}&start2=${start2}&stop2=${stop2}`);
     }
 
-    async nc_per(ncfile:string,df_f:string,start1:string,stop1:string,start2:string,stop2:string):Promise<Observable<any>> {
+    async nc_permonth(ncfile:string,df_f:string,start1:string,stop1:string,month:string):Promise<Observable<any>> {
         return this.http.get('http://127.0.0.1:5500' +
-        `/nc_per?ncfile=${ncfile}&df_f=${df_f}&start1=${start1}&stop1=${stop1}&start2=${start2}&stop2=${stop2}`
+        `/nc_permonth?ncfile=${ncfile}&df_f=${df_f}&start1=${start1}&stop1=${stop1}&month=${month}`
         ,{responseType:"text"});
     }
-
     async get_Avgcsv(ncfile:string,df_f:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string){
         const response = this.http.get('http://127.0.0.1:5500' +
         `/nc_avg?ncfile=${ncfile}&df_f=${df_f}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`
@@ -116,4 +115,42 @@ export class TempService {
         return this.http.get('http://127.0.0.1:5500' +
         `/api/detail?dataset=${dataset}&index=${index}`);
     }
+    // ----------------------------------------different----------------------------
+    async per_dif(ncfile:string,df_f:string,start1:string,stop1:string,start2:string,stop2:string):Promise<Observable<any>> {
+        return this.http.get('http://127.0.0.1:5500' +
+        `/per_dif?ncfile=${ncfile}&df_f=${df_f}&start1=${start1}&stop1=${stop1}&start2=${start2}&stop2=${stop2}`
+        ,{responseType:"text"});
+    }
+
+    async raw_dif(ncfile:string,df_f:string,start1:string,stop1:string,start2:string,stop2:string):Promise<Observable<any>> {
+        return this.http.get('http://127.0.0.1:5500' +
+        `/raw_dif?ncfile=${ncfile}&df_f=${df_f}&start1=${start1}&stop1=${stop1}&start2=${start2}&stop2=${stop2}`
+        ,{responseType:"text"});
+    }
+
+    async map_range1(dataset:string,index:string,start:string,stop:string):Promise<Observable<any>> {
+        return this.http.get('http://127.0.0.1:5500' +
+        `/map_range1?dataset=${dataset}&index=${index}&start=${start}&stop=${stop}`
+        ,{responseType:"text"});
+    }
+
+    async map_range1month(dataset:string,index:string,start:string,stop:string,month:string):Promise<Observable<any>> {
+        return this.http.get('http://127.0.0.1:5500' +
+        `/map_range1month?dataset=${dataset}&index=${index}&start=${start}&stop=${stop}&month=${month}`
+        ,{responseType:"text"});
+    }
+
+    async map_range2(dataset:string,index:string,start:string,stop:string):Promise<Observable<any>> {
+        return this.http.get('http://127.0.0.1:5500' +
+        `/map_range2?dataset=${dataset}&index=${index}&start=${start}&stop=${stop}`
+        ,{responseType:"text"});
+    }
+
+    async map_range2month(dataset:string,index:string,start:string,stop:string,month:string):Promise<Observable<any>> {
+        return this.http.get('http://127.0.0.1:5500' +
+        `/map_range2month?dataset=${dataset}&index=${index}&start=${start}&stop=${stop}&month=${month}`
+        ,{responseType:"text"});
+    }
+// -------------------------------------------------------------------------------------------------------
+
 }
