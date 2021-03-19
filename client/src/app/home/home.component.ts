@@ -43,32 +43,21 @@ export class HomeComponent implements OnInit {
   model: any;
   filename = [];
 
-  dataset_name: Array<Object> = [
-    { id: 'cru_ts', name: 'CRU TS' },
-    { id: 'TMD', name: 'TMD' },
-    { id: 'ec-earth3', name: 'EC-Earth' },
-    { id: 'cnrm-esm2-1', name: 'CNRM-ESM2-1' },
-    { id: 'mpi-esm1-2-lr', name: 'MPI-ESM1-2-LR' }
-    // {id:'hadex', name:'Hadex2'}
-  ];
+  dataset_name;
 
+  // dataset_name: Array<Object> = [
+  //   { id: 'cru_ts', name: 'CRU TS' },
+  //   { id: 'TMD', name: 'TMD' },
+  //   { id: 'ec-earth3', name: 'EC-Earth' },
+  //   { id: 'cnrm-esm2-1', name: 'CNRM-ESM2-1' },
+  //   { id: 'mpi-esm1-2-lr', name: 'MPI-ESM1-2-LR' }
+  // ];
 
   filename_cru = [{ id: 'tas', name: 'Averange Temperature' },
   { id: 'tasmin', name: 'Minimum Temperature' },
   { id: 'tasmax', name: 'Maximum Temperature' },
   { id: 'pr', name: 'Preciptipation' },
-  //  {id:'CDD',name:'H2_CDD'},
-  // { id: 'ec', name: 'Surface Air Temperature' }
-]
-
-  filename_ec = [{ id: 'pr', name: 'Preciptipation' },
-  { id: 'ps', name: 'surface pressure' },
-  { id: 'ta', name: 'Air Temperature' },
-  { id: 'tas', name: '2m Temperature' },
-  { id: 'tasmin', name: 'daily min 2m Temperature' },
-  { id: 'ua', name: 'eastward wind' },
-  { id: 'va', name: 'northward wind' },
-  { id: 'vas', name: '10V wind' }]
+  ]
 
   constructor(
     private router: Router,
@@ -99,28 +88,11 @@ export class HomeComponent implements OnInit {
   per;
   // selectGrid;
 
-  ngOnInit(): void {
-    $(document).ready(function () {
-
-      $('#sidebarCollapse').on('click', function () {
-        $('#sidebar').toggleClass('active');
-      });
-    });
-
-    var dropdown = document.getElementsByClassName("dropdown-toggle");
-    var i;
-
-    for (i = 0; i < dropdown.length; i++) {
-      dropdown[i].addEventListener("click", function () {
-        this.classList.toggle("active");
-        var dropdownContent = this.nextElementSibling;
-        if (dropdownContent.style.display === "block") {
-          dropdownContent.style.display = "none";
-        } else {
-          dropdownContent.style.display = "block";
-        }
-      });
-    }
+  async ngOnInit(){
+    this.tempService.get_dataset().then(data => data.subscribe(
+      res => {
+        this.dataset_name = res
+      }))
   }
 
   clearSelect() {

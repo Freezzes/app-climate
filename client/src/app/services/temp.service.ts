@@ -104,6 +104,10 @@ export class TempService {
         ,{responseType:"text"});
     }
 // -------------------------------------------------------------------------------------------------------
+    async get_dataset(): Promise<Observable<any>>{
+        // console.log("service",this.http.get('http://127.0.0.1:5500/locat/station'))
+        return this.http.get('http://127.0.0.1:5500//api/dataset')
+    }
 
-    
+
 }
