@@ -62,7 +62,7 @@ export class HomeComponent implements OnInit {
     private calendar: NgbCalendar,
     public formatter: NgbDateParserFormatter,
     private tempService: TempService,
-    private recieveDataService: RecieveDataService) {
+    private recieveDataService: RecieveDataService,
     private inputservice: InputService) {
     // this.fromDate = calendar.getToday();
     // this.toDate = calendar.getNext(calendar.getToday(), 'd', 10);
@@ -163,6 +163,13 @@ export class HomeComponent implements OnInit {
     
     
   }
+
+  async get_difference(){
+    this.select = 'get_dif'
+    var data = this.choosedataset.controls['set'].value
+    var index = this.choosefile.controls['file'].value
+    var sent = [data,index]
+    this.inputservice.senddif(sent)
 
   }
 

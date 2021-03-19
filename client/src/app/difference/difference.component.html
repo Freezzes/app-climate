@@ -1,0 +1,162 @@
+<head>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
+<script src="https://unpkg.com/elm-pep"></script>
+<script src="http://openlayers.org/en/v3.14.1/build/ol.js"></script>
+
+<script src="https://d3js.org/d3.v4.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.13.0/d3-legend.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+<!-- <script src="//cdnjs.cloudflare.com/ajax/libs/d3-legend/1.1.0/d3-legend.js"></script> -->
+<script src="colorbrewer.min.js"></script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+<link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
+</head>
+
+<!-- <div *ngIf="per == 'yes'"> -->
+<div class="showmap">
+    <!-- <div class="selectzone"> -->
+    <div class="form-group row">
+        <label for="year" class="control-label col-sm-6">Range year 1</label>
+        <label for="year" class="control-label col-sm-6">Range year 2</label>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-6">
+        <div [formGroup]="chooseyear1">
+            <select formControlName="fromyear1" style="max-width:120%;" class="form-control">
+            <option selected>from year</option>
+            <option *ngFor="let f of lists">{{f}}</option>
+            </select>
+        </div>
+        </div>
+        <div class="col-sm-6">
+        <div [formGroup]="chooseyear2">
+            <select formControlName="fromyear2" style="max-width:120%;" class="form-control">
+            <option selected>from year</option>
+            <option *ngFor="let f of lists">{{f}}</option>
+            </select>
+        </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-6">
+        <div [formGroup]="chooseyear1">
+            <select formControlName="toyear1" style="max-width:120%;" class="form-control">
+            <option selected>to year</option>
+            <option *ngFor="let f of lists">{{f}}</option>
+            </select>
+        </div>
+        <br>
+        <button type="button" class="btn btn-secondary" (click)="map_range1()"><i class="fas fa-map-marked-alt"></i>
+            Plot</button>
+        </div>
+        <div class="col-sm-6">
+        <div [formGroup]="chooseyear2">
+            <select formControlName="toyear2" style="max-width:120%;" class="form-control">
+            <option selected>to year</option>
+            <option *ngFor="let f of lists">{{f}}</option>
+            </select>
+        </div>
+        <br>
+        <button type="button" class="btn btn-secondary" (click)="map_range2()"><i class="fas fa-map-marked-alt"></i>
+            Plot</button>
+        </div>
+    </div>
+    <!-- </div> -->
+</div>
+<!-- </div> -->
+
+<!-- <div *ngIf="per == 'yes'"> -->
+<div class="row">
+    <div class="col-md-6">
+    <div class="card">
+        <div class="card-header">
+        <i class="fas fa-globe-americas"></i>
+        Year {{start1}}-{{stop1}}
+        <br>
+        <div class="small text-muted">Metadat</div>
+        </div>
+        <div class="card-body" style="background-color: rgb(255, 255, 255);">
+        <div class="row">
+            <!-- <div class="col-sm-8"> -->
+            <div id="map1" class="map_per"></div>
+            <div class="info" style="opacity: 0.8;">
+                <svg class="legend" width="1000" height="30" style="margin-top: 1em;"></svg>
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+    <div class="col-md-6">
+    <div class="card">
+        <div class="card-header">
+        <i class="fas fa-globe-americas"></i>
+        Year {{start2}}-{{stop2}}
+        <br>
+        <div class="small text-muted">Metadat</div>
+        </div>
+        <div class="card-body" style="background-color: rgb(255, 255, 255);">
+        <div class="row">
+            <!-- <div class="col-sm-8"> -->
+            <div id="map2" class="map_per"></div>
+            <div class="info" style="opacity: 0.8;">
+                <svg class="legend" width="1000" height="30" style="margin-top: 1em;"></svg>
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+    <br>
+    <button type="button" class="btn btn-secondary" (click)="per_different()"><i class="fas fa-map-marked-alt"></i>
+    Plot Per</button>
+    <button type="button" class="btn btn-secondary" (click)="raw_different()"><i class="fas fa-map-marked-alt"></i>
+    Plot Raw</button>
+</div>
+<br>
+<div class="row row-cols-1 row-cols-md-2">
+    <div class="col-md-8">
+    <div class="card" >
+        <div class="card-header">
+        <i class="fas fa-globe-americas"></i>
+        Different 
+        <br>
+        </div>
+        <div class="card-body" style="background-color: rgb(255, 255, 255);">
+        <div class="row">
+            <div id="dif" class="map"></div>
+            <div class="info" style="opacity: 0.8;">
+            <svg class="legend" width="1000" height="30" style="margin-top: 1em;"></svg>
+            </div>
+            <!-- </div> -->
+            <div class="col-sm-2 my-auto" style="margin-left: 2%;" *ngIf="type=='per'">
+            <svg id="my_dataviz3" height=300 width=450></svg>
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+    <br>
+    <div class="col-md-4">
+    <div class="card" >
+        <div class="card-header">
+        <i class="fas fa-globe-americas"></i>
+        Dataset & Index Detail
+        </div>
+        <div class="card-body" style="background-color: rgb(255, 255, 255);">
+        <h6><B>Dataset &nbsp; &nbsp; &nbsp;&nbsp; : </B>{{data}}</h6>
+        <h6><B>long name &nbsp; :</B> {{long_name}}</h6>
+        <h6><B>description &nbsp;:</B> {{difinition}}</h6>
+        <h6><B>unit &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :</B> {{unit}}</h6>
+        <h6><B>Year &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;:</B> {{year}}</h6>
+        </div>
+    </div>
+    </div>
+</div>
+<!-- </div> -->

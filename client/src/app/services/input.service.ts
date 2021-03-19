@@ -37,6 +37,11 @@ export class InputService {
     this.graphMean.next(value);
   }
 
+  private dif = new BehaviorSubject<any>(undefined);
+  difservice = this.dif.asObservable();
+  async senddif(value:any){
+    this.dif.next(value);
+  }
 
   constructor(){}
   

@@ -133,8 +133,8 @@
                         </div>
                         
                         <div style="margin-left: 3px;" role="group" aria-label="Basic example">
-                            <button type="button" class="buttongrid" (click)="percent()"><i class="fas fa-layer-group"></i><br>Different</button>
                             <button type="button" class="buttongrid" (click)="get_raw_data();"><i class="fas fa-map-marked-alt"></i><br>Grid</button>
+                            <button type="button" class="buttongrid" (click)="get_difference()"><i class="fas fa-layer-group"></i><br>Different</button>
                             <button type="button" class="buttongrid" (click)="station_thai()"><i class="fas fa-map-marker-alt"></i><br>Station</button>
 
                         </div> 
@@ -154,6 +154,11 @@
             </div>
         </div>
 
+        <div class="flex-column" style="margin-bottom: 5%;margin-left: 20%;">
+            <div *ngIf="select == 'get_dif'">
+                <app-difference></app-difference>
+            </div>
+        </div>
         <div class="flex-column" style="margin-bottom: 5%;margin-left: 20%;">
             <div *ngIf="select == 'Map'">
                 <app-netcdf [data]="choosedataset.controls['set'].value"
