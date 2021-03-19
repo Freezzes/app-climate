@@ -6,6 +6,7 @@ import { map } from 'rxjs/operators';
 import { Chart } from 'chart.js';
 import { from, range } from 'rxjs';
 import * as $ from 'jquery';
+import { InputService } from "src/app/services/input.service";
 
 @Component({
   selector: 'app-graph',
@@ -24,7 +25,7 @@ export class GraphComponent implements OnInit {
   @Input() stopmonth: string;
 
   constructor(
-    private tempService: TempService
+    private tempService: TempService,private sharedData:InputService
   ) { }
   
   public get;
@@ -36,27 +37,38 @@ export class GraphComponent implements OnInit {
   public name = ['Jan','Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov','Dec'];
 
   async ngOnInit() {
-    await this.tempService.global_avg(this.data, this.file, this.startyear, this.startmonth, this.stopyear, this.stopmonth)
-    .then(data => data.subscribe(res => {
-      console.log("global",res)
-      var data = Number(this.stopyear)- Number(this.startyear)
-      console.log("dddddd",data)
-      var start = Number(this.startyear)
-      for (var i =0; i<= data; i++){
-        this.Data.dataPoints.push(
-          {x: new Date(start, 0), y: res[0][i]},
-       
-        )
-        start+=1
+    this.sharedData.graphservice.subscribe(data => {
+      if (data){
+      console.log("graph",data)
+      // var avg = data[1]
+      // console.log("datapoint",data[0])
+      this.plotMean(data[0],data[1],data[2])
+      // this.Data.dataPoints = data[0]
+      // console.log("test graph",this.Data.dataPoints)
       }
-      console.log("point",this.Data.dataPoints)
-      this.plotMean(res[1],res[2])
-    }))
+    })
 
-    this.Data = {
-      value:[],
-      dataPoints : []
-    }
+    // await this.tempService.global_avg(this.data, this.file, this.startyear, this.startmonth, this.stopyear, this.stopmonth)
+    // .then(data => data.subscribe(res => {
+    //   console.log("global",res)
+    //   var data = Number(this.stopyear)- Number(this.startyear)
+    //   console.log("dddddd",data)
+    //   var start = Number(this.startyear)
+    //   for (var i =0; i<= data; i++){
+    //     this.Data.dataPoints.push(
+    //       {x: new Date(start, 0), y: res[0][i]},
+       
+    //     )
+    //     start+=1
+    //   }
+    //   console.log("point",this.Data.dataPoints)
+    //   this.plotMean(res[1],res[2])
+    // }))
+
+    // this.Data = {
+    //   // value:[],
+    //   dataPoints : []
+    // }
 
     // await this.plotMean()
     
@@ -64,7 +76,7 @@ export class GraphComponent implements OnInit {
 
   //---------------------------------------------------------------------------------------------------
 
-  async plotMean(Avg,unit) {
+  async plotMean(Data,Avg,unit) {
     var chart = new CanvasJS.Chart("chartContainer", {
       animationEnabled: true,  
       title:{
@@ -84,67 +96,32 @@ export class GraphComponent implements OnInit {
         xValueFormatString: "YYYY",
         showInLegend: true,
         type: "line",
-        dataPoints: this.Data.dataPoints
+        dataPoints: Data
       }]
     });
     chart.render();
   }
 
-  async datapoint(){
-    await this.tempService.global_avg(this.data, this.file, this.startyear, this.startmonth, this.stopyear, this.stopmonth)
-    .then(data => data.subscribe(res => {
-      console.log("global",res)
-      var data = Number(this.stopyear)- Number(this.startyear)
-      console.log("dddddd",data)
-      for (var i =0; i< data; i++){
-        this.Data.dataPoints.push(
-          {x: new Date(data[i], 0), y: res[0][i]},
-        )
-      }
-    }))
+  // async datapoint(){
+  //   await this.tempService.global_avg(this.data, this.file, this.startyear, this.startmonth, this.stopyear, this.stopmonth)
+  //   .then(data => data.subscribe(res => {
+  //     console.log("global",res)
+  //     var data = Number(this.stopyear)- Number(this.startyear)
+  //     console.log("dddddd",data)
+  //     for (var i =0; i< data; i++){
+  //       this.Data.dataPoints.push(
+  //         {x: new Date(data[i], 0), y: res[0][i]},
+  //       )
+  //     }
+  //   }))
 
-    this.Data = {
-      value:[],
-      dataPoints : []
-    }
+  //   this.Data = {
+  //     value:[],
+  //     dataPoints : []
+  //   }
     
-    // function range(start, stop, step) {
-    //   if (typeof stop == 'undefined') {
-    //     // one param defined
-    //     stop = start;
-    //     start = 0;
-    //   }
-    //   if (typeof step == 'undefined') {
-    //     step = 1;
-    //   }
-    //   if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) {
-    //     return [];
-    //   }
-
-    //   var result = [];
-    //   for (var i = start; step > 0 ? i < stop : i > stop; i += step) {
-    //     result.push(i);
-    //   }
-
-    //   return result;
-    // };
-
-    // var data = range(this.startyear, this.stopyear, 1)
-    // var values = [2798000,3386000,6944000,6026000]
-    // var total = 0;
-    // for(var i = 0; i < values.length; i++) {
-    //     total += values[i];
-    // }
-    // var avg = total / values.length;
-    // for (var i =0; i< data.length; i++){
-    //   this.Data.dataPoints.push(
-    //     {x: new Date(data[i], 0), y: values[i]},
-    //   )
-    // }
-    // this.Data.value.push(avg)
-    // console.log("range",data)
-    console.log("datapoints",this.Data.dataPoints)
-    // console.log("Avg",this.Data.value)
-  }
+  //   console.log("datapoints",this.Data.dataPoints)
+  //   // console.log("Avg",this.Data.value)
+  // }
 
 }
