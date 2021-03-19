@@ -78,6 +78,13 @@ export class TempService {
         ,{responseType:"text"});
         return response
     }
+    async get_Avgcsvtrend(ncfile:string,df_f:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string){
+        const response = this.http.get('http://127.0.0.1:5500' +
+        `/nc_avgtrend?ncfile=${ncfile}&df_f=${df_f}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`
+        ,{responseType:"text"});
+        return response
+    }
+
     async getdata_sta(df_f:string,startdate:string,stopdate:string): Promise<Observable<any>>{
         return this.http.get('http://127.0.0.1:5500'+ `/locat/station?df_f=${df_f}&startdate=${startdate}&stopdate=${stopdate}`)
     }

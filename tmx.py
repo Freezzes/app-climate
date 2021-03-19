@@ -1119,17 +1119,19 @@ def map_range2month():
 
     return jsonify(y.tolist(),x.tolist(),val1.tolist(),lon_step,lat_step,color)
 
+#--------------- high resolution ------------------------
 
 @app.route('/nc_avg_hire', methods=['GET'])
 def get_Avgmap_h():
-    start = time.time()
-    dataset = str(request.args.get("ncfile"))
-    index = str(request.args.get("df_f"))
+    ncfile = str(request.args.get("ncfile"))
+    df_f = str(request.args.get("df_f"))
     startyear = int(request.args.get("startyear"))
     stopyear = int(request.args.get("stopyear"))
     startmonth = int(request.args.get("startmonth"))
     stopmonth = int(request.args.get("stopmonth"))
-    f = read_folder_h(dataset, index, startyear, stopyear)
+    print("dataset name : ",ncfile)
+    print("index : ", df_f)
+    f = read_folder_h(ncfile, df_f, startyear, stopyear)
     print(f)
     V = []
     for i in range(len(f)):
@@ -1153,19 +1155,19 @@ def get_Avgmap_h():
     max_ = np.round(np.nanmax(res), 4)
     print(max_)
 
-    Min , Max = range_boxplot(res,index)
+    Min , Max = range_boxplot(res,df_f)
 
     x = np.repeat(ds['lat'], ds['lon'].shape[0])
     y = np.tile(ds['lon'], ds['lat'].shape[0])
     lat_step = ds['lat'][-1] - ds['lat'][-2]
     lon_step = ds['lon'][-1] - ds['lon'][-2]
     print(lon_step,lat_step)   
-    if index == 'pr':
+    if df_f == 'pr':
         color = 'dry_wet'
     else:
         color = 'cool_warm'
 
-    return jsonify(y.tolist(),x.tolist(),resp.tolist(),np.float64(Min),np.float64(Max),lon_step,lat_step,color)
+    return jsonify(y.tolist(),x.tolist(),resp.tolist(),np.float64(Min),np.float64(Max),np.float64(lon_step),np.float64(lat_step),color)
 
 #--------------------------------- Low resolution---------------------------------------------------
 # -----------------------------------------------per-----------------------------------------------
@@ -1243,7 +1245,7 @@ def per_dif():
 
 @app.route("/raw_dif", methods=["GET"])
 def raw_dif():
-    start = time.time()
+    # start = time.time()
     dataset = str(request.args.get("ncfile"))
     index = str(request.args.get("df_f"))
     start1 = int(request.args.get("start1"))
@@ -1344,7 +1346,64 @@ def nc_permonth():
 
     return jsonify(y.tolist(),x.tolist(),val1.tolist(),Min,Max,lon_step,lat_step,color)
 
+#------------------------ map trend ---------------------------------
+def get_Avgmaptrend(dataset, index, startyear, stopyear, startmonth, stopmonth):
+    f = read_folder(dataset, index, startyear, stopyear)
+    print(f)
+    V = []
+    for i in range(len(f)):
+        ds = np.load(f[i])
+        if f[i][:-4].split("-")[1] == str(startyear): #เช็คชื่อไฟล์ว่าปีตรงกับพี่เริ่ม 
+            val = ds['value'][startmonth-1:12] #เอาค่าตั้งแต่ startmonth ถึง เดือน12
+            val = np.mean(val, axis = 0) #เฉลี่ยทั้งหมด shape (lat,lon)
+        elif f[i][:-4].split("-")[1] == str(stopyear):
+            val = ds['value'][:stopmonth]
+            val = np.mean(val, axis = 0)
+        else:
+            val = ds['value'][0:12]
+            val = np.mean(val, axis = 0)#.flatten()
+        V.append(val)
+        print(len(V))
 
+    trend = []
+    for k in range(len(V[0][0])):
+        for j in range(len(V[0])):
+            lis = []
+            for i in range(len(V)):
+                if str(V[i][j][k]) == str(np.nan):
+                    V[i][j][k] = 1E20
+                lis.append(V[i][j][k])
+            res = mk.original_test(lis,0.05)
+            if res[0] == 'increasing':
+                trend.append(1)
+            elif res[0] == 'no trend':
+                trend.append(0)
+                print("-")
+            else :
+                trend.append(-1)
+    
+    x = np.repeat(ds['lat'], ds['lon'].shape[0])
+    y = np.tile(ds['lon'], ds['lat'].shape[0])
+    lat_step = ds['lat'][-1] - ds['lat'][-2]
+    lon_step = ds['lon'][-1] - ds['lon'][-2]
+    print(lon_step,lat_step)   
+    if index == 'pr':
+        color = 'dry_wet'
+    else:
+        color = 'cool_warm'
+
+    return y.tolist(),x.tolist(),trend,lon_step,lat_step,color
+
+@app.route('/nc_avgtrend', methods=['GET'])
+def selectNCtrend():
+    ncfile = str(request.args.get("ncfile"))
+    df_f = str(request.args.get("df_f"))
+    startyear = int(request.args.get("startyear"))
+    stopyear = int(request.args.get("stopyear"))
+    startmonth = int(request.args.get("startmonth"))
+    stopmonth = int(request.args.get("stopmonth"))
+    a = get_Avgmaptrend(ncfile, df_f, startyear, stopyear, startmonth, stopmonth)
+    return jsonify(a)
 
 #----------------------------map-------------------------------------
 
@@ -1378,6 +1437,7 @@ def get_Avgmap(dataset, index, startyear, stopyear, startmonth, stopmonth):
     
     x = np.repeat(ds['lat'], ds['lon'].shape[0])
     y = np.tile(ds['lon'], ds['lat'].shape[0])
+
     lat_step = ds['lat'][-1] - ds['lat'][-2]
     lon_step = ds['lon'][-1] - ds['lon'][-2]
     print(lon_step,lat_step)   
@@ -1385,6 +1445,11 @@ def get_Avgmap(dataset, index, startyear, stopyear, startmonth, stopmonth):
         color = 'dry_wet'
     else:
         color = 'cool_warm'
+        print("type >>>>>>>>>>>>>>>>>>> ")
+
+    print(type(lon_step))
+    print(type(lat_step))
+
 
     return y.tolist(),x.tolist(),resp.tolist(),np.float64(Min),np.float64(Max),lon_step,lat_step,color
 

@@ -391,5 +391,5 @@ button.buttongridselect{
   flex-direction: column;
   flex-grow: 1; 
   justify-content: center;
-  background-color: rgb(192, 92, 130);
+  /* background-color: rgb(192, 92, 130); */
 }

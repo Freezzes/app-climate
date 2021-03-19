@@ -9,7 +9,7 @@
 <body>
   <div *ngIf="per == 'yes'" style="display: flex;flex-direction: row;justify-content: space-between;align-items: center;">
   <!-- Select range 1 -->
-    <div style="flex-direction: row;display: flex;flex-wrap: nowrap;width: 600px;justify-content: center;background-color: cyan;"> 
+    <div style="flex-direction: row;display: flex;flex-wrap: nowrap;width: 600px;justify-content: center;/* background-color: cyan; */"> 
       <div class="col-mb-12">
         <div class="card" style="width: 550px">
           <div class="card-header" style="font-size: 20px; font-weight: 400;font-family:'Open Sans', sans-serif;">
@@ -22,7 +22,7 @@
               <div style="display:flex;flex-direction: column; width: 400px;">
               <div>
                 <div [formGroup]="chooseyear1">
-                  <select formControlName="fromyear1" style="max-width:120%;width: 350px;" class="form-control">
+                  <select formControlName="fromyear1" style="max-width:120%;width: 350px; " class="form-control">
                     <option selected>from year</option>
                     <option *ngFor="let f of lists">{{f}}</option>
                   </select>
@@ -52,7 +52,7 @@
       <br>
     </div>
   <!-- Select range 2 -->
-    <div style="flex-direction: row;display: flex;flex-wrap: nowrap;width: 600px;justify-content: center;background-color: darkcyan;"> 
+    <div style="flex-direction: row;display: flex;flex-wrap: nowrap;width: 600px;justify-content: center;/* background-color: darkcyan; */"> 
       <div class="col-mb-12">
         <div class="card" style="width: 550px">
           <div class="card-header" style="font-size: 20px; font-weight: 400;font-family:'Open Sans', sans-serif;">
@@ -97,15 +97,17 @@
 
   </div>
   <br>
-  <div style="display: flex; flex-direction: row; height:90px; border: solid; border-color: rgb(123, 166, 223); border-width: 3px; padding: 2px;">
+  <div *ngIf="per == 'yes'" style="display: flex; flex-direction: row; height:90px; border: solid; border-color: rgb(123, 166, 223); border-width: 3px; padding: 2px;">
     <div style="width: 50px;">
     </div>
-    <div style="display: flex;flex-direction: column; justify-content: center; font-size: 20px; font-weight: 400;font-family:'Open Sans', sans-serif;">
+    <div style="display: flex;flex-direction: column; justify-content: center; font-size: 15px; font-weight: 400;font-family:'Open Sans', sans-serif;">
           <label> ** Specific month : </label> 
+    </div>
+    <div style="width: 30px;">
     </div>
     <div style="display: flex;flex-direction: column;justify-content: center;">
       <form [formGroup]="myForm">
-        <ng-multiselect-dropdown
+        <ng-multiselect-dropdown style="font-size: 15px; font-weight: 400;font-family:'Open Sans', sans-serif;"
             name="city"
             [placeholder]="'Select Month'"
             [settings]="dropdownSettings"
@@ -143,10 +145,10 @@
 
 </div> -->
   <!-- per -->
-<div *ngIf="per == 'yes'" style="background-color: indianred;">
+<div *ngIf="per == 'yes'"> <!--style="/*background-color: indianred;*/-->
   <br>
-  <div class="row" style="background-color: indigo;">
-    <div class="col-md-6" style="background-color: lightblue;height: 500px;">
+  <div class="row" > <!--style="background-color: indigo;"-->
+    <div class="col-md-6" style="/* background-color: lightblue; */ height: 500px;">
       <div class="card" style="height: 500px;">
         <div class="card-header">
           <i class="fas fa-globe-americas"></i>
@@ -154,7 +156,7 @@
           <br>
           <div class="small text-muted">Metadata</div>
         </div>
-        <div class="card-body" style="background-color: rgb(167, 195, 236);height: 400px;">
+        <div class="card-body" > <!--style="/* background-color: rgb(167, 195, 236); */height: 400px;"-->
           <div>
               <div id="map1" class="map_per">
               </div>
@@ -164,7 +166,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-6" style="background-color: lightpink;">
+    <div class="col-md-6" > <!--style="background-color: lightpink;"-->
       <div class="card">
         <div class="card-header">
           <i class="fas fa-globe-americas"></i>
@@ -172,7 +174,7 @@
           <br>
           <div class="small text-muted">Metadat</div>
         </div>
-        <div class="card-body" style="background-color: rgb(235, 121, 121);">
+        <div class="card-body" style="background-color: rgb(255, 255, 255);">
           <div class="row">
             <!-- <div class="col-sm-8"> -->
               <div id="map2" class="map_per"></div>
