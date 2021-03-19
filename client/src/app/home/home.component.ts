@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { TempService } from 'src/app/services/temp.service';
 import { RecieveDataService } from './data.service';
 import * as $ from 'jquery'
+import { InputService } from "src/app/services/input.service";
 
 declare interface RouteInfo {
   path: string;
@@ -31,10 +32,6 @@ export class HomeComponent implements OnInit {
   public file;
   public getdataset: any;
   public station;
-  // public startyear;
-  // public startmonth;
-  // public stopyear;
-  // public stopmonth;CRU
   public start_date;
   public stop_date;
   public lenght_y;
@@ -66,6 +63,7 @@ export class HomeComponent implements OnInit {
     public formatter: NgbDateParserFormatter,
     private tempService: TempService,
     private recieveDataService: RecieveDataService) {
+    private inputservice: InputService) {
     // this.fromDate = calendar.getToday();
     // this.toDate = calendar.getNext(calendar.getToday(), 'd', 10);
   }
@@ -93,43 +91,79 @@ export class HomeComponent implements OnInit {
       res => {
         this.dataset_name = res
       }))
+
+    var region = [this.North.value, this.South.value, this.West.value, this.East.value]
+    await this.inputservice.sendRegion(region)
   }
 
   clearSelect() {
     this.select = "";
   }
 
-  Map() {
-    const data = {
-      data:this.choosedataset.controls['set'].value,
-      file:this.choosefile.controls['file'].value,
-      startYear:this.fromDate.year,
-      stopYear:this.toDate.year,
-      startMonth:this.fromDate.month,
-      stopMonth:this.toDate.month,
-      North:this.North.value,
-      South:this.South.value,
-      West:this.West.value,
-      East:this.East.value,
-      per:"per",
-    }
-
-    this.recieveDataService.setData(data);
-    // console.log("test test test", this.recieveDataService.data);
-    // this.router.navigate(['/nc'], {state :this.choosedataset.value});
-    let from_date = String(this.fromDate.year + '-' + this.fromDate.month + '-' + this.fromDate.day)
-    let end_date = new Date(this.toDate.year, this.toDate.month, this.toDate.day)
-    this.start_date = JSON.stringify(this.fromDate)
-    // this.start_date = this.start_date.slice(1,11)
-    this.stop_date = JSON.stringify(end_date)
-    this.stop_date = this.stop_date.slice(1, 11)
-    // console.log("start",this.fromDate)
-    // console.log("end",this.toDate)
-    // console.log("set",this.choosedataset.controls['set'].value)
-    // console.log("sent",this.choosefile.controls['file'].value)
-    this.select = "Map"
+  async get_raw_data() {
+    this.select = 'get_data'
+    console.log("get_data")
+    var data = this.choosedataset.controls['set'].value
+    var index = this.choosefile.controls['file'].value
+    var startyear = this.fromDate.year
+    var stopyear = this.toDate.year
+    var startmonth = this.fromDate.month
+    var stopmonth = this.toDate.month
+    // var region = [this.North.value, this.South.value, this.West.value, this.East.value]
     this.per = "no"
-    console.log(this.select)
+
+    await this.tempService.detail(data, index).then(data => data.subscribe(
+      res => {
+        this.inputservice.sendDetail(res)
+        console.log("detailllllll", res['color_map'])
+      }
+    )
+    )
+
+    // await this.inputservice.sendRegion(region)
+
+    await this.tempService.get_Avgcsv(data, index, startyear, stopyear, startmonth, stopmonth)
+      .then(data => data.subscribe(
+        (res => {
+          let resp = JSON.parse(res)
+          this.inputservice.sendLowRes(resp)
+        })
+      ))
+
+    await this.tempService.get_hire(data, index, startyear, stopyear, startmonth, stopmonth)
+      .then(data => data.subscribe(
+        (res => {
+          let resp = JSON.parse(res)
+          this.inputservice.sendHiRes(resp)
+        })
+      ))
+
+    await this.tempService.global_avg(data, index, startyear,startmonth, stopyear, stopmonth)
+    .then(data => data.subscribe(res => {
+      console.log("global",res)
+      var data = Number(stopyear)- Number(startyear)
+      console.log("dddddd",data)
+      var start = Number(startyear)
+      for (var i =0; i<= data; i++){
+        Data.dataPoints.push(
+          {x: new Date(start, 0), y: res[0][i]},        
+        )
+        start+=1
+      }
+      console.log("point",Data.dataPoints)
+      var sent = [Data.dataPoints,res[1],res[2]]
+      this.inputservice.sendGraph(sent)
+      // this.plotMean(res[1],res[2])
+    }))
+
+    var Data = {
+      // value:[],
+      dataPoints : []
+    }
+    
+    
+  }
+
   }
 
   station_thai() {

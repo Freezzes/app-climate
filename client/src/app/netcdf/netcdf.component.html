@@ -20,192 +20,48 @@
   <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
 </head>
 
-<div *ngIf="per == 'yes'">
-  <div class="showmap">
-    <!-- <div class="selectzone"> -->
-      <div class="form-group row">
-        <label for="year" class="control-label col-sm-6">Range year 1</label>
-        <label for="year" class="control-label col-sm-6">Range year 2</label>
-      </div>
-      <div class="form-group row">
-        <div class="col-sm-6">
-          <div [formGroup]="chooseyear1">
-            <select formControlName="fromyear1" style="max-width:120%;" class="form-control">
-              <option selected>from year</option>
-              <option *ngFor="let f of lists">{{f}}</option>
-            </select>
-          </div>
-        </div>
-        <div class="col-sm-6">
-          <div [formGroup]="chooseyear2">
-            <select formControlName="fromyear2" style="max-width:120%;" class="form-control">
-              <option selected>from year</option>
-              <option *ngFor="let f of lists">{{f}}</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      <div class="form-group row">
-        <div class="col-sm-6">
-          <div [formGroup]="chooseyear1">
-            <select formControlName="toyear1" style="max-width:120%;" class="form-control">
-              <option selected>to year</option>
-              <option *ngFor="let f of lists">{{f}}</option>
-            </select>
-          </div>
-          <br>
-          <button type="button" class="btn btn-secondary" (click)="map_range1()"><i class="fas fa-map-marked-alt"></i>
-            Plot</button>
-        </div>
-        <div class="col-sm-6">
-          <div [formGroup]="chooseyear2">
-            <select formControlName="toyear2" style="max-width:120%;" class="form-control">
-              <option selected>to year</option>
-              <option *ngFor="let f of lists">{{f}}</option>
-            </select>
-          </div>
-          <br>
-          <button type="button" class="btn btn-secondary" (click)="map_range2()"><i class="fas fa-map-marked-alt"></i>
-            Plot</button>
-        </div>
-      </div>
-    <!-- </div> -->
-  </div>
-</div>
-
-<!-- per -->
-<div *ngIf="per == 'yes'">
-  <div class="row">
-    <div class="col-md-6">
-      <div class="card">
+<div class="main-content">
+  <div class="container-fluid" style="height: inherit;">
+    <div class="col-mb-12">
+      <div class="card" style="margin-top: 1em;width:68%">
+        <!-- map -->
         <div class="card-header">
           <i class="fas fa-globe-americas"></i>
-          Year {{start1}}-{{stop1}}
+          World Map
           <br>
-          <div class="small text-muted">Metadat</div>
         </div>
         <div class="card-body" style="background-color: rgb(255, 255, 255);">
           <div class="row">
-            <!-- <div class="col-sm-8"> -->
-              <div id="map1" class="map_per"></div>
+            <div class="col-sm-8">
+              <div id="map" class="map"></div>
               <div class="info" style="opacity: 0.8;">
                 <svg class="legend" width="1000" height="30" style="margin-top: 1em;"></svg>
               </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-header">
-          <i class="fas fa-globe-americas"></i>
-          Year {{start2}}-{{stop2}}
-          <br>
-          <div class="small text-muted">Metadat</div>
-        </div>
-        <div class="card-body" style="background-color: rgb(255, 255, 255);">
-          <div class="row">
-            <!-- <div class="col-sm-8"> -->
-              <div id="map2" class="map_per"></div>
-              <div class="info" style="opacity: 0.8;">
-                <svg class="legend" width="1000" height="30" style="margin-top: 1em;"></svg>
-              </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <br>
-    <button type="button" class="btn btn-secondary" (click)="per_different()"><i class="fas fa-map-marked-alt"></i>
-      Plot Per</button>
-    <button type="button" class="btn btn-secondary" (click)="raw_different()"><i class="fas fa-map-marked-alt"></i>
-      Plot Raw</button>
-  </div>
-  <br>
-  <div class="row row-cols-1 row-cols-md-2">
-    <div class="col-md-8">
-      <div class="card" >
-        <div class="card-header">
-          <i class="fas fa-globe-americas"></i>
-          Percent Different 
-          <br>
-        </div>
-        <div class="card-body" style="background-color: rgb(255, 255, 255);">
-          <div class="row">
-            <div id="per" class="map"></div>
-            <div class="info" style="opacity: 0.8;">
-              <svg class="legend" width="1000" height="30" style="margin-top: 1em;"></svg>
             </div>
-            <!-- </div> -->
             <div class="col-sm-2 my-auto" style="margin-left: 2%;" *ngIf="type=='per'">
               <svg id="my_dataviz3" height=300 width=450></svg>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <br>
-    <div class="col-md-4">
-      <div class="card" >
-        <div class="card-header">
-          <i class="fas fa-globe-americas"></i>
-          Dataset & Index Detail
-        </div>
-        <div class="card-body" style="background-color: rgb(255, 255, 255);">
-          <h6><B>Dataset &nbsp; &nbsp; &nbsp;&nbsp; : </B>{{data}}</h6>
-          <h6><B>long name &nbsp; :</B> {{long_name}}</h6>
-          <h6><B>description &nbsp;:</B> {{difinition}}</h6>
-          <h6><B>unit &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :</B> {{unit}}</h6>
-          <h6><B>Year &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;:</B> {{year}}</h6>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div *ngIf="per != 'yes'">
-  <div class="main-content">
-    <div class="container-fluid" style="height: inherit;">
-      <div class="col-mb-12">
-        <div class="card" style="margin-top: 1em;width:68%">
-          <!-- map -->
-          <div class="card-header">
-            <i class="fas fa-globe-americas"></i>
-            World Map
-            <br>
-          </div>
-          <div class="card-body" style="background-color: rgb(255, 255, 255);">
-            <div class="row">
-              <!-- <div class="col-sm-8"> -->
-                <div id="map" class="map"></div>
-                <div class="info" style="opacity: 0.8;">
-                  <svg class="legend" width="1000" height="30" style="margin-top: 1em;"></svg>
+            <div class="col-sm-4 text-muted my-auto">
+                <div class="h6 mb-0 text-primary">
+                  <h5><B>Dataset :&nbsp;</B>{{data}}</h5>
+                  <h6><B>long name &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;:</B> {{long_name}}</h6>
+                  <h6><B>description &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;:</B> {{difinition}}</h6>
+                  <h6><B>unit &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;:</B> {{unit}}</h6>
+                  <h6><B>Year &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;:</B> {{year}}</h6>
                 </div>
-              <!-- </div> -->
-              <div class="col-sm-2 my-auto" style="margin-left: 2%;" *ngIf="type=='per'">
-                <svg id="my_dataviz3" height=300 width=450></svg>
-              </div>
-              <!-- <div class="col-sm-4 text-muted my-auto">
-                  <div class="h6 mb-0 text-primary">
-                    <h5><B>Dataset :&nbsp;</B>{{data}}</h5>
-                    <h6><B>long name &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;:</B> {{long_name}}</h6>
-                    <h6><B>description &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;:</B> {{difinition}}</h6>
-                    <h6><B>unit &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;:</B> {{unit}}</h6>
-                    <h6><B>Year &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;:</B> {{year}}</h6>
-                  </div>
-                  <hr>
-                  <div class="h6 mb-0 text-warning" >Country:   </div>
-                    <span class="small text-muted" id="selectedCountryName" style="color:rgb(255, 168, 7);font-weight:bold"></span>             
-                  <hr>
-                  <div class="h6 mb-0 text-success">Minimum : </div>
-                  <div class="small text-muted">
-                    <span id="selectedCountryMin" style="color:blue;font-weight:bold"></span> 
-                  </div>
-                  
-                  <div class="h6 mb-0 text-success">Maximum : </div>
-                  <div class="small text-muted">
-                    <span id="selectedCountryMax" style="color:red;font-weight:bold"></span>
-                  </div>                
-              </div> -->
+                <hr>
+                <div class="h6 mb-0 text-warning" >Country:   </div>
+                  <span class="small text-muted" id="selectedCountryName" style="color:rgb(255, 168, 7);font-weight:bold"></span>             
+                <hr>
+                <div class="h6 mb-0 text-success">Minimum : </div>
+                <div class="small text-muted">
+                  <span id="selectedCountryMin" style="color:blue;font-weight:bold"></span> 
+                </div>
+                
+                <div class="h6 mb-0 text-success">Maximum : </div>
+                <div class="small text-muted">
+                  <span id="selectedCountryMax" style="color:red;font-weight:bold"></span>
+                </div>                
             </div>
           </div>
         </div>
@@ -213,26 +69,3 @@
     </div>
   </div>
 </div>
-
-  <!-- <div class="showmap">
-  <div class="form-group row">
-    <div class="col-sm-8">
-      <div id="map" class="map" ></div>
-      <div class="selectzone">
-        <div class="info" style="opacity: 0.8;">
-          <svg class="legend" width="1000" height="30"></svg>
-        </div>
-      </div>
-    </div>
-    <div class="dat">
-      <h5><B>Dataset :&nbsp;</B>{{data}}</h5>
-      <p><B>Year &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;:</B> &nbsp; {{range_y}}</p>
-      <p><B>Country: </B><span id="selectedCountryName" style="color:rgb(255, 168, 7);font-weight:bold"></span> </p> 
-      <p><B>Minimum {{input_ds}}: </B> <span id="selectedCountryMin" style="color:blue;font-weight:bold"></span> </p>
-      <p><B>Maximum {{input_ds}}: </B> <span id="selectedCountryMax" style="color:red;font-weight:bold"></span> </p>
-    </div>
-  </div>
-</div> -->
-
-  <!-- <div id="map" class="map_per" ></div> -->
-  <!-- </div> -->
