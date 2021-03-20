@@ -105,10 +105,10 @@ export class HomeComponent implements OnInit {
     console.log("get_data")
     var data = this.choosedataset.controls['set'].value
     var index = this.choosefile.controls['file'].value
-    var startyear = this.fromDate.year
-    var stopyear = this.toDate.year
-    var startmonth = this.fromDate.month
-    var stopmonth = this.toDate.month
+    var startyear = String(this.fromDate.year)
+    var stopyear = String(this.toDate.year)
+    var startmonth = String(this.fromDate.month)
+    var stopmonth = String(this.toDate.month)
     // var region = [this.North.value, this.South.value, this.West.value, this.East.value]
     this.per = "no"
 
