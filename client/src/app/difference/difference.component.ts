@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit ,OnChanges} from '@angular/core';
 import 'ol/ol.css';
 import * as MapLib from 'src/app/netcdf/lib/map.js';
 import { TempService } from 'src/app/services/temp.service';
@@ -16,7 +16,7 @@ import { InputService } from "src/app/services/input.service";
   styleUrls: ['./difference.component.css']
 })
 export class DifferenceComponent implements OnInit {
-
+  
   lists;
   map;
   dataset;
@@ -36,6 +36,11 @@ export class DifferenceComponent implements OnInit {
   South;
   West;
   East;
+
+  long_name;
+  difinition;
+  unit;
+  year;
 
 
   constructor(
@@ -77,6 +82,19 @@ export class DifferenceComponent implements OnInit {
     this.map1 = MapLib.draw_map('map1')
     this.map2 = MapLib.draw_map('map2')
     this.map = MapLib.draw_map('dif')
+
+    this.sharedData.Detailservice.subscribe(data => {
+      if(data){
+        console.log("input Detail",data)
+        this.unit = data.unit
+        this.difinition = data.description
+        this.long_name = data.long_name
+        this.year = data.year
+        console.log("unit",this.unit)
+      }
+      
+    })
+    
     this.sharedData.difservice.subscribe(data => {
       if (data) {
         console.log("input dif", data)
