@@ -37,6 +37,7 @@ export class DifferenceComponent implements OnInit {
   difinition;
   unit;
   year;
+  dataset_name;
 
 
   constructor(
@@ -82,15 +83,16 @@ export class DifferenceComponent implements OnInit {
     this.sharedData.Detailservice.subscribe(data => {
       if(data){
         console.log("input Detail",data)
-        this.unit = data.unit
-        this.difinition = data.description
-        this.long_name = data.long_name
-        this.year = data.year
+        this.unit = data[0].unit
+        this.difinition = data[0].description
+        this.long_name = data[0].long_name
+        this.year = data[0].year
+        this.dataset_name = data[1]
         console.log("unit",this.unit)
       }
       
     })
-    
+
     this.sharedData.difservice.subscribe(data => {
       if (data) {
         console.log("input dif", data)

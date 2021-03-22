@@ -93,7 +93,7 @@ export class HomeComponent implements OnInit {
   async get_raw_data() {
     this.select = 'get_data'
     console.log("get_data")
-    var data = this.choosedataset.controls['set'].value
+    this.dataset = this.choosedataset.controls['set'].value
     var index = this.choosefile.controls['file'].value
     var startyear = String(this.fromDate.year)
     var stopyear = String(this.toDate.year)
@@ -101,11 +101,13 @@ export class HomeComponent implements OnInit {
     var stopmonth = String(this.toDate.month)
     // var region = [this.North.value, this.South.value, this.West.value, this.East.value]
     this.per = "no"
+    console.log(this.dataset)
 
     await this.dataService.detail(this.dataset, index).then(data => data.subscribe(
       res => {
-        this.inputservice.sendDetail(res)
-        console.log("detailllllll", res['color_map'])
+        var detail = [res,this.dataset]
+        this.inputservice.sendDetail(detail)
+        console.log("detailllllll",this.dataset)
       }
     )
     )

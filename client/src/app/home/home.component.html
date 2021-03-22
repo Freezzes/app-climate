@@ -138,13 +138,14 @@
                             <button type="button" class="buttongrid" (click)="station_thai()"><i class="fas fa-map-marker-alt"></i><br>Station</button>
 
                         </div> 
+                        <button type="button" (click)="get_raw_data();">testtt</button>
                     </div>   
                 </li>
             </ul>
         </nav>
         <div class="flex-column" style="margin-bottom: 5%;margin-left: 20%;">
             <div *ngIf="select == 'get_data'">
-                <app-netcdf [per] = "per"></app-netcdf>
+                <app-netcdf ></app-netcdf>
                 <app-graph [data]="choosedataset.controls['set'].value"
                            [file]="choosefile.controls['file'].value" 
                            [startyear]="this.fromDate.year"
@@ -159,38 +160,7 @@
                 <app-difference></app-difference>
             </div>
         </div>
-        <div class="flex-column" style="margin-bottom: 5%;margin-left: 20%;">
-            <div *ngIf="select == 'Map'">
-                <app-netcdf [data]="choosedataset.controls['set'].value"
-                            [file]="choosefile.controls['file'].value" 
-                            [startyear]="this.fromDate.year"
-                            [stopyear]="this.toDate.year"
-                            [startmonth]="this.fromDate.month"
-                            [stopmonth]="this.toDate.month"
-                            [North]="this.North.value"
-                            [South]="this.South.value"
-                            [West]="this.West.value"
-                            [East]="this.East.value"
-                            [per] = "per"></app-netcdf>
-            </div>
-            <div *ngIf="select == 'Map'">
-                <app-graph [data]="choosedataset.controls['set'].value"
-                           [file]="choosefile.controls['file'].value" 
-                           [startyear]="this.fromDate.year"
-                           [stopyear]="this.toDate.year"
-                           [startmonth]="this.fromDate.month"
-                           [stopmonth]="this.toDate.month"></app-graph>
-            </div>
-        </div>
-        <div *ngIf="select == 'percent'">
-            <app-netcdf [data]="choosedataset.controls['set'].value"
-                        [file]="choosefile.controls['file'].value" 
-                        [North]="this.North.value"
-                        [South]="this.South.value"
-                        [West]="this.West.value"
-                        [East]="this.East.value"
-                        [per] = "per"></app-netcdf>
-        </div>
+       
         <div *ngIf="select == 'station'">
                 <app-map  [file]="choosefile.controls['file'].value"
                         [startyear]="this.fromDate.year"
@@ -212,15 +182,3 @@
 </body>
 
 </html>
-
-
-
-<!-- <div *ngIf="select == 'Grid'">
-    <app-map></app-map>
-</div> -->
-
-<!-- <div *ngIf="select == 'percent'">
-    <app-netcdf [file]="choosefile.controls['file'].value"
-                [per] = "per"></app-netcdf>
-</div> -->
-
