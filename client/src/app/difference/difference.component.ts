@@ -1,13 +1,9 @@
 import { Component, OnInit ,OnChanges} from '@angular/core';
 import 'ol/ol.css';
 import * as MapLib from 'src/app/netcdf/lib/map.js';
-import { TempService } from 'src/app/services/data.service';
+import { DataService } from 'src/app/services/data.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NgbDate, NgbCalendar, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
-import { from, Observable, range } from 'rxjs';
-import { geojson } from 'highcharts';
-import { data } from 'jquery';
-import { RecieveDataService } from 'src/app/home/data.service';
 import { InputService } from "src/app/services/input.service";
 
 @Component({
@@ -45,7 +41,7 @@ export class DifferenceComponent implements OnInit {
 
   constructor(
     public formatter: NgbDateParserFormatter,
-    private tempService: TempService,
+    private dataService: DataService,
     private sharedData: InputService
   ) { }
 
@@ -152,7 +148,7 @@ export class DifferenceComponent implements OnInit {
       let v
       let L = []
       console.log("-----",this.index)
-      await this.tempService.per_dif(this.dataset, this.index,this.start1, this.stop1,this.start2, this.stop2).then(data => data.subscribe(
+      await this.dataService.per_dif(this.dataset, this.index,this.start1, this.stop1,this.start2, this.stop2).then(data => data.subscribe(
           (res => { 
             // console.log(">>>>>>>>>>",res)
             let resp = JSON.parse(res)
@@ -182,7 +178,7 @@ export class DifferenceComponent implements OnInit {
       this.start2 = this.chooseyear2.controls['fromyear2'].value
       this.stop2 = this.chooseyear2.controls['toyear2'].value
 
-      await this.tempService.raw_dif(this.dataset, this.index,this.start1, this.stop1,this.start2, this.stop2).then(data => data.subscribe(
+      await this.dataService.raw_dif(this.dataset, this.index,this.start1, this.stop1,this.start2, this.stop2).then(data => data.subscribe(
           (res => { 
             let resp = JSON.parse(res)
             console.log(">>>>>>>>>",resp)
@@ -207,7 +203,7 @@ export class DifferenceComponent implements OnInit {
     this.start1 = this.chooseyear1.controls['fromyear1'].value
     this.stop1 = this.chooseyear1.controls['toyear1'].value
 
-    await this.tempService.map_range1(this.dataset, this.index, this.start1, this.stop1).then(data => data.subscribe(
+    await this.dataService.map_range1(this.dataset, this.index, this.start1, this.stop1).then(data => data.subscribe(
       (res => {
         let resp = JSON.parse(res)
         console.log(">>>>>>>>>", resp)
@@ -229,7 +225,7 @@ export class DifferenceComponent implements OnInit {
     this.start1 = this.chooseyear2.controls['fromyear2'].value
     this.stop1 = this.chooseyear2.controls['toyear2'].value
 
-    await this.tempService.map_range1(this.dataset, this.index, this.start1, this.stop1).then(data => data.subscribe(
+    await this.dataService.map_range1(this.dataset, this.index, this.start1, this.stop1).then(data => data.subscribe(
       (res => {
         let resp = JSON.parse(res)
         console.log(">>>>>>>>>", resp)

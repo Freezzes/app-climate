@@ -1,13 +1,8 @@
-import { Component, OnInit, OnChanges, Input } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import 'ol/ol.css';
 import * as MapLib from './lib/map.js';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { NgbDate, NgbCalendar, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
-import { from, Observable, range } from 'rxjs';
-import { geojson } from 'highcharts';
-import { data } from 'jquery';
-import { RecieveDataService } from 'src/app/home/data.service';
-import { TempService } from 'src/app/services/data.service';
+import { DataService } from 'src/app/services/data.service';
+import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { InputService } from "src/app/services/input.service";
 
 interface DataRecieve {
@@ -28,7 +23,7 @@ interface DataRecieve {
   selector: 'app-netcdf',
   templateUrl: './netcdf.component.html',
   styleUrls: ['./netcdf.component.css'],
-  providers: [TempService, RecieveDataService]
+  providers: [DataService]
 })
 export class NetcdfComponent implements OnInit {
   data: string;
@@ -106,7 +101,7 @@ export class NetcdfComponent implements OnInit {
 
   constructor(
     public formatter: NgbDateParserFormatter,
-    private tempService: TempService,
+    private dataService: DataService,
     private sharedData:InputService
   ) {}
 
@@ -276,13 +271,13 @@ export class NetcdfComponent implements OnInit {
     let v
     let L = []
 
-    await this.tempService.get_detail(dataset, index).then(data => data.subscribe(res => {
+    await this.dataService.get_detail(dataset, index).then(data => data.subscribe(res => {
       this.color = JSON.parse(res)
       this.color = this.color[0]['color_map']
       console.log(this.color)
     }))
     
-    await this.tempService.get_Avgcsv(dataset, index, this.startyear, this.stopyear,
+    await this.dataService.get_Avgcsv(dataset, index, this.startyear, this.stopyear,
       this.startmonth, this.stopmonth).then(data => data.subscribe(
         (res => { 
           // console.log(">>>>>>>>>>",res)

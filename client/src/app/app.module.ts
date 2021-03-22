@@ -9,26 +9,20 @@ import { AppComponent } from './app.component';
 
 import { GraphComponent } from './graph/graph.component';
 import { MapComponent } from './map/map.component';
-import { SelectplotComponent } from './components/selectplot.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { TestfunctionComponent } from './testfunction/testfunction.component';
 import { NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import { MissingvalueComponent } from './missingvalue/missingvalue.component';
 import * as PlotlyJS from 'plotly.js/dist/plotly.js';
 import { PlotlyModule } from 'angular-plotly.js';
 import { from } from 'rxjs';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { HIGHCHARTS_MODULES, ChartModule } from 'angular-highcharts';
-import { BoxplotComponent } from './boxplot/boxplot.component';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { NetcdfComponent } from './netcdf/netcdf.component';
 import { HomeComponent } from './home/home.component';
 import { MockComponent } from './mock/mock.component';
 // import { SharedModule, PanelModule } from 'primeng/primeng';
-import { TempService } from './services/temp.service'
-import { PopUpService } from './services/pop-up.service'
-import { MarkerService } from './services/markers.service'
-import {LeafletModule} from '@asymmetrik/ngx-leaflet';
+import { DataService } from './services/data.service'
+
 
 import { 
 	IgxDropDownModule,
@@ -38,6 +32,7 @@ import {
  } from "igniteui-angular";
 // import { DropDownSample5Component } from "./dropdown-sample-5/dropdown-sample-5.component";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DifferenceComponent } from './difference/difference.component';
 
 
 PlotlyModule.plotlyjs = PlotlyJS;
@@ -47,13 +42,11 @@ PlotlyModule.plotlyjs = PlotlyJS;
     AppComponent,
     MapComponent,
     GraphComponent,
-    SelectplotComponent,
-    TestfunctionComponent,
-    MissingvalueComponent,
-    BoxplotComponent,
     NetcdfComponent,
     HomeComponent,
-    MockComponent
+    MockComponent,
+    NetcdfComponent,
+    DifferenceComponent
   ],
   imports: [
     BrowserModule,
@@ -73,10 +66,9 @@ PlotlyModule.plotlyjs = PlotlyJS;
     IgxSwitchModule,
     IgxToggleModule,
     BrowserAnimationsModule,
-    LeafletModule
 
   ],
-  providers: [PopUpService,MarkerService],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

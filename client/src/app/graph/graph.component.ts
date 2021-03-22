@@ -1,5 +1,5 @@
 import { Component, OnInit,Input } from '@angular/core';
-import { TempService } from '../services/temp.service';
+import { DataService } from '../services/data.service';
 import * as CanvasJS from 'C:/Users/Mewkk/Downloads/canvasjs-3.2.8/canvasjs.min';
 import { ClassGetter } from '@angular/compiler/src/output/output_ast';
 import { map } from 'rxjs/operators';
@@ -12,7 +12,7 @@ import { InputService } from "src/app/services/input.service";
   selector: 'app-graph',
   templateUrl: './graph.component.html',
   styleUrls: ['./graph.component.css'],
-  providers: [TempService]
+  providers: [DataService]
 })
 export class GraphComponent implements OnInit {
   @Input() data: string;
@@ -25,7 +25,7 @@ export class GraphComponent implements OnInit {
   @Input() stopmonth: string;
 
   constructor(
-    private tempService: TempService,private sharedData:InputService
+    private sharedData:InputService
   ) { }
   
   public get;

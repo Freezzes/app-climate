@@ -2,31 +2,22 @@ import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NgbDate, NgbCalendar, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { Router, ActivatedRoute } from '@angular/router';
-import { TempService } from 'src/app/services/temp.service';
-import { RecieveDataService } from './data.service';
+import { DataService } from 'src/app/services/data.service';
 import * as $ from 'jquery'
 import { InputService } from "src/app/services/input.service";
 
-declare interface RouteInfo {
-  path: string;
-  class: string;
-}
-
-export const ROUTES: RouteInfo[] = [
-  { path: '/station', class: '' },
-];
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
-  providers: [TempService, RecieveDataService]
+  providers: [DataService]
 
 })
 export class HomeComponent implements OnInit {
   menuItems: any[];
 
   hoveredDate: NgbDate | null = null;
-  fromDate: NgbDate;
+  fromDate: NgbDate | null = null;
   toDate: NgbDate | null = null;
   public dataset;
   public file;
@@ -61,8 +52,7 @@ export class HomeComponent implements OnInit {
     private route: ActivatedRoute,
     private calendar: NgbCalendar,
     public formatter: NgbDateParserFormatter,
-    private tempService: TempService,
-    private recieveDataService: RecieveDataService,
+    private dataService: DataService,
     private inputservice: InputService) {
     // this.fromDate = calendar.getToday();
     // this.toDate = calendar.getNext(calendar.getToday(), 'd', 10);
@@ -87,7 +77,7 @@ export class HomeComponent implements OnInit {
   // selectGrid;
 
   async ngOnInit(){
-    this.tempService.get_dataset().then(data => data.subscribe(
+    this.dataService.get_dataset().then(data => data.subscribe(
       res => {
         this.dataset_name = res
       }))
@@ -112,7 +102,7 @@ export class HomeComponent implements OnInit {
     // var region = [this.North.value, this.South.value, this.West.value, this.East.value]
     this.per = "no"
 
-    await this.tempService.detail(data, index).then(data => data.subscribe(
+    await this.dataService.detail(this.dataset, index).then(data => data.subscribe(
       res => {
         this.inputservice.sendDetail(res)
         console.log("detailllllll", res['color_map'])
@@ -122,7 +112,7 @@ export class HomeComponent implements OnInit {
 
     // await this.inputservice.sendRegion(region)
 
-    await this.tempService.get_Avgcsv(data, index, startyear, stopyear, startmonth, stopmonth)
+    await this.dataService.get_Avgcsv(this.dataset, index, startyear, stopyear, startmonth, stopmonth)
       .then(data => data.subscribe(
         (res => {
           let resp = JSON.parse(res)
@@ -130,7 +120,7 @@ export class HomeComponent implements OnInit {
         })
       ))
 
-    await this.tempService.get_hire(data, index, startyear, stopyear, startmonth, stopmonth)
+    await this.dataService.get_hire(this.dataset, index, startyear, stopyear, startmonth, stopmonth)
       .then(data => data.subscribe(
         (res => {
           let resp = JSON.parse(res)
@@ -138,7 +128,7 @@ export class HomeComponent implements OnInit {
         })
       ))
 
-    await this.tempService.global_avg(data, index, startyear,startmonth, stopyear, stopmonth)
+    await this.dataService.global_avg(this.dataset, index, startyear,startmonth, stopyear, stopmonth)
     .then(data => data.subscribe(res => {
       console.log("global",res)
       var data = Number(stopyear)- Number(startyear)

@@ -5,7 +5,7 @@ import { Temp, Plot, meanplot, station5, st, Missing ,data_test, data_db,data_st
 
 @Injectable()
 
-export class TempService {
+export class DataService {
     private API_URL = 'http://127.0.0.1:5500';
     constructor(private http: HttpClient) { }
 

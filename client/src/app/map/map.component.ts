@@ -1,5 +1,5 @@
 import { Component, OnInit , Input} from '@angular/core';
-import { TempService } from '../services/temp.service';
+import { DataService } from '../services/data.service';
 import 'ol/ol.css';
 import * as MapLib from './lib/mapthai.js';
 import * as MapLib2 from './lib/map_station.js';
@@ -18,7 +18,7 @@ useGeographic();
   selector: 'app-map',
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css'],
-  providers: [TempService]
+  providers: [DataService]
 })
 
 export class MapComponent implements OnInit {
@@ -30,7 +30,7 @@ export class MapComponent implements OnInit {
   map: any;
   popup: any;
 
-  constructor(private tempService: TempService,private router: Router) {
+  constructor(private dataService: DataService,private router: Router) {
   }
 
   capitals: string = '../../assets/station_input.geojson';
@@ -42,7 +42,7 @@ export class MapComponent implements OnInit {
     // await this.tempService.getdata_sta(this.data).then(res => {
     //   // MapLib2.map_sta(res)
     //   console.log("map",res)
-    await this.tempService.getdata_sta(this.file,this.startyear,this.stopyear,
+    await this.dataService.getdata_sta(this.file,this.startyear,this.stopyear,
       this.startmonth,this.stopmonth).then(res => {
       res.subscribe(datas => {
         // console.log(datas)
