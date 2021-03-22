@@ -33,6 +33,14 @@ database = "test"
 mongo = PyMongo(app)
 CORS(app)
 
+@app.route("/api/dataset", methods=["GET"])
+def get_dataset():
+    ds = pd.read_csv(r'C:/Mew/Project/dataset_name.csv')
+    res = []
+    for i in range(len(ds['id'])):
+        res.append({'id': ds['id'][i] , 'name': ds['name'][i] })
+
+    return jsonify(res)
 # ----------------------------------------dif-----------------------------------------------
 def read_folder_dif(dataset, index, start1,stop1, start2,stop2):
     print(">>>>>>>>>>>>>>>>....")
@@ -146,7 +154,7 @@ def raw_dif():
     # per = ((dif/res)*100).flatten()
     raw1 = np.where(np.isnan(raw), None, raw)
 
-    Min , Max = range_boxplot(raw,index)
+    Min , Max = np.float64(range_boxplot(raw,index))
 
     x = np.repeat(ds['lat'], ds['lon'].shape[0])
     y = np.tile(ds['lon'], ds['lat'].shape[0])
@@ -483,11 +491,7 @@ def avg_global_year():
     stopyear = int(request.args.get("stopyear"))
     stopmonth = int(request.args.get("stopmonth"))
     year_list = range(int(startyear), int(stopyear)+1)
-    print(year_list)
-    print(startyear)
-    # df = Dataset("C:/Mew/Project/CRU TS/cru_ts4.04.1901.2019.tmp.dat.nc")
     path = f'C:/Mew/Project/{dataset}.avg_global.csv'
-    print(">>>path",path)
     df = pd.read_csv(path)
     if dataset == 'cru_ts':
         start_year = 1901
@@ -497,10 +501,6 @@ def avg_global_year():
         end_year = 2014
     start_index = startyear - start_year
     end_index = stopyear - start_year
-    print("index :", start_index, end_index)
-    # global_average= np.mean(df.variables['tmp'][:,:,:],axis=(1,2))
-    # global_temp = np.mean(np.reshape(global_average, (119,12)), axis = 1)
-    # result = global_temp[start_index:end_index+1].data.tolist()
     result = df[index][start_index:end_index+1].tolist()
     avg = np.round(np.mean(result), 4)
     if index == 'pr':
@@ -517,10 +517,10 @@ def detail():
     index = str(request.args.get("index"))
     df = pd.read_csv('C:/Mew/Project/index_detail.csv')
     print(df)
-    query = df.loc[(df['dataset']=='cru_ts')&(df['index']=='tmp')]
+    query = df.loc[(df['dataset']==dataset)&(df['index']==index)]
     # res = jsonify(query['long name'][0],query['description'][0],query['unit'][0],query['year'][0])
     # color = jsonify(query['color_map'][0])
-    select = query[['long name','description','unit','year','color_map']].to_json(orient='records')
+    select = query[['long_name','description','unit','year','color_map']].to_json(orient='records')
     select = json.loads(select)
     return select[0]
 
