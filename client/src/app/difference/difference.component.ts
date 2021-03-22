@@ -1,7 +1,7 @@
 import { Component, OnInit ,OnChanges} from '@angular/core';
 import 'ol/ol.css';
 import * as MapLib from 'src/app/netcdf/lib/map.js';
-import { TempService } from 'src/app/services/temp.service';
+import { TempService } from 'src/app/services/data.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NgbDate, NgbCalendar, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { from, Observable, range } from 'rxjs';

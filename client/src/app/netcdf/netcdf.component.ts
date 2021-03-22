@@ -1,13 +1,13 @@
 import { Component, OnInit, OnChanges, Input } from '@angular/core';
 import 'ol/ol.css';
 import * as MapLib from './lib/map.js';
-import { TempService } from 'src/app/services/temp.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NgbDate, NgbCalendar, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { from, Observable, range } from 'rxjs';
 import { geojson } from 'highcharts';
 import { data } from 'jquery';
 import { RecieveDataService } from 'src/app/home/data.service';
+import { TempService } from 'src/app/services/data.service';
 import { InputService } from "src/app/services/input.service";
 
 interface DataRecieve {
