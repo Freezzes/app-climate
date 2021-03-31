@@ -208,16 +208,6 @@ def mkstation():
     trend_line = np.arange(len(data)) * res.slope + res.intercept
     return trend_line
 
-#------------------ Manage NC file ----------------------------------
-def read_folder_h(dataset, index, startyear, stopyear):
-    folder = f"C:/Users/ice/Documents/managenc/{dataset}_h_file/"
-    l_path = []
-    for _file in os.listdir(folder):
-        for t in range(startyear,stopyear+1):
-            if _file[:-4].split("-")[0] == index and _file[:-4].split("-")[1] == str(t) :
-                path = f'{folder}{_file}'
-                l_path.append(path)
-    return l_path
 
 # ----------------------------------map different-----------------------------------------
 @app.route("/map_range1", methods=["GET"])
@@ -403,19 +393,7 @@ def get_Avgmap_h():
 
 #--------------------------------- Low resolution---------------------------------------------------
 # -----------------------------------------------per-----------------------------------------------
-def read_folder_dif(dataset, index, start1,stop1, start2,stop2):
-    l_path1 = []
-    l_path2 = []
-    folder = f"C:/Users/ice/Documents/managenc/{dataset}_l_file/"
-    for _file in os.listdir(folder):
-        for y1 ,y2  in zip(range(start1,stop1+1), range(start2,stop2+1)):
-            if _file[:-4].split("-")[0] == index and _file[:-4].split("-")[1] == str(y1) :
-                path = f'{folder}{_file}'
-                l_path1.append(path)
-            elif _file[:-4].split("-")[0] == index and _file[:-4].split("-")[1] == str(y2) :
-                path = f'{folder}{_file}'
-                l_path2.append(path)
-    return l_path1,l_path2
+
 
 @app.route("/per_dif", methods=["GET"])
 def per_dif():
@@ -509,17 +487,6 @@ def raw_dif():
 
 
     return jsonify(y.tolist(),x.tolist(),raw1.tolist(),np.float64(Min),np.float64(Max),lon_step,lat_step,color,)
-
-# -----------------------------------read folder------------------------------
-def read_folder(dataset, index, startyear, stopyear):
-    folder = f"C:/Users/ice/Documents/managenc/{dataset}_l_file/"
-    l_path = []
-    for _file in os.listdir(folder):
-        for t in range(startyear,stopyear+1):
-            if _file[:-4].split("-")[0] == index and _file[:-4].split("-")[1] == str(t) :
-                path = f'{folder}{_file}'
-                l_path.append(path)
-    return l_path
 
 #------------------------ map trend ------------------------------------------
 #-------------------- trend function -----------------------------------------

@@ -26,7 +26,7 @@ import {MatRadioModule} from '@angular/material/radio';
 import { HomeComponent } from './home/home.component';
 import { NetcdfgraphComponent } from './netcdfgraph/netcdfgraph.component';
 import { DifferenceComponent } from './difference/difference.component';
-import { NgxSpinnerModule } from "ngx-spinner";
+// import { NgxSpinnerModule } from "ngx-spinner";
 PlotlyModule.plotlyjs = PlotlyJS;
 
 @NgModule({
@@ -57,7 +57,7 @@ PlotlyModule.plotlyjs = PlotlyJS;
     ChartModule,
     NgMultiSelectDropDownModule.forRoot(),
     MatRadioModule,
-    NgxSpinnerModule
+    // NgxSpinnerModule
 
   ],
   providers: [],

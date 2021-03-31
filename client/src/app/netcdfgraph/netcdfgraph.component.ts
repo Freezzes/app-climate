@@ -9,7 +9,6 @@ import { Chart } from 'chart.js';
 import { from, range } from 'rxjs';
 import * as $ from 'jquery';
 import { InputService } from "src/app/services/input.service";
-import * as ChartLib from './hightchart.js';
 
 
 @Component({
@@ -52,7 +51,6 @@ export class NetcdfgraphComponent implements OnInit {
 
   async ngOnInit() {
     console.log("graphhhhhhhhhhhhhhhhhhh")
-    this.get_data()
     this.sharedData.graphAvgservice.subscribe(data => {
       if (data) {
         console.log("graph", data)
@@ -80,55 +78,34 @@ export class NetcdfgraphComponent implements OnInit {
     // this.plotbar()
     // this.draw_seasonal_chart('anomaly')
     // this.plotanomaly(this.testa)
-    let highchartsbar = Highcharts;
-    let chartOptionsbar = {
-      chart: {
-        type: 'column'
-      },
-      title: {
-        text: '',
-        style: {
-          display: 'none'
-        }
-      },
-      xAxis: {
-        categories: this.anomaly_year
-      },
-      series: [
-        {
-          name: this.fileanomaly,
-          data: this.anomalydata,
-          zones: [{
-            value: -0,
-            color: '#306EFF'
-          }, {
-            color: '#E42217'
-          }]
-        }
-      ]
-    };
 
   }
 
-  async get_data(){
-    this.sharedData.anomalyservice.subscribe(ano => {
-      if (ano) {
-        console.log("data recirve >>>>> ", ano)
-        console.log("plot ano name .... ", ano[2])
-        // this.plotanomaly(ano)
-        this.anomalydata = ano[0]
-        this.anomaly_year = ano[1]
-        this.fileanomaly = ano[2]
-        ChartLib.draw_seasonal_chart('amomaly',this.anomalydata, this.anomaly_year,this.nameanomaly)
-       
-        // this.get_data(ano[0],ano[1],ano[2])
-        // this.draw_seasonal_chart('anomaly',this.anomalydata, this.anomaly_year,this.nameanomaly)
-      }
-    })
-    // this.anomalydata = anomalydata
-    // this.anomaly_year = anomaly_year
-    // this.fileanomaly = fileanomaly
-    // console.log("ano name ...",this.fileanomaly)
+  
+  async plot_anomaly(value,name){
+    var chart = new CanvasJS.Chart("anomaly", {
+      animationEnabled: true,
+      
+      title:{
+        text:name
+      },
+      axisX:{
+        interval: 1
+      },
+      axisY2:{
+        interlacedColor: "rgba(1,77,101,.2)",
+        gridColor: "rgba(1,77,101,.1)",
+        title: "Number of Companies"
+      },
+      data: [{
+        type: "bar",
+        name: "companies",
+        axisYType: "secondary",
+        color: "#014D65",
+        dataPoints: value
+      }]
+    });
+    chart.render();
   }
 
   async plotMean(Data, Avg, unit) {
