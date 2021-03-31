@@ -1,4 +1,4 @@
-import { Component, OnInit} from '@angular/core';
+import { Component, OnInit,Input} from '@angular/core';
 import 'ol/ol.css';
 import * as MapLib from './lib/map.js';
 import { DataService } from 'src/app/services/data.service';
@@ -12,8 +12,10 @@ import { InputService } from "src/app/services/input.service";
   providers: [DataService]
 })
 export class NetcdfComponent implements OnInit {
+  // @Input() index: string;
   data: string;
-  index: string;
+  dataset:string;
+  // index: string;
   startyear : string;
   start_date: string;
   stopyear: string;
@@ -28,16 +30,22 @@ export class NetcdfComponent implements OnInit {
   lowres_layer: any;
   hires_layer: any;
 
-  long_name;
-  difinition;
-  unit;
-  year;
+  long_name: string;
+  difinition:string;
+  unit:any;
+  year:any;
+  index:string;
 
-  color;
+  color:string;
   datalayer;
 
   data_low;
-  dataset_name;
+  public dataset_name: any;
+  select: any = null;
+  details:any;
+  trend_layer;
+  selectcountry:any;
+  chart
 
   getDataLayer(data,North,South,West,East,layername) {
     console.log("GetDataLayer")
@@ -49,25 +57,10 @@ export class NetcdfComponent implements OnInit {
     var min_ =  data[3]
     var max_ = data[4]
     var color = data[7]
-    var geojson = MapLib.merge_data_to_geojson(lon, lat, value, North,South,West,East,'value')
+    var geojson = MapLib.convert_to_geojson(value,lon,lat)
+    var merge = MapLib.merge_data_to_geojson(geojson, value, North,South,West,East,'value')
     var layer = MapLib.genGridData(
-      geojson, min_, max_, color, lon_step, lat_step,'main', layername
-    );
-    return layer
-  }
-
-  getTrendLayer(data,North,South,West,East,layername) {
-    var lon = data[0]
-    var lat = data[1]
-    var value = data[2]
-    var lon_step = data[5]
-    var lat_step = data[6]
-    var min_ =  data[3]
-    var max_ = data[4]
-    var color = data[7]
-    var geojson = MapLib.merge_data_to_geojson(lon, lat, value, North,South,West,East,'trend')
-    var layer = MapLib.genGridData(
-      geojson, min_, max_, color, lon_step, lat_step,'main', layername
+      merge, min_, max_, color, lon_step, lat_step,'main', layername
     );
     return layer
   }
@@ -79,31 +72,26 @@ export class NetcdfComponent implements OnInit {
   ) {}
 
   public lists: Array<string>
-  ngOnInit() {
+  async ngOnInit() {
     this.map = MapLib.draw_map('map')
-    console.log("datainput", this.data)
-    console.log("North", this.North)
-
-    this.sharedData.Detailservice.subscribe(data => {
-      if(data){
-        console.log("input Detail",data)
-        this.unit = data[0].unit
-        this.difinition = data[0].description
-        this.long_name = data[0].long_name
-        this.year = data[0].year
-        this.dataset_name = data[1]
-        console.log("unit",this.unit)
-      }
-      
-    })
-    
-      // this.plot(this.data,this.index)
     this.plot_ser()
-
   }
 
   async plot_ser(){
-    this.sharedData.regionservice.subscribe(data => {
+    await this.sharedData.Detailservice.subscribe(data => {
+      this.details = data;
+      if(data){
+        console.log("input Detail",data)
+        this.unit = data.unit
+        this.difinition = data.description
+        this.long_name = data.long_name
+        this.year = data.year
+        this.dataset_name = data.dataset
+        this.index = data.index
+      }
+    })
+    
+    await this.sharedData.regionservice.subscribe(data => {
       console.log("input region",data)
       this.North = data[0]
       this.South = data[1]
@@ -111,30 +99,139 @@ export class NetcdfComponent implements OnInit {
       this.East = data[3]
     })
 
-    this.sharedData.lowresservice.subscribe(data => {
+    // await this.sharedData.continentservice.subscribe(data => {
+    //   if(data){
+    //     console.log("continentttttttttttt",data)
+    //     var data_con = data
+    //     this.lowres_layer = this.getDataLayer(data_con,this.North, this.South, this.West, this.East,'lowres_data')
+    //     MapLib.clearLayers(this.map);
+    //     this.map.getLayers().insertAt(0,this.lowres_layer);
+    //   }
+    // })
+
+    // await this.sharedData.countryservice.subscribe(data => {
+    //   if(data){
+    //     console.log("continentttttttttttt",data)
+    //     var data_con = data
+    //     this.lowres_layer = this.getDataLayer(data_con,this.North, this.South, this.West, this.East,'lowres_data')
+    //     MapLib.clearLayers(this.map);
+    //     this.map.getLayers().insertAt(0,this.lowres_layer);
+    //   }
+    // })
+
+    await this.sharedData.inputhomeservice.subscribe(data => {
       if(data){
-        console.log("input Lowres",data)
+        console.log("input2222222222",data)
+      }
+    })
+
+    await this.sharedData.lowresservice.subscribe(data => {
+      if(data){
         this.data_low = data
         this.lowres_layer = this.getDataLayer(this.data_low,this.North, this.South, this.West, this.East,'lowres_data')
         MapLib.clearLayers(this.map);
         this.map.getLayers().insertAt(0,this.lowres_layer);
-        // MapLib.setResolution(this.map,this.North, this.South, this.West, this.East)
-        MapLib.select_country(this.map)
-        // MapLib.clearLayers(this.map);
+        // MapLib.select_country(this.map)
       }
     })
 
+
     this.sharedData.hiresservice.subscribe(data => {
       if(data){
-        console.log("input Hires",data)
-        // this.data_hire = data
-        this.hires_layer = this.getDataLayer(data,this.North, this.South, this.West, this.East,'hires_data')
-        // MapLib.clearLayers(this.map);
+        console.log("hires",data)
+        this.hires_layer = this.getDataLayer(data.map,this.North, this.South, this.West, this.East,'hires_data')
         this.map.getLayers().insertAt(0,this.hires_layer);
-        // MapLib.setResolution(this.map,this.North, this.South, this.West, this.East)
-        // MapLib.select_country(this.map)
         MapLib.setResolution(this.map)
-        // MapLib.clearLayers(this.map);
+
+        // this.chart = {
+        //   'global_avg': data.chart,
+        // }
+        this.sharedData.sendGraphAvg(data.chart)
+
+        // Get selected country data chart
+        if (this.select !== null) {
+          this.map.removeInteraction(this.select);
+        }
+        let that = this
+        this.select = MapLib.select_country(this.map);
+        this.select.on('select', function(e:any) {
+          // Checking if not select country change to global stat
+          if(e.selected.length == 0) {
+            console.log("NO SELECT")
+            that.sharedData.sendGraphAvg(data.chart)
+          }
+          else if(e.selected.length == 1) {
+            var selectedCountry = e.selected[0].get('name');
+            console.log("SELECT",selectedCountry)  
+            that.dataService.getCountry(data.input.dataset,data.input.index,data.input.startyear,data.input.stopyear,data.input.startmonth,data.input.stopmonth,selectedCountry).subscribe(
+              (res:any) => {
+                console.log("resssssssss",res)
+                console.log("countryyyyy",selectedCountry)
+                var value = Number(data.input.stopyear)- Number(data.input.startyear)
+                var start = Number(data.input.startyear)
+                  for (var i =0; i<= value; i++){
+                    Data.dataPoints.push(
+                      {x: new Date(start, 0), y: res[0][i]},        
+                    )
+                    start+=1
+                  }
+                  console.log("point",Data.dataPoints)
+                  var sent = [Data.dataPoints,res[1],res[2]]
+                  // this.inputservice.sendGraph(sent)
+                  that.sharedData.sendGraphAvg(sent)
+                  console.log("graph country",sent)
+                // that.sharedData.sendcountry(res)
+              })
+              var Data = {
+                // value:[],
+                dataPoints : []
+              }
+             // that.sharedData.inputhomeservice.subscribe(data => {
+              //   if(data){
+              //     console.log(data)
+                //   this.dataset = data[0]
+                //   this.index = data[1]
+                //   this.startyear = data[2]
+                //   this.stopyear = data[3]
+                //   this.startmonth = data[4]
+                //   this.stopmonth = data[5]
+                //   console.log("dataset",this.dataset)
+                //   that.dataService.getCountry(data[0],data[1],data[2],data[3],data[4],data[5],selectedCountry).subscribe(
+                //   (res:any) => {
+                //     console.log("resssssssss",res)
+                //     console.log("daaaaaaaaa",this.dataset)
+                //     var data = Number(this.stopyear)- Number(this.startyear)
+                //     var start = Number(this.startyear)
+                //       for (var i =0; i<= data; i++){
+                //         Data.dataPoints.push(
+                //           {x: new Date(start, 0), y: res[0][i]},        
+                //         )
+                //         start+=1
+                //       }
+                //       console.log("point",Data.dataPoints)
+                //       var sent = [Data.dataPoints,res[1],res[2]]
+                //       // this.inputservice.sendGraph(sent)
+                //       that.sharedData.sendGraphAvg(sent)
+                //       console.log("graph country",sent)
+                //     // that.sharedData.sendcountry(res)
+                //   })
+                //   var Data = {
+                //     // value:[],
+                //     dataPoints : []
+                //   }
+              //   }
+                
+              // })
+
+            // that.dataService.getCountry(selectedCountry).subscribe(
+            //   (res:any) => {
+            //     console.log("resssssssss",res)
+            //     that.sharedData.sendcountry(res)
+            //   }
+            // )
+            // console.log("dataset",this.details)
+          }
+        });
       }
     })
   }
@@ -157,7 +254,7 @@ export class NetcdfComponent implements OnInit {
       console.log(this.color)
     }))
     
-    await this.dataService.get_Avgcsv(dataset, index, this.startyear, this.stopyear,
+    await this.dataService.get_lowres(dataset, index, this.startyear, this.stopyear,
       this.startmonth, this.stopmonth).then(data => data.subscribe(
         (res => { 
           // console.log(">>>>>>>>>>",res)

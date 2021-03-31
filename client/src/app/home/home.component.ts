@@ -33,14 +33,6 @@ export class HomeComponent implements OnInit {
 
   dataset_name;
 
-  // dataset_name: Array<Object> = [
-  //   { id: 'cru_ts', name: 'CRU TS' },
-  //   { id: 'TMD', name: 'TMD' },
-  //   { id: 'ec-earth3', name: 'EC-Earth' },
-  //   { id: 'cnrm-esm2-1', name: 'CNRM-ESM2-1' },
-  //   { id: 'mpi-esm1-2-lr', name: 'MPI-ESM1-2-LR' }
-  // ];
-
   filename_cru = [{ id: 'tas', name: 'Averange Temperature' },
   { id: 'tasmin', name: 'Minimum Temperature' },
   { id: 'tasmax', name: 'Maximum Temperature' },
@@ -48,14 +40,10 @@ export class HomeComponent implements OnInit {
   ]
 
   constructor(
-    private router: Router,
-    private route: ActivatedRoute,
     private calendar: NgbCalendar,
     public formatter: NgbDateParserFormatter,
     private dataService: DataService,
     private inputservice: InputService) {
-    // this.fromDate = calendar.getToday();
-    // this.toDate = calendar.getNext(calendar.getToday(), 'd', 10);
   }
 
   choosedataset = new FormGroup({
@@ -74,16 +62,16 @@ export class HomeComponent implements OnInit {
 
   select;
   per;
-  // selectGrid;
+  chart;
 
   async ngOnInit(){
+
     this.dataService.get_dataset().then(data => data.subscribe(
       res => {
         this.dataset_name = res
       }))
 
-    var region = [this.North.value, this.South.value, this.West.value, this.East.value]
-    await this.inputservice.sendRegion(region)
+    
   }
 
   clearSelect() {
@@ -103,18 +91,36 @@ export class HomeComponent implements OnInit {
     this.per = "no"
     console.log(this.dataset)
 
+    var region = [this.North.value, this.South.value, this.West.value, this.East.value]
+    await this.inputservice.sendRegion(region)
+
+    var inputs = {'dataset':this.dataset,'index':index,'startyear':startyear,'stopyear':stopyear,'startmonth':startmonth,'stopmonth':stopmonth}
+    await this.inputservice.sendInput(inputs)
+
     await this.dataService.detail(this.dataset, index).then(data => data.subscribe(
       res => {
-        var detail = [res,this.dataset]
-        this.inputservice.sendDetail(detail)
-        console.log("detailllllll",this.dataset)
+        // var detail = [res,this.dataset]
+        this.inputservice.sendDetail(res)
+        // console.log("detailllllll",this.dataset)
       }
     )
     )
 
-    // await this.inputservice.sendRegion(region)
+  //  await this.dataService.getSelectContinent(this.dataset, index, startyear, stopyear, startmonth, stopmonth)
+  //     .then(data => data.subscribe(
+  //       res => {
+  //         console.log("continent",res)
+  //         this.inputservice.sendcontinent(res)
+  //       }))
 
-    await this.dataService.get_Avgcsv(this.dataset, index, startyear, stopyear, startmonth, stopmonth)
+    // await this.dataService.getSelectCountry(this.dataset, index, startyear, stopyear, startmonth, stopmonth)
+    // .then(data => data.subscribe(
+    //   res => {
+    //     // console.log("continent",res)
+    //     this.inputservice.sendcountry(res)
+    //   }))
+
+    await this.dataService.get_lowres(this.dataset, index, startyear, stopyear, startmonth, stopmonth)
       .then(data => data.subscribe(
         (res => {
           let resp = JSON.parse(res)
@@ -126,32 +132,50 @@ export class HomeComponent implements OnInit {
       .then(data => data.subscribe(
         (res => {
           let resp = JSON.parse(res)
-          this.inputservice.sendHiRes(resp)
+          var inputs = {'dataset':this.dataset,'index':index,'startyear':startyear,'stopyear':stopyear,'startmonth':startmonth,'stopmonth':stopmonth}
+          this.dataService.global_avg(this.dataset, index, startyear,startmonth, stopyear, stopmonth)
+            .then(data => data.subscribe(res => {
+              var data = Number(stopyear)- Number(startyear)
+              console.log("dddddd",data)
+              var start = Number(startyear)
+              for (var i =0; i<= data; i++){
+                Data.dataPoints.push(
+                  {x: new Date(start, 0), y: res[0][i]},        
+                )
+                start+=1
+              }
+              console.log("point",Data.dataPoints)
+              this.chart = [Data.dataPoints,res[1],res[2]]
+              var sent = {'chart':this.chart,'map':resp,'input':inputs}
+              this.inputservice.sendHiRes(sent)
+              console.log("hi graph",resp)
+            }))
+          // this.inputservice.sendHiRes(resp)
         })
       ))
 
-    await this.dataService.global_avg(this.dataset, index, startyear,startmonth, stopyear, stopmonth)
-    .then(data => data.subscribe(res => {
-      console.log("global",res)
-      var data = Number(stopyear)- Number(startyear)
-      console.log("dddddd",data)
-      var start = Number(startyear)
-      for (var i =0; i<= data; i++){
-        Data.dataPoints.push(
-          {x: new Date(start, 0), y: res[0][i]},        
-        )
-        start+=1
-      }
-      console.log("point",Data.dataPoints)
-      var sent = [Data.dataPoints,res[1],res[2]]
-      this.inputservice.sendGraph(sent)
-      // this.plotMean(res[1],res[2])
-    }))
+    // await this.dataService.global_avg(this.dataset, index, startyear,startmonth, stopyear, stopmonth)
+    // .then(data => data.subscribe(res => {
+    //   var data = Number(stopyear)- Number(startyear)
+    //   console.log("dddddd",data)
+    //   var start = Number(startyear)
+    //   for (var i =0; i<= data; i++){
+    //     Data.dataPoints.push(
+    //       {x: new Date(start, 0), y: res[0][i]},        
+    //     )
+    //     start+=1
+    //   }
+    //   console.log("point",Data.dataPoints)
+    //   this.chart = [Data.dataPoints,res[1],res[2]]
+    //   this.inputservice.sendGraphAvg(this.chart)
+    // }))
 
     var Data = {
       // value:[],
       dataPoints : []
     }
+
+
     
     
   }
@@ -208,7 +232,7 @@ export class HomeComponent implements OnInit {
 
   validateInput(currentValue: NgbDate | null, input: string): NgbDate | null {
     const parsed = this.formatter.parse(input);
-    console.log("vali", parsed)
+    // console.log("vali", parsed)
     return parsed && this.calendar.isValid(NgbDate.from(parsed)) ? NgbDate.from(parsed) : currentValue;
   }
 }

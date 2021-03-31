@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core'
-import { HttpClient, HttpClientModule } from '@angular/common/http'
-import { from, Observable } from 'rxjs'
-import { Temp, Plot, meanplot, station5, st, Missing ,data_test, data_db,data_sta, grid} from '../interfaces/temp.interface'
+import { HttpClient, HttpHeaders } from '@angular/common/http'
+import { Observable } from 'rxjs'
 
 @Injectable()
 
 export class DataService {
-    private API_URL = 'http://127.0.0.1:5500';
+    private apiURL = 'http://127.0.0.1:5500';
     constructor(private http: HttpClient) { }
 
     async getdata_sta(df_f:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string): Promise<Observable<any>>{
@@ -52,7 +51,7 @@ export class DataService {
     }
 
 // --------------------------------------map---------------------------------------------------------------
-    async get_Avgcsv(ncfile:string,df_f:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string){
+    async get_lowres(ncfile:string,df_f:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string){
         const response = this.http.get('http://127.0.0.1:5500' +
         `/nc_avg?ncfile=${ncfile}&df_f=${df_f}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`
         ,{responseType:"text"});
@@ -60,9 +59,9 @@ export class DataService {
         return response
         }
 
-    async get_hire(ncfile:string,df_f:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string){
+    async get_hire(dataset:string,index:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string){
         const response = this.http.get('http://127.0.0.1:5500' +
-        `/nc_avg_hire?ncfile=${ncfile}&df_f=${df_f}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`
+        `/nc_avg_hire?dataset=${dataset}&index=${index}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`
         ,{responseType:"text"});
 
         return response
@@ -106,8 +105,35 @@ export class DataService {
 // -------------------------------------------------------------------------------------------------------
     async get_dataset(): Promise<Observable<any>>{
         // console.log("service",this.http.get('http://127.0.0.1:5500/locat/station'))
-        return this.http.get('http://127.0.0.1:5500//api/dataset')
+        return this.http.get('http://127.0.0.1:5500/api/dataset')
     }
 
+    getCountry(dataset:string,index:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string,country:any): Observable<any>{
+        console.log("country",country)
+        const httpOptions = {
+          headers: new HttpHeaders({
+            'country':  country,
+          })
+        };
+        console.log("country in ser",httpOptions)
+        
+        return this.http.get('http://127.0.0.1:5500'+`/api/country_avg?dataset=${dataset}&index=${index}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`,httpOptions)
+    }
 
+    async getSelectCountry(dataset:string,index:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string): Promise<Observable<any>>{
+        // console.log("country",country)
+        // const httpOptions = {
+        //   headers: new HttpHeaders({
+        //     'country':  country,
+        //   })
+        // };
+        // console.log("country in ser",httpOptions)
+        
+        return this.http.get('http://127.0.0.1:5500'+`/api/country_avg?dataset=${dataset}&index=${index}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`)
+    }
+
+    async getSelectContinent(dataset:string,index:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string): Promise<Observable<any>>{
+        
+        return this.http.get('http://127.0.0.1:5500'+`/api/continent?dataset=${dataset}&index=${index}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`)
+    }
 }

@@ -143,15 +143,19 @@
                 </li>
             </ul>
         </nav>
-        <div class="flex-column" style="margin-bottom: 5%;margin-left: 20%;">
+        <div class="flex-column" style="margin-bottom: 5%;margin-left: 10%;">
             <div *ngIf="select == 'get_data'">
-                <app-netcdf ></app-netcdf>
+                <!-- <div style="border-bottom: 2px;"> -->
+                    <app-netcdf [index]="choosefile.controls['file'].value"  ></app-netcdf>
+                <!-- </div> -->
+                <div style="margin-top: 10px;">
                 <app-graph [data]="choosedataset.controls['set'].value"
                            [file]="choosefile.controls['file'].value" 
                            [startyear]="this.fromDate.year"
                            [stopyear]="this.toDate.year"
                            [startmonth]="this.fromDate.month"
                            [stopmonth]="this.toDate.month"></app-graph>
+                        </div>
             </div>
         </div>
 

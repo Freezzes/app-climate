@@ -1,29 +1,5 @@
-<!-- <div class="selectzone">
-    <div class="pad">
-    <select id="file">
-        <option value="tmean" selected>Average temperature </option>
-        <option value="tmin">Minimum temperature</option>
-        <option value="tmax">Maximum temperature</option>
-        <option value="rain">Rain</option>
-    </select>
-    </div>
-    <div class="pad">
-    <select id="Station">
-        <option value="s300201" selected>แม่ฮ่องสอน</option>
-        <option value="s432301">สุรินทร์ สกษ.</option>
-        <option value="s583201">นราธิวาส</option>
-    </select>
-    </div>
-   <button (click)= "plotMean(); plotBar();"> PLOT </button>
-</div> -->
 
-
-
-<!-- <div id="linechartContainer" style="height: 370px; width: 50%;"></div> -->
-<!-- <button (click)=""> PLOT </button> -->
-<!-- <div id="chartContainer" style="height: 370px; width: 50%;"></div> -->
-
-<div class="main-content">
+<!-- <div class="main-content">
     <div class="container-fluid" style="height: inherit;">
       <div class="col-mb-12">
         <div class="card" style="margin-top: 1em;width: 40pc">
@@ -32,6 +8,82 @@
             </div>
         </div>
     </div>
+</div> -->
+<div class="main-content">
+    <div class="container" style="height: inherit;">
+<div class="row">
+    <div class="col-lg-6 ">
+        <div class="card" >
+            <div class="card-header">
+              <i class="fas fa-map-marker-alt"></i> Area averange time series
+            </div>
+
+            <div class="card-body" style="background-color: rgb(255, 255, 255);justify-content: flex-start;">
+              <div id="chartContainer" style="height: 400px; width: auto">
+              </div>
+            </div>
+          </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+              <i class="fas fa-map-marker-alt"></i> Anomaly
+            </div>
+            <div class="card-body" style="background-color: rgb(255, 255, 255);">
+              <!-- <div *ngIf="checkbar=='check'" style="height: 400px; width: 610px;justify-content: center;">
+                <highcharts-chart
+                  [Highcharts]="highchartsbar" 
+                  [options] = "chartOptionsbar"
+                  style = "width: 580px; height: 400px; display: block;" >
+                </highcharts-chart>
+              </div> -->
+            </div>
+        </div>
+    </div>
 </div>
+</div>
+</div>
+<!-- <div style="display: flex;flex-direction: row; justify-content: space-around;align-items: center;">
+
+  <div style="flex-direction: row;display: flex;flex-wrap: nowrap;width: 600px;justify-content: flex-start;"> 
+        <div class="col-mb-12">
+          <div class="card" style="width: 610px">
+            <div class="card-header">
+              <i class="fas fa-map-marker-alt"></i> Area averange time series
+            </div>
+
+            <div class="card-body" style="background-color: rgb(255, 255, 255);width: 610px;justify-content: flex-start;">
+              <div id="chartContainer" style="height: 400px; width: 580px;">
+              </div>
+            </div>
+          </div>
+        </div>
+  </div>
+
+  <div style="flex-direction: row;display: flex;flex-wrap: nowrap;width: 610px;"> 
+    <div class="main-content">
+      <div class="container-fluid">
+        <div class="col-mb-12">
+          <div class="card" style="width: 610px">
+
+            <div class="card-header">
+              <i class="fas fa-map-marker-alt"></i> Anomaly
+            </div>
+            <div class="card-body" style="background-color: rgb(255, 255, 255);">
+              <div *ngIf="checkbar=='check'" style="height: 400px; width: 610px;justify-content: center;">
+                <highcharts-chart
+                  [Highcharts]="highchartsbar" 
+                  [options] = "chartOptionsbar"
+                  style = "width: 580px; height: 400px; display: block;" >
+                </highcharts-chart>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div> -->
 
 

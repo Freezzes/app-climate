@@ -1,8 +1,10 @@
 import numpy as np
 import pandas as pd
+from lib.country import _get_country_mask_arr,_get_continent_mask_arr
+import time
 
 def range_boxplot(res,index): 
-    print(index)
+    print(res)
     min_ = np.round(np.nanmin(res), 4)
     max_ = np.round(np.nanmax(res), 4)
 
@@ -32,3 +34,27 @@ def range_boxplot(res,index):
         return min_,max_
     else:
         return Min,Max
+
+def mask_inside_country(country, lats, lons, data):
+    lats = np.array(lats)
+    lons = np.array(lons)
+    mask_arr = _get_country_mask_arr(country, lats, lons)
+
+    for y in range(len(data)):
+        data[y] = np.where(mask_arr==1, np.array(data[y], dtype=np.float), np.nan)
+
+    return data
+
+def mask_inside_continent(continent, lats, lons, data):
+    start = time.time()
+    lats = np.array(lats)
+    lons = np.array(lons)
+    print("dataaaaaaaa",data)
+    mask_arr = _get_continent_mask_arr(continent, lats, lons)
+
+    for y in range(len(data)):
+        data[y] = np.where(mask_arr==1, np.array(data[y], dtype=np.float), np.nan)
+
+    end= time.time()
+    print("mask",end-start)
+    return data

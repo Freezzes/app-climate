@@ -1,11 +1,6 @@
 import { Component, OnInit,Input } from '@angular/core';
 import { DataService } from '../services/data.service';
 import * as CanvasJS from 'C:/Users/Mewkk/Downloads/canvasjs-3.2.8/canvasjs.min';
-import { ClassGetter } from '@angular/compiler/src/output/output_ast';
-import { map } from 'rxjs/operators';
-import { Chart } from 'chart.js';
-import { from, range } from 'rxjs';
-import * as $ from 'jquery';
 import { InputService } from "src/app/services/input.service";
 
 @Component({
@@ -15,14 +10,14 @@ import { InputService } from "src/app/services/input.service";
   providers: [DataService]
 })
 export class GraphComponent implements OnInit {
-  @Input() data: string;
-  @Input() file: string;
-  @Input() startyear: string;
-  @Input() start_date: string;
-  @Input() stop_date: string
-  @Input() stopyear: string;
-  @Input() startmonth: string;
-  @Input() stopmonth: string;
+  // @Input() data: string;
+  // @Input() file: string;
+  // @Input() startyear: string;
+  // @Input() start_date: string;
+  // @Input() stop_date: string
+  // @Input() stopyear: string;
+  // @Input() startmonth: string;
+  // @Input() stopmonth: string;
 
   constructor(
     private sharedData:InputService
@@ -37,16 +32,19 @@ export class GraphComponent implements OnInit {
   public name = ['Jan','Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov','Dec'];
 
   async ngOnInit() {
-    this.sharedData.graphservice.subscribe(data => {
+    this.sharedData.graphAvgservice.subscribe(data => {
       if (data){
-      console.log("graph",data)
-      // var avg = data[1]
-      // console.log("datapoint",data[0])
       this.plotMean(data[0],data[1],data[2])
-      // this.Data.dataPoints = data[0]
-      // console.log("test graph",this.Data.dataPoints)
       }
     })
+
+    // this.sharedData.graphcountryservice.subscribe(data => {
+    //   if (data){
+    //   this.plotMean(data.global_avg[0],data.global_avg[1],data.global_avg[2])
+    //   }
+    // })
+
+    
 
     // await this.tempService.global_avg(this.data, this.file, this.startyear, this.startmonth, this.stopyear, this.stopmonth)
     // .then(data => data.subscribe(res => {

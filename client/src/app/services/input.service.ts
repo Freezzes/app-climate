@@ -31,16 +31,40 @@ export class InputService {
     this.region.next(value);
   }
 
-  private graphMean = new BehaviorSubject<any>(undefined);
-  graphservice = this.graphMean.asObservable();
-  async sendGraph(value:any){
-    this.graphMean.next(value);
-  }
-
   private dif = new BehaviorSubject<any>(undefined);
   difservice = this.dif.asObservable();
   async senddif(value:any){
     this.dif.next(value);
+  }
+
+  private country = new BehaviorSubject<any>(undefined);
+  countryservice = this.country.asObservable();
+  async sendcountry(value:any){
+    this.country.next(value);
+  }
+
+  private input = new BehaviorSubject<any>(undefined);
+  inputhomeservice = this.input.asObservable();
+  async sendInput(value:any){
+    this.input.next(value);
+  }
+
+  private continent = new BehaviorSubject<any>(undefined);
+  continentservice = this.continent.asObservable();
+  async sendcontinent(value:any){
+    this.continent.next(value);
+  }
+
+  private graphAvg = new BehaviorSubject<any>(undefined);
+  graphAvgservice = this.graphAvg.asObservable();
+  async sendGraphAvg(value:any){
+    this.graphAvg.next(value);
+  }
+
+  private graphcountryAvg = new BehaviorSubject<any>(undefined);
+  graphcountryservice = this.graphcountryAvg.asObservable();
+  async sendGraphcountry(value:any){
+    this.graphcountryAvg.next(value);
   }
 
   constructor(){}
