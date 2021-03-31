@@ -25,6 +25,8 @@ import { NetcdfComponent } from './netcdf/netcdf.component';
 import {MatRadioModule} from '@angular/material/radio';
 import { HomeComponent } from './home/home.component';
 import { NetcdfgraphComponent } from './netcdfgraph/netcdfgraph.component';
+import { DifferenceComponent } from './difference/difference.component';
+import { NgxSpinnerModule } from "ngx-spinner";
 PlotlyModule.plotlyjs = PlotlyJS;
 
 @NgModule({
@@ -38,7 +40,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     BoxplotComponent,
     NetcdfComponent,
     HomeComponent,
-    NetcdfgraphComponent
+    NetcdfgraphComponent,
+    DifferenceComponent
   ],
   imports: [
     BrowserModule,
@@ -53,7 +56,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     HighchartsChartModule,
     ChartModule,
     NgMultiSelectDropDownModule.forRoot(),
-    MatRadioModule
+    MatRadioModule,
+    NgxSpinnerModule
 
   ],
   providers: [],

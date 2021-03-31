@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core'
-import { HttpClient, HttpClientModule } from '@angular/common/http'
+import { HttpClient, HttpClientModule ,HttpHeaders} from '@angular/common/http'
 import { Observable } from 'rxjs'
 import { Temp, Plot, meanplot, station5, st, Missing, Boxplotval, data_test, data_db,data_sta, grid } from '../interfaces/temp.interface'
 import { from } from 'rxjs'
+
 @Injectable()
 export class TempService {
     constructor(private http: HttpClient) { }
@@ -52,9 +53,10 @@ export class TempService {
         )
     }
 
-    async getanomalync(filename:string){
-        return this.http.get('http://127.0.0.1:5500' +
-                            `/api/anomalyNC?filename=${filename}`)
+    async getanomalync(ncfile:string,filename:string){
+        const response = this.http.get('http://127.0.0.1:5500' + 
+                            `/api/anomalyNC?ncfile=${ncfile}&filename=${filename}`)
+        return response
     }
 
     getData(){
@@ -157,6 +159,35 @@ export class TempService {
         return this.http.get('http://127.0.0.1:5500' +
         `/map_range2month?dataset=${dataset}&index=${index}&start=${start}&stop=${stop}&month=${month}`
         ,{responseType:"text"});
+    }
+
+    async get_dataset(): Promise<Observable<any>>{
+        // console.log("service",this.http.get('http://127.0.0.1:5500/locat/station'))
+        return this.http.get('http://127.0.0.1:5500//api/dataset')
+    }
+
+    getCountry(dataset:string,index:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string,country:any): Observable<any>{
+        console.log("country",country)
+        const httpOptions = {
+          headers: new HttpHeaders({
+            'country':  country,
+          })
+        };
+        console.log("country in ser",httpOptions)
+        
+        return this.http.get('http://127.0.0.1:5500'+`/api/country_avg?dataset=${dataset}&index=${index}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`,httpOptions)
+    }
+
+    async getSelectCountry(dataset:string,index:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string): Promise<Observable<any>>{
+        // console.log("country",country)
+        // const httpOptions = {
+        //   headers: new HttpHeaders({
+        //     'country':  country,
+        //   })
+        // };
+        // console.log("country in ser",httpOptions)
+        
+        return this.http.get('http://127.0.0.1:5500'+`/api/country_avg?dataset=${dataset}&index=${index}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`)
     }
 // -------------------------------------------------------------------------------------------------------
 

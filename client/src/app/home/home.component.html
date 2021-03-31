@@ -30,46 +30,12 @@
 
 </head>
 
-<!-- <body> -->
-<!-- <div class="flex-container"> -->
-
-    <!-- <div class="flex-container.content" style="background-color: hotpink;">
-        <div *ngIf="select == 'Map'" style="margin-top: 10%;margin-left: 0;flex-direction: row; display: flex; flex-wrap: nowrap;width: 80%;">
-            <app-netcdfgraph [file]="choosefile.controls['file'].value">
-            </app-netcdfgraph>
-        </div>
-    </div>
-
-    <div style="flex-direction: row; display: flex; flex-wrap: wrap;justify-content: flex-end;" >
-    
-        <div style="flex-direction: column; display: flex;width: 400px;height: 400px;" *ngIf="select == 'station'">
-            <app-map [file]="choosefile.controls['file'].value" 
-            [start_date]="this.start_date"
-            [stop_date]="this.stop_date"></app-map>
-        </div>
-        <div style="flex-direction: column; display: flex;"  *ngIf="select == 'station'">
-            <app-boxplot    [file]="choosefile.controls['file'].value" 
-                            [startyear]="this.fromDate.year"
-                            [stopyear]="this.toDate.year"
-                            [startmonth]="this.fromDate.month"
-                            [stopmonth]="this.toDate.month"
-                            [startday]="this.fromDate.day"
-                            [stopday]="this.toDate.day"></app-boxplot>
-        </div>
-    </div>
-        <router-outlet ></router-outlet>           
-    </div> -->
-<!-- </div> -->
-
-
     <!-- jQuery CDN - Slim version (=without AJAX) -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <!-- Popper.JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
     <!-- Bootstrap JS -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
-
-<!-- </body> -->
 
 <body class="flex-container">
     <div class="justify-content">
@@ -123,7 +89,7 @@
                     [value]="formatter.format(fromDate)"
                     (input)="fromDate = validateInput(fromDate, dpFromDate.value)">
                 <div class="input-group-append">
-                    <button class="btn btn-outline-secondary calendar" (click)="datepicker.toggle(); clearSelect()"
+                    <button class="btn btn-outline-secondary calendar" (click)="datepicker.toggle();"
                         type="button" style="background-color: rgb(255, 255, 255);"><i class="far fa-calendar-alt"></i></button>
                 </div>
             </div>
@@ -173,38 +139,56 @@
             </div>
 
             <div style="display: flex; justify-content: center; flex-direction: row;" role="group" aria-label="Basic example">
-                <button type="button" class="buttongrid" (click)="Map();"><i class="fas fa-map-marked-alt"></i><br>Grid</button>
-                <button type="button" class="buttongrid" (click)="percent()"><i class="fas fa-layer-group"></i><br>Different</button>
+                <button type="button" class="buttongrid" (click)="get_raw_data();"><i class="fas fa-map-marked-alt"></i><br>Grid</button>
+                <button type="button" class="buttongrid" (click)="get_difference()"><i class="fas fa-layer-group"></i><br>Different</button>
                 <button type="button" class="buttongrid" (click)="station_thai()"><i class="fas fa-map-marker-alt"></i><br>Station</button>
             </div> 
         </div>
         
-        <div class="content" style="flex-direction: column; display: flex; flex-wrap: nowrap;align-items: center;justify-content: center;" >
-            <!--World Map-->
-            <div >
-                <div style="flex-direction: column; display: flex;">
-                    <div  *ngIf="select == 'Map'" style="width: 100%;">
-                        <app-netcdf [data]="choosedataset.controls['set'].value"
-                                    [file]="choosefile.controls['file'].value" 
-                                    [startyear]="this.fromDate.year"
-                                    [stopyear]="this.toDate.year"
-                                    [startmonth]="this.fromDate.month"
-                                    [stopmonth]="this.toDate.month"
-                                    [North]="this.North.value"
-                                    [South]="this.South.value"
-                                    [West]="this.West.value"
-                                    [East]="this.East.value"
-                                    [per] = "per">
-                        </app-netcdf>
-                    </div>
+<!-- 
+        <div class="flex-column" style="margin-bottom: 5%;margin-left: 2%;">
+            <div *ngIf="select == 'get_data'">
+                <app-netcdf [index]="choosefile.controls['file'].value"  ></app-netcdf>
+                <div style="margin-top: 10px;">
+                <app-netcdfgraph [data]="choosedataset.controls['set'].value"
+                           [file]="choosefile.controls['file'].value" 
+                           [startyear]="this.fromDate.year"
+                           [stopyear]="this.toDate.year"
+                           [startmonth]="this.fromDate.month"
+                           [stopmonth]="this.toDate.month"></app-netcdfgraph>
                 </div>
             </div>
-            <div style="height: 100px;">
+        </div> -->
 
+        <div class="content" style="flex-direction: column; display: flex; flex-wrap: nowrap;align-items: center;justify-content: space-between;" >
+            <!-- World Map grid-->
+            
+        <div class="flex-column" style="margin-bottom: 5%;margin-left: 2%;">
+            <div *ngIf="select == 'get_data'">
+                <app-netcdf [index]="choosefile.controls['file'].value"  ></app-netcdf>
+                <div style="margin-top: 10px;">
+                <app-netcdfgraph [data]="choosedataset.controls['set'].value"
+                           [file]="choosefile.controls['file'].value" 
+                           [startyear]="this.fromDate.year"
+                           [stopyear]="this.toDate.year"
+                           [startmonth]="this.fromDate.month"
+                           [stopmonth]="this.toDate.month"></app-netcdfgraph>
+                </div>
             </div>
+        </div>
+            <!-- <div >
+                <div style="flex-direction: column; display: flex;">
+                    <div  *ngIf="select == 'get_data'" style="width: 100%;">
+                        <app-netcdf></app-netcdf>
+                    </div>
+                </div>
+            </div> -->
+            <!-- space -->
+            <!-- <div style="height: 100px;">
+            </div> -->
             <!--NC Graph-->
-            <div style="justify-content: flex-start;margin-top: 30px;margin-left: 0px;">
-                <div *ngIf="select == 'Map'">
+            <!-- <div style="justify-content: flex-start;margin-top: 30px;margin-left: 0px;">
+                <div *ngIf="select == 'get_data'">
                     <app-netcdfgraph [data]="choosedataset.controls['set'].value"
                                     [file]="choosefile.controls['file'].value" 
                                     [startyear]="this.fromDate.year"
@@ -213,22 +197,15 @@
                                     [stopmonth]="this.toDate.month">
                     </app-netcdfgraph>
                 </div>
-            </div>
+            </div> -->
             <!--Percent Difference-->
             <div>
-                <div *ngIf="select == 'percent'" style="justify-content: center;margin: 15px;">
-                    <app-netcdf [data]="choosedataset.controls['set'].value"
-                                [file]="choosefile.controls['file'].value" 
-                                [North]="this.North.value"
-                                [South]="this.South.value"
-                                [West]="this.West.value"
-                                [East]="this.East.value"
-                                [per] = "per">
-                    </app-netcdf>
+                <div *ngIf="select == 'get_dif'" style="justify-content: center;margin: 15px;margin-top: 5px;">
+                    <app-difference></app-difference>
                 </div>
             </div>
             <!--Thailand Station-->
-            <div style="display: flex;flex-direction: column;justify-content: center;">
+            <div style="display: flex;flex-direction: column;justify-content: center; margin-top: 5px;">
                 <div style="flex-direction: row; display: flex; flex-wrap: wrap;justify-content: space-between;height: 800px;width: 1150px;" >
     
                     <div style="flex-direction: column; display: flex;width: 502px;height: 800px;" *ngIf="select == 'station'">

@@ -3,8 +3,9 @@ import {FormGroup, FormControl,Validators} from '@angular/forms';
 import {NgbDate, NgbCalendar, NgbDateParserFormatter} from '@ng-bootstrap/ng-bootstrap';
 import { Router ,ActivatedRoute} from '@angular/router';
 import { TempService } from 'src/app/services/temp.service';
-// import { RecieveDataService } from './data.service';
+// import { RecieveDataService } from 'src/app/services/data.service';
 import * as $ from 'jquery';
+import { InputService } from "src/app/services/input.service";
 
 declare interface RouteInfo {
   path: string;
@@ -43,33 +44,25 @@ export class HomeComponent implements OnInit {
   model: any;
   filename = [];
 
+  dataset_name;
+
   public start_date;
   public stop_date;
 
   public checkmap = '';
 
-  dataset_name:Array<Object> = [
-    {id:'cru-ts', name:'CRU TS'},
-    {id:'station', name:'TMD'},
-    { id: 'ec-earth3', name: 'EC-Earth' },
-    { id: 'cnrm-esm2-1', name: 'CNRM-ESM2-1' },
-    { id: 'mpi-esm1-2-lr', name: 'MPI-ESM1-2-LR' }
-  ];
+  // dataset_name:Array<Object> = [
+  //   {id:'cru-ts', name:'CRU TS'},
+  //   {id:'station', name:'TMD'},
+  //   { id: 'ec-earth3', name: 'EC-Earth' },
+  //   { id: 'cnrm-esm2-1', name: 'CNRM-ESM2-1' },
+  //   { id: 'mpi-esm1-2-lr', name: 'MPI-ESM1-2-LR' }
+  // ];
 
   filename_cru = [{ id: 'tas', name: 'Averange Temperature' },
     { id: 'tasmin', name: 'Minimum Temperature' },
     { id: 'tasmax', name: 'Maximum Temperature' },
     { id: 'pr', name: 'Preciptipation' }
-  ];
-
-  filename_ec = [{ id: 'pr', name: 'Preciptipation' },
-    { id: 'ps', name: 'surface pressure' },
-    { id: 'ta', name: 'Air Temperature' },
-    { id: 'tas', name: '2m Temperature' },
-    { id: 'tasmin', name: 'daily min 2m Temperature' },
-    { id: 'ua', name: 'eastward wind' },
-    { id: 'va', name: 'northward wind' },
-    { id: 'vas', name: '10V wind' }
   ];
 
   constructor(
@@ -78,7 +71,8 @@ export class HomeComponent implements OnInit {
     private calendar: NgbCalendar,
     public formatter:NgbDateParserFormatter,
     private tempService: TempService,
-    // private recieveDataService: RecieveDataService
+    // private recieveDataService: RecieveDataService,
+    private inputservice: InputService
     ){
    }
 
@@ -98,66 +92,173 @@ export class HomeComponent implements OnInit {
   select;
   per;
   selectGrid;
+  chart;
 
-  // public toggle = false;
-  // public status = 'Enable'; 
-  
-  // enableDisableRule() {
-  //   this.toggle = !this.toggle;
-  //   this.status = this.toggle ? 'Enable' : 'Disable';
-  //   console.log(this.status)
-  // }
+  public anomaly_year = []
+  public anomaly_name = [];
+  public anomalydata = []
+  public anomaly = []
+  public anomalyyear = []
+  public fileanomaly = [];
 
-  ngOnInit(): void {
-    // this.enableDisableRule()
-    console.log("select",this.choosefile.controls['file'].value)
-    console.log("select set: ",this.choosedataset.controls['set'].value)   
-    $(document).ready(function () {
 
-      $('#sidebarCollapse').on('click', function () {
-          $('#sidebar').toggleClass('active');
-      });  
-  });
+  async ngOnInit() {
+    this.tempService.get_dataset().then(data => data.subscribe(
+      res => {
+        this.dataset_name = res
+      }))
 
-  var dropdown = document.getElementsByClassName("dropdown-toggle");
-  var i;
-
-  for (i = 0; i < dropdown.length; i++) {
-    dropdown[i].addEventListener("click", function() {
-    this.classList.toggle("active");
-    var dropdownContent = this.nextElementSibling;
-    if (dropdownContent.style.display === "block") {
-    dropdownContent.style.display = "none";
-    } else {
-    dropdownContent.style.display = "block";
-    }
-    });
-  }
+    var region = [this.North.value, this.South.value, this.West.value, this.East.value]
+    await this.inputservice.sendRegion(region)
   }
 
-  clearSelect(){
+  clearSelect() {
     this.select = "";
   }
 
+  async get_difference(){
+    this.select = 'get_dif'
+    var data = this.choosedataset.controls['set'].value
+    var index = this.choosefile.controls['file'].value
+    var sent = [data,index]
+    this.inputservice.senddif(sent)
 
-  Map(){
-    this.checkmap = ''
-    let from_date = String(this.fromDate.year + '-' + this.fromDate.month + '-' + this.fromDate.day)
-    let end_date = new Date(this.toDate.year, this.toDate.month, this.toDate.day)
-    this.start_date = JSON.stringify(this.fromDate)
-    this.stop_date = JSON.stringify(end_date)
-    this.stop_date = this.stop_date.slice(1, 11)
-    this.checkmap = 'check'
-    this.select = "Map"
+  }
+
+  async get_raw_data() {
+    this.select = 'get_data'
+    this.dataset = this.choosedataset.controls['set'].value
+    var index = this.choosefile.controls['file'].value
+    var startyear = String(this.fromDate.year)
+    var stopyear = String(this.toDate.year)
+    var startmonth = String(this.fromDate.month)
+    var stopmonth = String(this.toDate.month)
+    // var region = [this.North.value, this.South.value, this.West.value, this.East.value]
     this.per = "no"
-    console.log(this.select)
+
+    await this.tempService.detail(this.dataset, index).then(data => data.subscribe(
+      res => {
+        var detail = [res,this.dataset]
+        this.inputservice.sendDetail(detail)
+      }
+    )
+    )
+
+    await this.tempService.get_Avgcsvtrend(this.dataset, index, startyear, stopyear,startmonth, stopmonth)
+    .then(data => data.subscribe(
+      res => {
+        console.log("trend result finish")
+        let resp = JSON.parse(res)
+        this.inputservice.sendtrend(resp)
+      } 
+    ))
+
+    await this.tempService.get_Avgcsv(this.dataset, index, startyear, stopyear, startmonth, stopmonth)
+      .then(data => data.subscribe(
+        (res => {
+          let resp = JSON.parse(res)
+          this.inputservice.sendLowRes(resp)
+        })
+      ))
+
+    await this.tempService.get_hire(this.dataset, index, startyear, stopyear, startmonth, stopmonth)
+      .then(data => data.subscribe(
+        (res => {
+          let resp = JSON.parse(res)
+          var inputs = {'dataset':this.dataset,'index':index,'startyear':startyear,'stopyear':stopyear,'startmonth':startmonth,'stopmonth':stopmonth}
+          this.tempService.global_avg(this.dataset, index, startyear,startmonth, stopyear, stopmonth)
+            .then(data => data.subscribe(res => {
+              var data = Number(stopyear)- Number(startyear)
+              console.log("dddddd",data)
+              var start = Number(startyear)
+              for (var i =0; i<= data; i++){
+                Data.dataPoints.push(
+                  {x: new Date(start, 0), y: res[0][i]},        
+                )
+                start+=1
+              }
+              console.log("point",Data.dataPoints)
+              this.chart = [Data.dataPoints,res[1],res[2]]
+              var sent = {'chart':this.chart,'map':resp,'input':inputs}
+              this.inputservice.sendHiRes(sent)
+              console.log("hi graph",sent)
+            }))
+        })
+      ))
+
+    // await this.tempService.global_avg(this.dataset, index, startyear,startmonth, stopyear, stopmonth)
+    // .then(data => data.subscribe(res => {
+    //   // console.log("global",res)
+    //   var data = Number(stopyear)- Number(startyear)
+    //   // console.log("dddddd",data)
+    //   var start = Number(startyear)
+    //   for (var i =0; i<= data; i++){
+    //     Data.dataPoints.push(
+    //       {x: new Date(start, 0), y: res[0][i]},        
+    //     )
+    //     start+=1
+    //   }
+    //   // console.log("point",Data.dataPoints)
+    //   var sent = [Data.dataPoints,res[1],res[2]]
+    //   // console.log("sent data from home ",sent)
+    //   this.inputservice.sendGraph(sent)
+    //   // this.plotMean(res[1],res[2])
+    // }))
+
+    var Data = {
+      dataPoints : []
+    }
+
+    await this.tempService.getanomalync(this.dataset, index).
+    then(data => data.subscribe(
+      res => {
+        console.log("ano home res:",res)
+        this.anomaly.push(res[0])
+        this.anomaly_year.push(res[1])
+        this.anomaly_name.push(res[2])
+        this.anomaly.map(u=>{
+          
+          for (let v in u){
+            // this.anomaly_name.push(v)
+            for (let i in u[v]){
+              if(String(u[v][i]) == String("-")){
+                  u[v][i] = null
+              }else{
+                u[v][i] = Number(u[v][i])
+              }   
+            this.anomalydata.push(u[v][i])               
+            }
+          }
+        })
+        this.anomaly_name.map(u =>{
+          
+          for (let v in u ){
+            this.fileanomaly.push(u[v])
+          }
+          console.log( "u name home: ", this.fileanomaly)
+        })
+        this.anomaly_year.map(u=>{
+          for (let v in u){
+            for (let i in u[v]){
+            this.anomalyyear.push(u[v][i])               
+            }
+          }
+        })
+        var send = [this.anomalydata,this.anomalyyear,this.fileanomaly]
+        console.log("ano home :",send)      
+        
+        this.inputservice.sendAnomaly(send)
+      }))
+
+
+
   }
 
   station_thai(){
-    console.log("start",this.fromDate.year)
-    console.log("end",this.toDate.year)
-    console.log("set",this.choosedataset.controls['set'].value)
-    console.log("sent",this.choosefile.controls['file'].value)
+    // console.log("start",this.fromDate.year)
+    // console.log("end",this.toDate.year)
+    // console.log("set",this.choosedataset.controls['set'].value)
+    // console.log("sent",this.choosefile.controls['file'].value)
     let from_date = new Date(this.fromDate.year,this.fromDate.month,this.fromDate.day)
     let end_date = new Date(this.toDate.year,this.toDate.month,this.toDate.day)
     let startyear = String(this.fromDate.year)
@@ -180,9 +281,9 @@ export class HomeComponent implements OnInit {
       stopmonth = '0'+stopmonth
     }
     this.stop_date = String(stopyear+'-'+stopmonth+'-'+stopday)
-    console.log("f date : ",this.fromDate.year,this.fromDate.month,startday)
-    console.log("begin : ", from_date,end_date)
-    console.log("sent date : ", this.start_date,this.stop_date)
+    // console.log("f date : ",this.fromDate.year,this.fromDate.month,startday)
+    // console.log("begin : ", from_date,end_date)
+    // console.log("sent date : ", this.start_date,this.stop_date)
     this.select = "station"
   }
 

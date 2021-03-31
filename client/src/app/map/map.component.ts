@@ -3,7 +3,6 @@ import { TempService } from '../services/temp.service';
 import { HttpClient, HttpClientModule } from '@angular/common/http'
 import * as L from 'leaflet';
 import { latLng, MapOptions, tileLayer, Marker, icon } from 'leaflet';
-import { MarkerService } from '../services/markers.service';
 import 'ol/ol.css';
 import * as MapLib from './lib/mapthai.js';
 import * as MapLib2 from './lib/map_station.js';

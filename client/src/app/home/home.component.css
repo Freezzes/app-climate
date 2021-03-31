@@ -31,6 +31,10 @@
     width: 80%;
     color: rgb(255, 255, 255);
   }
+
+  .flex-column{
+    flex-direction: column;
+  }
   
   .header h1{
     font-family: 'Open Sans', sans-serif;
@@ -323,19 +327,6 @@ button.buttongridselect{
     width: 75px;
     }  
 
-.rightworld{
-  float:right;
-  width:40%;
-  padding-left: 13px;
-  padding-bottom: 30px;
-  padding-right: 8px;
-}
-.leftworld{
-  float: left;
-  width: 60%;
-  padding-left: 10px;
-  padding-bottom: 20px;
-}
 .flex-container{
   display: flex;
   flex-direction: column; 
@@ -390,6 +381,7 @@ button.buttongridselect{
   display: flex;
   flex-direction: column;
   flex-grow: 1; 
+  margin-top: 0px;
   justify-content: center;
   /* background-color: rgb(192, 92, 130); */
 }

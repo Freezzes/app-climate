@@ -528,6 +528,81 @@ function createLegend (colorScale,min,max,color,type) {
       .call(xAxis);
     }
   }
+
+
+// --------------------- trend --------------------------------------------
+export function draw_trend(geojson, layername='') {
+
+    var createTextStyle = function (feature) {
+      var texts = feature.getProperties().trend
+      // console.log("text trend",texts)
+      if (texts == '+'){
+        return new ol.style.Text({
+          textAlign: "center",
+          text: feature.getProperties().trend,
+          font: '12px',
+          fill: new ol.style.Fill({color: "black",width: 0.5}),
+          stroke: new ol.style.Stroke({color: "red", width: 1}),
+          placement: "point",
+        })
+      }
+      else if (texts == '-'){
+        return new ol.style.Text({
+          textAlign: "center",
+          text: feature.getProperties().trend,
+          font: '12px',
+          fill: new ol.style.Fill({color: "black",width: 0.5}),
+          stroke: new ol.style.Stroke({color: "blue", width: 1}),
+          placement: "point",
+        })
+      }
+    };
+  
+    var grid = new ol.source.Vector({
+      wrapX: false,
+      extent: [-180, -90, 180, 90],
+      features: (new ol.format.GeoJSON()).readFeatures(geojson)
+    });
+    
+    var gridLayer = new ol.layer.Vector({
+        name: layername,
+        source: grid,
+        style: function(feature) {
+          return new ol.style.Style({
+            text: createTextStyle(feature)
+          })
+        }
+    });
+  
+    return gridLayer
+  }
+
+export function merge_datatrend_to_geojson(geojsondata, data,North,South,West,East,type){
+ 
+    var temp = data
+    var trend = "";
+    // var grids = geojsondata
+    // console.log("temp",temp)
+    for(let i=0; i<geojsondata.features.length; i++) {
+      // grids["features"][i]["properties"] = {"value": temp[i]}
+      if (  geojsondata['features'][i]['geometry']['coordinates'][0] >= West && 
+            geojsondata['features'][i]['geometry']['coordinates'][0] <= East && 
+            geojsondata['features'][i]['geometry']['coordinates'][1] >= South && 
+            geojsondata['features'][i]['geometry']['coordinates'][1] <= North)
+            {
+              if(temp[i] == 0){ trend = ""}
+              else if (temp[i] == 1){ trend = "+"}
+              else if (temp[i] == -1){ trend = "-"}
+              geojsondata["features"][i]["properties"] = {"trend": trend}
+            }
+    }
+  
+    console.log("merge",geojsondata)
+  
+    return geojsondata
+  }
+
+
 //--------------------------Convert Data------------------------------
 export function convert_to_geojson(data,lon,lat){
     var geojsondata = {
@@ -549,23 +624,24 @@ export function convert_to_geojson(data,lon,lat){
   return geojsondata
 }
 
-export function merge_data_to_geojson(lon,lat, data,North,South,West,East){
+export function merge_data_to_geojson(geojsondata, data,North,South,West,East){
   // var tempData = data.flat();
-  var geojsondata = {
-    type: 'FeatureCollection',
-    features: []
-  };
-  for (var i =0; i< data.length ;i++) {
-  geojsondata.features.push({
-        type: 'Feature',
-        // properties: { "value": data[i]},
-        geometry: {
-            type: 'Point',
-            coordinates: [lon[i], lat[i]]
-        }
-      })
-  }
+  // var geojsondata = {
+  //   type: 'FeatureCollection',
+  //   features: []
+  // };
+  // for (var i =0; i< data.length ;i++) {
+  // geojsondata.features.push({
+  //       type: 'Feature',
+  //       // properties: { "value": data[i]},
+  //       geometry: {
+  //           type: 'Point',
+  //           coordinates: [lon[i], lat[i]]
+  //       }
+  //     })
 
+
+  // }
   var temp = data
   // var grids = geojsondata
   console.log("merge",geojsondata)
@@ -604,13 +680,17 @@ export function setzoom(map){
 }
 //-------------------------Clear Layers----------------------------
 export function clearLayers(map){
-  // console.log("old layer",map.getLayers())
-  const layers = map.getLayers().getArray()
-
-  for(var i=layers.length; i>=1; i--) {
-    map.removeLayer(layers[i]);
-    console.log(i,layers[i])
-    console.log("last",layers)
+    var layersToRemove = [];
+    map.getLayers().forEach(function (layer) {
+      if (layer.get('name') == 'lowres_data' || layer.get('name') == 'hires_data'|| layer.get('name') == 'trend') {
+        layersToRemove.push(layer);
+        console.log("layer :".layersToRemove)
+      }
+    });
+  
+    for(var i = 0; i < layersToRemove.length; i++) {
+      console.log(">>>>>> Clear <<<<<<<")
+      map.removeLayer(layersToRemove[i]);
+    }
   }
-}
 
