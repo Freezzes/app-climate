@@ -139,6 +139,7 @@ def anomalyplot():
     a = anomaly.values.round(2)
     ana = {'anomaly':list(a)}
     year = {'year':list(anomaly.index)}
+
     return jsonify(ana,year,list(re))
 
 #-------------------------- NC anomaly ------------------------------------------------------
@@ -194,7 +195,11 @@ def anamalymap():
     ano = {'anomaly':an}
     year = {'year':y}
     namefile = {'name':select}
-    return jsonify(ano,year,namefile)
+    if filename == 'pr':
+        unit = "mm"
+    else:
+        unit = "°C"
+    return jsonify(ano,year,namefile,unit)
 
 #----------------------- MK TEST -------------------------------------------------------
 @app.route("/api/mkstation",methods=["GET"])

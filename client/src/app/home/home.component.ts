@@ -94,13 +94,25 @@ export class HomeComponent implements OnInit {
   selectGrid;
   chart;
 
-  public anomaly_year = []
-  public anomaly_name = [];
-  public anomalydata = []
-  public anomaly = []
-  public anomalyyear = []
-  public fileanomaly = [];
+  public anomaly_year 
+  public anomaly_name
+  public anomalydata 
+  public anomaly
+  public anomalyyear 
+  public fileanomaly
 
+  // public anomaly_year = []
+  // public anomaly_name = [];
+  // public anomalydata = []
+  // public anomaly = []
+  // public anomalyyear = []
+  // public fileanomaly = [];
+
+  public Data;
+  
+  public value;
+  public year;
+  public name;
 
   async ngOnInit() {
     this.tempService.get_dataset().then(data => data.subscribe(
@@ -167,7 +179,10 @@ export class HomeComponent implements OnInit {
           let resp = JSON.parse(res)
           var inputs = {'dataset':this.dataset,'index':index,'startyear':startyear,'stopyear':stopyear,'startmonth':startmonth,'stopmonth':stopmonth}
           this.tempService.global_avg(this.dataset, index, startyear,startmonth, stopyear, stopmonth)
-            .then(data => data.subscribe(res => {
+            .then(data => data.subscribe(res => {       
+              var Data = {
+                dataPoints : []
+              }
               var data = Number(stopyear)- Number(startyear)
               console.log("dddddd",data)
               var start = Number(startyear)
@@ -205,48 +220,33 @@ export class HomeComponent implements OnInit {
     //   // this.plotMean(res[1],res[2])
     // }))
 
-    var Data = {
-      dataPoints : []
-    }
 
     await this.tempService.getanomalync(this.dataset, index).
     then(data => data.subscribe(
       res => {
         console.log("ano home res:",res)
-        this.anomaly.push(res[0])
-        this.anomaly_year.push(res[1])
-        this.anomaly_name.push(res[2])
-        this.anomaly.map(u=>{
-          
-          for (let v in u){
-            // this.anomaly_name.push(v)
-            for (let i in u[v]){
-              if(String(u[v][i]) == String("-")){
-                  u[v][i] = null
-              }else{
-                u[v][i] = Number(u[v][i])
-              }   
-            this.anomalydata.push(u[v][i])               
-            }
+        this.anomalydata = res[0].anomaly
+        this.anomaly_year = res[1].year
+        this.anomaly_name = res[2].name
+        var unit = res[3]
+        this.Data = {
+          dataPoints : []
+        }
+        for (var i =0; i< this.anomalydata.length; i++){
+          if (this.anomalydata[i] > 0){
+            this.Data.dataPoints.push(
+              { y: this.anomalydata[i], label: this.anomaly_year[i],color: 'red' }          
+            )
           }
-        })
-        this.anomaly_name.map(u =>{
-          
-          for (let v in u ){
-            this.fileanomaly.push(u[v])
+          else if (this.anomalydata[i] < 0){
+            this.Data.dataPoints.push(
+              { y: this.anomalydata[i], label: this.anomaly_year[i],color: 'blue' }          
+            )
           }
-          console.log( "u name home: ", this.fileanomaly)
-        })
-        this.anomaly_year.map(u=>{
-          for (let v in u){
-            for (let i in u[v]){
-            this.anomalyyear.push(u[v][i])               
-            }
-          }
-        })
-        var send = [this.anomalydata,this.anomalyyear,this.fileanomaly]
+        }
+        var send = [this.Data.dataPoints,this.anomaly_name,unit]
         console.log("ano home :",send)      
-        
+
         this.inputservice.sendAnomaly(send)
       }))
 

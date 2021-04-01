@@ -38,86 +38,100 @@ export class NetcdfgraphComponent implements OnInit {
   public testa: any;
   public get;
   public Data;
-  public value_avg;
-  public dataTemp;
+  
+  public value;
+  public year;
+  public name;
   public dataMean;
-  public dataMeanDB;
-  public name = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
+  dataset_name;
+  long_name;
+  difinition;
+  unit;
+
+  
   constructor(
     private tempService: TempService,
     private sharedData: InputService
   ) { }
 
   async ngOnInit() {
-    console.log("graphhhhhhhhhhhhhhhhhhh")
+    await this.sharedData.Detailservice.subscribe(data => {
+      if (data) {
+        console.log("input Detail", data)
+        this.unit = data[0].unit
+        this.difinition = data[0].description
+        this.long_name = data[0].long_name
+        this.year = data[0].year
+        this.dataset_name = data[1]
+      }
+
+    })
     this.sharedData.graphAvgservice.subscribe(data => {
       if (data) {
         console.log("graph", data)
-        // var avg = data[1]
-        // console.log("datapoint",data[0])
-        this.plotMean(data[0], data[1], data[2])
-        // this.Data.dataPoints = data[0]
-        // console.log("test graph",this.Data.dataPoints)
+        this.plotMean(data[0], data[1], data[2],this.long_name)
       }
     })
 
-    // this.sharedData.anomalyservice.subscribe(ano => {
-    //   if (ano) {
-    //     console.log("data recirve >>>>> ", ano)
-    //     console.log("plot ano name .... ", ano[2])
-    //     // this.plotanomaly(ano)
-    //     // this.anomalydata = ano[0]
-    //     // this.anomaly_year = ano[1]
-    //     // this.fileanomaly = ano[2]
-    //     this.get_data(ano[0],ano[1],ano[2])
-    //     // this.draw_seasonal_chart('anomaly',this.anomalydata, this.anomaly_year,this.nameanomaly)
-    //   }
-    // })
-    // console.log("ano name ...",this.fileanomaly)
-    // this.plotbar()
-    // this.draw_seasonal_chart('anomaly')
-    // this.plotanomaly(this.testa)
-
+     this.sharedData.anomalyservice.subscribe(data => {
+      if(data){
+        console.log("anomaly service",data)
+        this.value = data[0]
+        this.name = data[1]
+        var unit = data[2]
+        this.plot_anomaly(this.value,this.name,unit)
+      }
+    })
   }
 
   
-  async plot_anomaly(value,name){
+  async plot_anomaly(value,name,unit){
+    console.log("unittttttt",unit)
     var chart = new CanvasJS.Chart("anomaly", {
       animationEnabled: true,
       
       title:{
-        text:name
+        text:name,
+        fontSize: 25,
+        fontFamily: "Open Sans",
       },
       axisX:{
-        interval: 1
+        title : 'Year',
+        fontSize: 12
       },
-      axisY2:{
-        interlacedColor: "rgba(1,77,101,.2)",
+      axisX2:{
         gridColor: "rgba(1,77,101,.1)",
-        title: "Number of Companies"
       },
+      axisY:{
+        title : name,
+        suffix: unit,
+        fontSize: 12
+       },
       data: [{
-        type: "bar",
-        name: "companies",
-        axisYType: "secondary",
-        color: "#014D65",
+        yValueFormatString: "#.# " + unit,
+        // showInLegend: true,
+        type: "column",
+        // name: "companies",
         dataPoints: value
       }]
     });
     chart.render();
   }
 
-  async plotMean(Data, Avg, unit) {
+  async plotMean(Data, Avg, unit,name) {
     var chart = new CanvasJS.Chart("chartContainer", {
       animationEnabled: true,
       title: {
-        text: null
+        text: "Averange" + name,
+        fontSize: 25,
+        fontFamily: "Open Sans", 
       },
       axisY: {
-        title: "Averange temperature",
+        title: name,
         // valueFormatString: "#,,.",
         suffix: unit,
+        fontSize: 12,
         stripLines: [{
           value: Avg,
           label: "Average"
@@ -126,144 +140,11 @@ export class NetcdfgraphComponent implements OnInit {
       data: [{
         yValueFormatString: "#.### " + unit,
         xValueFormatString: "YYYY",
-        showInLegend: true,
+        // showInLegend: true,
         type: "line",
         dataPoints: Data
       }]
     });
     chart.render();
   }
-
-  // bar plot anomaly data
-  public anomaly_year = []
-  public anomaly_name = [];
-
-  async plotbar() {
-    this.checkbar = ''
-    let fil = this.file
-    console.log("anomaly plot >>> ", this.data, this.file)
-    this.anomaly = []
-    this.anomaly_year = []
-    this.anomaly_name.length = 0;
-    this.anomalydata.length = 0;
-    this.anomalyyear.length = 0;
-    await this.tempService.getanomalync(this.data, this.file).then(data => data.subscribe(
-      res => {
-        this.anomaly.push(res[0])
-        this.anomaly_year.push(res[1])
-        this.anomaly_name.push(res[2])
-        // console.log("res : ",this.anomaly,this.anomaly_year)
-        this.anomaly.map(u => {
-
-          for (let v in u) {
-            // this.anomaly_name.push(v)
-            // console.log(v,"v")
-            for (let i in u[v]) {
-              if (String(u[v][i]) == String("-")) {
-                u[v][i] = null
-              } else {
-                u[v][i] = Number(u[v][i])
-              }
-              this.anomalydata.push(u[v][i])
-            }
-          }
-        })
-        this.anomaly_name.map(u => {
-          // console.log( "u name : ", u)
-          for (let v in u) {
-            this.fileanomaly.push(u[v])
-          }
-        })
-        this.anomaly_year.map(u => {
-          for (let v in u) {
-            for (let i in u[v]) {
-              this.anomalyyear.push(u[v][i])
-            }
-          }
-        })
-        console.log("anomaly_name : ", this.fileanomaly)
-        this.fileanomaly = this.nameanomaly
-        console.log("ano name in plotbar...", this.nameanomaly)
-        console.log("file name anoma ...", this.fileanomaly)
-        this.checkbar = 'check'
-      }))
-
-  }
-
-  public a_name = [];
-  a_data;
-  a_year;
-  //  async plotanomaly(ano){
-  //    this.a_data = ano[0]
-  //     this.a_year = ano[1]
-  //     this.a_name = ano[2]
-  //     console.log("ddddd ",this.a_data)
-  //     console.log("nnnnnnnn",this.a_name)
-  //     console.log("plot a ....",this.a_year)
-
-  //     this.checkbar = 'check'
-
-  //  }
-
-  // async draw_seasonal_chart(target,anomalydata,anomaly_year, fileanomaly) {
-  //   console.log("draw_seasonal_chart")
-  //   var chart = new Highcharts.chart(target, {
-  //       chart: {
-  //           type: 'column',
-  //       },
-  //       title: {
-  //         text: '',
-  //         style: {
-  //             display: 'none'
-  //         }
-  //       },
-  //       xAxis: {
-  //           categories: anomaly_year
-  //       },
-  //       series: [
-  //         {
-  //            name: fileanomaly,
-  //            data: anomalydata,
-  //            zones: [{
-  //                value: -0,
-  //                color: '#306EFF'
-  //            }, {
-  //                color: '#E42217'
-  //            }]
-  //         }
-  //      ]
-  //   })
-  //   chart.render();
-  //   // return chart
-  // }
-
-  highchartsbar = Highcharts;
-  chartOptionsbar = {
-    chart: {
-      type: 'column'
-    },
-    title: {
-      text: '',
-      style: {
-        display: 'none'
-      }
-    },
-    xAxis: {
-      categories: this.anomaly_year
-    },
-    series: [
-      {
-        name: this.fileanomaly,
-        data: this.anomalydata,
-        zones: [{
-          value: -0,
-          color: '#306EFF'
-        }, {
-          color: '#E42217'
-        }]
-      }
-    ]
-  };
-
-
 }
