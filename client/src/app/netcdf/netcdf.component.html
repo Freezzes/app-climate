@@ -22,103 +22,105 @@
 
 
 <body>
-  <!-- <div class="main-content"> -->
-    <!-- <div class="h1"></div> -->
-    <div style="display: flex;flex-direction: row;">
-      <div style="display: flex; flex-wrap: nowrap;align-items: stretch;justify-content: flex-start;width: 900px;">
-        <div class="col-mb-12" style="width: 850px;">
-          <div class="card" style="margin-top: 1em;">
-            <div class="card-header">
-              <i class="fas fa-globe-americas"></i>
-              World Map
-            </div>
-            <!-- <div class="d-flex justify-content-center">
+  <div style="display: flex;flex-direction: row;">
+    <div style="display: flex; flex-wrap: nowrap;align-items: stretch;justify-content: flex-start;width: 900px;">
+      <div class="col-mb-12" style="width: 850px;">
+        <div class="card" style="margin-top: 1em;">
+          <div class="card-header">
+            <i class="fas fa-globe-americas"></i>
+            World Map
+          </div>
+          <!-- <div class="d-flex justify-content-center">
               <div class="spinner-border" role="status" >
                 <span class="sr-only" id="loading"></span>
               </div>
             </div> -->
 
-            <div class="card-body" style="background-color: rgb(255, 255, 255);">
-              <div id="map" class="map" style="flex-direction: column; display: flex;"></div>
-              <div class="info" style="opacity: 0.8;">
-                <svg class="legend" width="850" height="30" style="margin-top: 1em;"></svg>
-              </div>
+          <div class="card-body" style="background-color: rgb(255, 255, 255);">
+            <div id="map" class="map" style="flex-direction: column; display: flex;"></div>
+            <div class="info" style="opacity: 0.8;">
+              <svg class="legend" width="850" height="30" style="margin-top: 1em;"></svg>
             </div>
           </div>
         </div>
       </div>
-      
-      <!-- <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" type="ball-spin-clockwise">
-        <p style="color: white">Please Wait. </p>
-      </ngx-spinner> -->
+    </div>
 
-      <div style="display: flex;flex-direction: column;">
-        <div style="display: flex;flex-direction: column;flex-wrap: nowrap;justify-content: flex-start;">
-          <div style="flex-direction: column; display: flex;flex-wrap: nowrap;width: 30vw;">
-            <div class="col-mb-12">
-              <div class="card" style="margin-top: 1em;">
-                <div class="card-header"><i class="fas fa-info"></i>
-                  Dataset & Index Detials
-                </div>
-                <div class="card-body">
-                  <h6><B>Dataset &nbsp; &nbsp; &nbsp; &nbsp; :</B>{{dataset_name}}</h6>
-                  <h6><B>long name &nbsp;&nbsp; :</B> {{long_name}}</h6>
-                  <h6><B>description &nbsp; :</B> {{difinition}}</h6>
-                  <h6><B>unit &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :</B> {{unit}}</h6>
-                  <h6><B>Year &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;:</B> {{year}}</h6>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+    <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" type="ball-spin-clockwise">
+      <p style="color: white">Please Wait. </p>
+    </ngx-spinner>
 
-        <div style="flex-direction: column; display: flex;flex-wrap: nowrap;justify-content: flex-end;">
+    <div style="display: flex;flex-direction: column;">
+      <div style="display: flex;flex-direction: column;flex-wrap: nowrap;justify-content: flex-start;">
+        <div style="flex-direction: column; display: flex;flex-wrap: nowrap;width: 30vw;">
           <div class="col-mb-12">
             <div class="card" style="margin-top: 1em;">
               <div class="card-header"><i class="fas fa-info"></i>
-                Selected Country Details
+                Dataset & Index Detials
               </div>
-              <div>
-                <div class="h5 mb-0 text-warning">Country:
-                  <span id="selectedCountryName" style="color:rgb(36, 148, 83);font-weight:400,bold;"></span>
-                </div>
-                <hr>
-                <div class="h5 mb-0 text-success">Minimum :
-                  <span id="selectedCountryMin" style="color:blue;font-weight: 300;"></span>
-                </div>
-                <div class="h5 mb-0 text-success">Maximum :
-                  <span id="selectedCountryMax" style="color:red;font-weight:300"></span>
-                </div>
+              <div class="card-body">
+                <h6><B>Dataset &nbsp; &nbsp; &nbsp; &nbsp; :</B>{{dataset_name}}</h6>
+                <h6><B>long name &nbsp;&nbsp; :</B> {{long_name}}</h6>
+                <h6><B>description &nbsp; :</B> {{difinition}}</h6>
+                <h6><B>unit &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :</B> {{unit}}</h6>
+                <h6><B>Year &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;:</B> {{year}}</h6>
               </div>
             </div>
           </div>
         </div>
-
-        <div style="flex-direction: column; display: flex;flex-wrap: nowrap;justify-content: flex-end;">
-          <div class="col-mb-12">
-            <div class="card" style="margin-top: 1em;">
-              <div class="card-header">
-                <i class="fas fa-info"></i>
-                TREND
-              </div>
-              <div>
-
-                <div style="display: flex; justify-content: center;align-items: center; height: 100px;">
-                  <button type="button" class="btn btn-secondary" style="background-color: #79b8e9;color: rgb(231, 239, 245);  font-size: 20px; height: max-content;
-                  font-weight: 400;font-family:'Open Sans', sans-serif;" (click)="test_load()">
-                  <i class="fas fa-chart-line"></i>
-                    Plot trend
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
 
+      <div style="flex-direction: column; display: flex;flex-wrap: nowrap;justify-content: flex-end;">
+        <div class="col-mb-12">
+          <div class="card" style="margin-top: 1em;">
+            <div class="card-header"><i class="fas fa-info"></i>
+              Selected Country Details
+            </div>
+            <div>
+              <div class="h5 mb-0 text-warning">Country:
+                <span id="selectedCountryName" style="color:rgb(36, 148, 83);font-weight:400,bold;"></span>
+              </div>
+              <hr>
+              <div class="h5 mb-0 text-success">Minimum :
+                <span id="selectedCountryMin" style="color:blue;font-weight: 300;"></span>
+              </div>
+              <div class="h5 mb-0 text-success">Maximum :
+                <span id="selectedCountryMax" style="color:red;font-weight:300"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-
+      <div style="flex-direction: column; display: flex;flex-wrap: nowrap;justify-content: flex-end;">
+        <div class="col-mb-12">
+          <div class="card" style="margin-top: 1em;">
+            <div class="card-header">
+              <i class="fas fa-info"></i>
+              TREND
+            </div>
+            <div class="card-body">
+              <div style="display: flex;flex-direction: row; justify-content: flex-start;align-items: center; height: 100px;">
+                <div style="display: flex;flex-direction: column; justify-content: center;align-items: flex-start; height: 100px; width: 200px;">
+                  <h6>
+                    {{decresing}}
+                  </h6>
+                  <h6>
+                    {{incresing}}
+                  </h6>
+                </div>
+                <button type="button" class="btn btn-primary" style="background-color: #27689b;color: rgb(231, 239, 245);  font-size: 20px; height: max-content;
+                  font-weight: 400;font-family:'Open Sans', sans-serif;" (click)="Trand()">
+                  <i class="fas fa-chart-line"></i>
+                  Plot trend
+                </button>
+                <div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  <!-- </div> -->
+  </div>
 </body>

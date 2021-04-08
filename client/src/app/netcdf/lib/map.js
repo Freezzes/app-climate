@@ -89,6 +89,7 @@ export function hightre(map){
 export function select_country(targetMap, mode) {
   var features, baselayer ;
   targetMap.getLayers().forEach(function(layers) {
+    console.log("name layer",layers.get('name'))
     if (layers.get('name') === 'lowres_data') {
       features = layers.getSource().getFeatures()
       console.log("fea",features)
@@ -682,9 +683,10 @@ export function setzoom(map){
 export function clearLayers(map){
     var layersToRemove = [];
     map.getLayers().forEach(function (layer) {
+      console.log("layerrrr",layer.get('name'))
       if (layer.get('name') == 'lowres_data' || layer.get('name') == 'hires_data'|| layer.get('name') == 'trend') {
         layersToRemove.push(layer);
-        console.log("layer :".layersToRemove)
+        console.log("layer :",layersToRemove)
       }
     });
   
@@ -693,4 +695,5 @@ export function clearLayers(map){
       map.removeLayer(layersToRemove[i]);
     }
   }
+
 

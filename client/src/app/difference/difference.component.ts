@@ -118,17 +118,15 @@ export class DifferenceComponent implements OnInit {
 
     await this.sharedData.Detailservice.subscribe(data => {
       if(data){
-        console.log("input Detail",data)
+        console.log("input G Detail",data)
         this.unit = data[0].unit
         this.difinition = data[0].description
         this.long_name = data[0].long_name
         this.year = data[0].year
-        this.dataset_name = data[1]
-        console.log("difinition ",this.difinition)
-        console.log("long name ...",this.long_name)
-        console.log("differ ....",this.dataset_name)
-      }
-      
+        var start = data[0].year.split("-")[0]
+        var stop = data[0].year.split("-")[1]
+        this.Range(start,stop)
+      } 
     })
     
     await this.sharedData.difservice.subscribe(data => {
@@ -139,6 +137,20 @@ export class DifferenceComponent implements OnInit {
       }
     })
 
+    this.sharedData.regionservice.subscribe(data => {
+      if (data) {
+        console.log("input region", data)
+        this.North = data[0]
+        this.South = data[1]
+        this.West = data[2]
+        this.East = data[3]
+      }
+    })
+  }
+
+  async Range(x,y){
+    var start_y = Number(x)
+    var stop_y = Number(y)
     function range(start, stop, step) {
       if (typeof stop == 'undefined') {
         // one param defined
@@ -160,19 +172,8 @@ export class DifferenceComponent implements OnInit {
       return result;
     };
 
-    this.lists = range(1901, 2019, 1)
-
-    this.sharedData.regionservice.subscribe(data => {
-      if (data) {
-        console.log("input region", data)
-        this.North = data[0]
-        this.South = data[1]
-        this.West = data[2]
-        this.East = data[3]
-      }
-    })
+    this.lists = range(start_y, stop_y, 1)
   }
-
 
     async per_different(){
       // this.type = 'per'

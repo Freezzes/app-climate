@@ -70,7 +70,7 @@ export class NetcdfgraphComponent implements OnInit {
     this.sharedData.graphAvgservice.subscribe(data => {
       if (data) {
         console.log("graph", data)
-        this.plotMean(data[0], data[1], data[2],this.long_name)
+        this.plotMean(data[0], data[1], data[2],this.long_name,data[3])
       }
     })
 
@@ -80,19 +80,21 @@ export class NetcdfgraphComponent implements OnInit {
         this.value = data[0]
         this.name = data[1]
         var unit = data[2]
-        this.plot_anomaly(this.value,this.name,unit)
+        var country = data[3]
+        console.log("countryyy",data[3])
+        this.plot_anomaly(this.value,this.name,unit,country)
       }
     })
   }
 
   
-  async plot_anomaly(value,name,unit){
+  async plot_anomaly(value,name,unit,country){
     console.log("unittttttt",unit)
     var chart = new CanvasJS.Chart("anomaly", {
       animationEnabled: true,
       
       title:{
-        text:name,
+        text:name +' of '+country,
         fontSize: 25,
         fontFamily: "Open Sans",
       },
@@ -119,11 +121,11 @@ export class NetcdfgraphComponent implements OnInit {
     chart.render();
   }
 
-  async plotMean(Data, Avg, unit,name) {
+  async plotMean(Data, Avg, unit,name,country) {
     var chart = new CanvasJS.Chart("chartContainer", {
       animationEnabled: true,
       title: {
-        text: "Averange" + name,
+        text: "Averange " + name +' of '+country,
         fontSize: 25,
         fontFamily: "Open Sans", 
       },

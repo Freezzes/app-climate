@@ -33,7 +33,8 @@ export class NetcdfComponent implements OnInit {
   East: number;
 
   // hoveredDate: NgbDate | null = null;
-
+  decresing;
+  incresing;
   map: any;
   // map1: any;
   // map2: any;
@@ -80,6 +81,9 @@ export class NetcdfComponent implements OnInit {
   data_trend;
   select;
 
+  click;
+  plot_trend;
+
 
   getDataLayer(data, North, South, West, East, layername) {
     console.log("GetDataLayer")
@@ -122,23 +126,12 @@ export class NetcdfComponent implements OnInit {
     private sharedData: InputService,
     private SpinnerService: NgxSpinnerService) {
   }
-  // chooseyear1 = new FormGroup({
-  //   fromyear1: new FormControl(),
-  //   toyear1: new FormControl('', Validators.required)
-  // });
-  // chooseyear2 = new FormGroup({
-  //   fromyear2: new FormControl('', Validators.required),
-  //   toyear2: new FormControl('', Validators.required)
-  // });
 
   public lists: Array<string>
 
   async ngOnInit() {
 
     this.map = MapLib.draw_map('map')
-    console.log("datainput", this.data)
-    console.log("North", this.North)
-    // this.range_y= this.startyear +'-'+ this.startyear;
 
     await this.sharedData.Detailservice.subscribe(data => {
       if (data) {
@@ -148,8 +141,6 @@ export class NetcdfComponent implements OnInit {
         this.long_name = data[0].long_name
         this.year = data[0].year
         this.dataset_name = data[1]
-        console.log("unit", this.unit)
-        console.log("netcdf long.......", this.long_name)
       }
 
     })
@@ -170,6 +161,14 @@ export class NetcdfComponent implements OnInit {
       this.East = data[3]
     })
 
+    await this.sharedData.inputhomeservice.subscribe(data => {
+      if (data) {
+        console.log("input2222222222", data)
+        this.plot_trend = data.plottrend
+        this.plotTrand(this.plot_trend)
+      }
+    })
+
 
     this.sharedData.lowresservice.subscribe(data => {
       if (data) {
@@ -183,106 +182,116 @@ export class NetcdfComponent implements OnInit {
         // MapLib.clearLayers(this.map);
       }
     })
+
     await this.sharedData.hiresservice.subscribe(data => {
       if (data) {
         console.log("input Hires", data)
-        this.hires_layer = this.getDataLayer(data.map,this.North, this.South, this.West, this.East,'hires_data')
+        console.log("input Anomaly", data.anomaly)
+        this.hires_layer = this.getDataLayer(data.map, this.North, this.South, this.West, this.East, 'hires_data')
         this.map.getLayers().insertAt(0, this.hires_layer);
         MapLib.setResolution(this.map)
 
         this.sharedData.sendGraphAvg(data.chart)
+        this.sharedData.sendAnomaly(data.anomaly)
 
         // Get selected country data chart
         if (this.select !== null) {
-        this.map.removeInteraction(this.select);
+          this.map.removeInteraction(this.select);
         }
         let that = this
         this.select = MapLib.select_country(this.map);
-        this.select.on('select', function(e:any) {
+        this.select.on('select', function (e: any) {
           // Checking if not select country change to global stat
-          if(e.selected.length == 0) {
+          if (e.selected.length == 0) {
             console.log("NO SELECT")
             that.sharedData.sendGraphAvg(data.chart)
+            that.sharedData.sendAnomaly(data.anomaly)
           }
-          else if(e.selected.length == 1) {
+          else if (e.selected.length == 1) {
             var selectedCountry = e.selected[0].get('name');
-            console.log("SELECT",selectedCountry)  
-            that.tempService.getCountry(data.input.dataset,data.input.index,data.input.startyear,data.input.stopyear,data.input.startmonth,data.input.stopmonth,selectedCountry).subscribe(
-              (res:any) => {
-                console.log("resssssssss",res)
-                console.log("countryyyyy",selectedCountry)
-                var value = Number(data.input.stopyear)- Number(data.input.startyear)
+            console.log("SELECT", selectedCountry)
+            that.tempService.getCountry(data.input.dataset, data.input.index, data.input.startyear, data.input.stopyear, data.input.startmonth, data.input.stopmonth, selectedCountry).subscribe(
+              (res: any) => {
+                console.log("resssssssss", res)
+                console.log("countryyyyy", selectedCountry)
+                var value = Number(data.input.stopyear) - Number(data.input.startyear)
                 var start = Number(data.input.startyear)
-                  for (var i =0; i<= value; i++){
-                    Data.dataPoints.push(
-                      {x: new Date(start, 0), y: res[0][i]},        
-                    )
-                    start+=1
-                  }
-                  console.log("point",Data.dataPoints)
-                  var sent = [Data.dataPoints,res[1],res[2]]
-                  // this.inputservice.sendGraph(sent)
-                  that.sharedData.sendGraphAvg(sent)
-                  console.log("graph country",sent)
+                for (var i = 0; i <= value; i++) {
+                  Data.dataPoints.push(
+                    { x: new Date(start, 0), y: res[0][i] },
+                  )
+                  start += 1
+                }
+                console.log("point", Data.dataPoints)
+                var sent = [Data.dataPoints, res[1], res[2], selectedCountry]
+                // this.inputservice.sendGraph(sent)
+                that.sharedData.sendGraphAvg(sent)
+                console.log("graph country", sent)
                 // that.sharedData.sendcountry(res)
               })
-              var Data = {
-                // value:[],
-                dataPoints : []
-              }
+            var Data = {
+              // value:[],
+              dataPoints: []
+            }
+
+            that.tempService.anomalyCountry(data.input.dataset, data.input.index, selectedCountry).subscribe(
+              (res: any) => {
+                console.log("anoooooo",res)
+                console.log("anooooo country >", selectedCountry)
+                this.anomalydata = res[0].anomaly
+                this.anomaly_year = res[1].year
+                this.anomaly_name = res[2].name
+                var unit = res[3]
+                var Data = {
+                  dataPoints: []
+                }
+                for (var i = 0; i < this.anomalydata.length; i++) {
+                  if (this.anomalydata[i] > 0) {
+                    Data.dataPoints.push(
+                      { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'red' }
+                    )
+                  }
+                  else if (this.anomalydata[i] < 0) {
+                    Data.dataPoints.push(
+                      { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'blue' }
+                    )
+                  }
+                }
+                var send = [Data.dataPoints, this.anomaly_name, unit,selectedCountry]
+                console.log("ano home :", send)
+
+                that.sharedData.sendAnomaly(send)
+              })
+
           }
-      });
+        });
       }
     })
 
-    // await this.sharedData.trendservice.subscribe(data => {
-    //   // this.trend_layer = this.getTrendLayer(data,this.North, this.South, this.West, this.East,'trend')
-    //   if(data){
-    //     // this.showLoadindIndicator = true;
-    //     console.log("trend netcdf >>>>>> ",data)
-    //     this.data_trend = data
-    //     this.SpinnerService.hide();
-    //     // hideloader();
-    //     // this.plottrend(this.data_trend)
-    //     // this.trend_layer = this.getTrendLayer(data,this.North, this.South, this.West, this.East,'trend')
-
-    //     // this.plottrend(this.trend_layer)
-    //     // this.map.addLayer(this.trend_layer);
-    //   }
-
-    //   console.log("test-----------",this.data_trend)
-    // })
-  }
-
-  async test_load() {
-    this.SpinnerService.show();
     await this.sharedData.trendservice.subscribe(data => {
-      // this.trend_layer = this.getTrendLayer(data,this.North, this.South, this.West, this.East,'trend')
-      if (data) {
-        // this.showLoadindIndicator = true;
-        console.log("trend netcdf >>>>>> ", data)
-        this.data_trend = data
-        this.SpinnerService.hide();
-        this.plottrend(this.data_trend)
-      }
+      this.data_trend = data
     })
   }
-  async plottrend(trend) {
-    // console.log("trend")
-    this.trend_layer = this.getTrendLayer(trend, this.North, this.South, this.West, this.East, 'trend')
-    console.log("trend layer >>> ", this.trend_layer)
-    this.map.addLayer(this.trend_layer);
 
 
-    // await this.sharedData.trendservice.subscribe(data => {
-    //   if(data){
-    //     console.log("trend netcdf >>>>>> ",data)
-    //     this.trend_layer = this.getTrendLayer(data,this.North, this.South, this.West, this.East,'trend')
-    //     this.map.addLayer(this.trend_layer);
-    //   }
-    // })
+  Trand() {
+    console.log("plot_trend_sent", this.plot_trend)
+    this.plot_trend = true
+    this.decresing = '+ decresing'
+    this.incresing = '- incresing'
+    console.log("plot_trend", this.plot_trend)
+    if (this.plot_trend == true) {
+      this.plotTrand(this.plot_trend)
+    }
   }
 
+  plotTrand(trend) {
+    if (trend == true) {
+      var trend_layer = this.getTrendLayer(this.data_trend, this.North, this.South, this.West, this.East, 'trend')
+      console.log("trend layer >>> ", trend_layer)
+      this.map.addLayer(trend_layer);
+    }
+  }
 
   // -----------read npz USE!!!!!!!!!!--------------------------------
   async plot(dataset, index) {

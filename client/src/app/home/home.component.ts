@@ -1,7 +1,7 @@
-import { Component, OnInit,ViewChild, AfterViewInit  } from '@angular/core';
-import {FormGroup, FormControl,Validators} from '@angular/forms';
-import {NgbDate, NgbCalendar, NgbDateParserFormatter} from '@ng-bootstrap/ng-bootstrap';
-import { Router ,ActivatedRoute} from '@angular/router';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { NgbDate, NgbCalendar, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
+import { Router, ActivatedRoute } from '@angular/router';
 import { TempService } from 'src/app/services/temp.service';
 // import { RecieveDataService } from 'src/app/services/data.service';
 import * as $ from 'jquery';
@@ -12,19 +12,19 @@ declare interface RouteInfo {
   class: string;
 }
 
-export const ROUTES: RouteInfo[] = [ 
+export const ROUTES: RouteInfo[] = [
   { path: '/station', class: '' },
- ];
+];
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
-  providers:[TempService]
-  
+  providers: [TempService]
+
 })
 export class HomeComponent implements OnInit {
-  
+
   menuItems: any[];
 
   hoveredDate: NgbDate | null = null;
@@ -32,7 +32,7 @@ export class HomeComponent implements OnInit {
   toDate: NgbDate | null = null;
   public dataset;
   public file;
-  public getdataset:any;
+  public getdataset: any;
   public station;
   public startyear;
   public startmonth;
@@ -49,32 +49,20 @@ export class HomeComponent implements OnInit {
   public start_date;
   public stop_date;
 
-  public checkmap = '';
-
-  // dataset_name:Array<Object> = [
-  //   {id:'cru-ts', name:'CRU TS'},
-  //   {id:'station', name:'TMD'},
-  //   { id: 'ec-earth3', name: 'EC-Earth' },
-  //   { id: 'cnrm-esm2-1', name: 'CNRM-ESM2-1' },
-  //   { id: 'mpi-esm1-2-lr', name: 'MPI-ESM1-2-LR' }
-  // ];
-
   filename_cru = [{ id: 'tas', name: 'Averange Temperature' },
-    { id: 'tasmin', name: 'Minimum Temperature' },
-    { id: 'tasmax', name: 'Maximum Temperature' },
-    { id: 'pr', name: 'Preciptipation' }
+  { id: 'tasmin', name: 'Minimum Temperature' },
+  { id: 'tasmax', name: 'Maximum Temperature' },
+  { id: 'pr', name: 'Preciptipation' }
   ];
 
   constructor(
-    private router: Router, 
+    private router: Router,
     private route: ActivatedRoute,
     private calendar: NgbCalendar,
-    public formatter:NgbDateParserFormatter,
+    public formatter: NgbDateParserFormatter,
     private tempService: TempService,
-    // private recieveDataService: RecieveDataService,
     private inputservice: InputService
-    ){
-   }
+  ) {}
 
   choosedataset = new FormGroup({
     set: new FormControl()
@@ -94,11 +82,11 @@ export class HomeComponent implements OnInit {
   selectGrid;
   chart;
 
-  public anomaly_year 
+  public anomaly_year
   public anomaly_name
-  public anomalydata 
-  public anomaly
-  public anomalyyear 
+  public anomalydata
+  anomaly: any;
+  public anomalyyear
   public fileanomaly
 
   // public anomaly_year = []
@@ -107,9 +95,9 @@ export class HomeComponent implements OnInit {
   // public anomaly = []
   // public anomalyyear = []
   // public fileanomaly = [];
-
+  plot_trend;
   public Data;
-  
+
   public value;
   public year;
   public name;
@@ -120,24 +108,56 @@ export class HomeComponent implements OnInit {
         this.dataset_name = res
       }))
 
-    var region = [this.North.value, this.South.value, this.West.value, this.East.value]
-    await this.inputservice.sendRegion(region)
+    // var region = [this.North.value, this.South.value, this.West.value, this.East.value]
+    // await this.inputservice.sendRegion(region)
   }
 
-  clearSelect() {
-    this.select = "";
+  // clearSelect() {
+  //   this.select = "";
+  // }
+
+  
+  async check_data(){
+    this.dataset = this.choosedataset.controls['set'].value
+    var index = this.choosefile.controls['file'].value
+    var startyear = String(this.fromDate.year)
+    var stopyear = String(this.toDate.year)
+    await this.tempService.check_data(this.dataset,index,startyear,stopyear).then(data => data.subscribe(
+      res => {
+        let resp = JSON.parse(res)
+        if (resp['check'] == 'no data'){
+          this.errors(resp['year'])
+        }
+        else if(resp['check'] == 'have data'){
+          this.get_raw_data()
+        }
+      }
+    ))
   }
 
-  async get_difference(){
+  async errors(year){
+    this.select = 'NoData'
+    this.year = year
+  }  
+
+  async get_difference() {
     this.select = 'get_dif'
     var data = this.choosedataset.controls['set'].value
     var index = this.choosefile.controls['file'].value
-    var sent = [data,index]
+    var sent = [data, index]
     this.inputservice.senddif(sent)
-
+    await this.tempService.detail(data, index).then(data => data.subscribe(
+      res => {
+        var detail = [res, data]
+        this.inputservice.sendDetail(detail)
+        // this.inputservice.sendDetail(res)
+        console.log("dif result : ",res)
+      }
+    ))
   }
 
   async get_raw_data() {
+    this.plot_trend = false
     this.select = 'get_data'
     this.dataset = this.choosedataset.controls['set'].value
     var index = this.choosefile.controls['file'].value
@@ -148,22 +168,57 @@ export class HomeComponent implements OnInit {
     // var region = [this.North.value, this.South.value, this.West.value, this.East.value]
     this.per = "no"
 
+    var region = [this.North.value, this.South.value, this.West.value, this.East.value]
+    await this.inputservice.sendRegion(region)
+
+    var inputs = { 'dataset': this.dataset, 'index': index, 'startyear': startyear, 'stopyear': stopyear, 'startmonth': startmonth, 'stopmonth': stopmonth, 'plottrend': this.plot_trend }
+    await this.inputservice.sendInput(inputs)
+
     await this.tempService.detail(this.dataset, index).then(data => data.subscribe(
       res => {
-        var detail = [res,this.dataset]
+        var detail = [res, this.dataset]
         this.inputservice.sendDetail(detail)
       }
     )
     )
 
-    await this.tempService.get_Avgcsvtrend(this.dataset, index, startyear, stopyear,startmonth, stopmonth)
-    .then(data => data.subscribe(
-      res => {
-        console.log("trend result finish")
-        let resp = JSON.parse(res)
-        this.inputservice.sendtrend(resp)
-      } 
-    ))
+    await this.tempService.get_Avgcsvtrend(this.dataset, index, startyear, stopyear, startmonth, stopmonth)
+      .then(data => data.subscribe(
+        res => {
+          console.log("trend result finish")
+          let resp = JSON.parse(res)
+          this.inputservice.sendtrend(resp)
+        }
+      ))
+
+    await this.tempService.getanomalync(this.dataset, index)
+      .then(data => data.subscribe(
+        res => {
+          console.log("ano home res:", res)
+          this.anomalydata = res[0].anomaly
+          this.anomaly_year = res[1].year
+          this.anomaly_name = res[2].name
+          var unit = res[3]
+          this.Data = {
+            dataPoints: []
+          }
+          for (var i = 0; i < this.anomalydata.length; i++) {
+            if (this.anomalydata[i] > 0) {
+              this.Data.dataPoints.push(
+                { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'red' }
+              )
+            }
+            else if (this.anomalydata[i] < 0) {
+              this.Data.dataPoints.push(
+                { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'blue' }
+              )
+            }
+          }
+          this.anomaly = [this.Data.dataPoints, this.anomaly_name, unit,'Global']
+          // console.log("ano home :",send)      
+
+          // this.inputservice.sendAnomaly(send)
+        }))
 
     await this.tempService.get_Avgcsv(this.dataset, index, startyear, stopyear, startmonth, stopmonth)
       .then(data => data.subscribe(
@@ -177,27 +232,29 @@ export class HomeComponent implements OnInit {
       .then(data => data.subscribe(
         (res => {
           let resp = JSON.parse(res)
-          var inputs = {'dataset':this.dataset,'index':index,'startyear':startyear,'stopyear':stopyear,'startmonth':startmonth,'stopmonth':stopmonth}
-          this.tempService.global_avg(this.dataset, index, startyear,startmonth, stopyear, stopmonth)
-            .then(data => data.subscribe(res => {       
+          var inputs = { 'dataset': this.dataset, 'index': index, 'startyear': startyear, 'stopyear': stopyear, 'startmonth': startmonth, 'stopmonth': stopmonth }
+          this.tempService.global_avg(this.dataset, index, startyear, startmonth, stopyear, stopmonth)
+            .then(data => data.subscribe(res => {
               var Data = {
-                dataPoints : []
+                dataPoints: []
               }
-              var data = Number(stopyear)- Number(startyear)
-              console.log("dddddd",data)
+              var data = Number(stopyear) - Number(startyear)
               var start = Number(startyear)
-              for (var i =0; i<= data; i++){
+              for (var i = 0; i <= data; i++) {
                 Data.dataPoints.push(
-                  {x: new Date(start, 0), y: res[0][i]},        
+                  { x: new Date(start, 0), y: res[0][i] },
                 )
-                start+=1
+                start += 1
               }
-              console.log("point",Data.dataPoints)
-              this.chart = [Data.dataPoints,res[1],res[2]]
-              var sent = {'chart':this.chart,'map':resp,'input':inputs}
+              console.log("point", Data.dataPoints)
+              this.chart = [Data.dataPoints, res[1], res[2], 'Global']
+              var sent = {'chart':this.chart,'map':resp,'input':inputs,'anomaly':this.anomaly}
               this.inputservice.sendHiRes(sent)
               console.log("hi graph",sent)
-            }))
+            })
+            )
+          // var sent = { 'chart': this.chart, 'map': resp, 'input': inputs, 'anomaly': this.anomaly }
+          // this.inputservice.sendHiRes(sent)
         })
       ))
 
@@ -221,82 +278,55 @@ export class HomeComponent implements OnInit {
     // }))
 
 
-    await this.tempService.getanomalync(this.dataset, index).
-    then(data => data.subscribe(
-      res => {
-        console.log("ano home res:",res)
-        this.anomalydata = res[0].anomaly
-        this.anomaly_year = res[1].year
-        this.anomaly_name = res[2].name
-        var unit = res[3]
-        this.Data = {
-          dataPoints : []
-        }
-        for (var i =0; i< this.anomalydata.length; i++){
-          if (this.anomalydata[i] > 0){
-            this.Data.dataPoints.push(
-              { y: this.anomalydata[i], label: this.anomaly_year[i],color: 'red' }          
-            )
-          }
-          else if (this.anomalydata[i] < 0){
-            this.Data.dataPoints.push(
-              { y: this.anomalydata[i], label: this.anomaly_year[i],color: 'blue' }          
-            )
-          }
-        }
-        var send = [this.Data.dataPoints,this.anomaly_name,unit]
-        console.log("ano home :",send)      
 
-        this.inputservice.sendAnomaly(send)
-      }))
 
 
 
   }
 
-  station_thai(){
+  station_thai() {
     // console.log("start",this.fromDate.year)
     // console.log("end",this.toDate.year)
     // console.log("set",this.choosedataset.controls['set'].value)
     // console.log("sent",this.choosefile.controls['file'].value)
-    let from_date = new Date(this.fromDate.year,this.fromDate.month,this.fromDate.day)
-    let end_date = new Date(this.toDate.year,this.toDate.month,this.toDate.day)
+    let from_date = new Date(this.fromDate.year, this.fromDate.month, this.fromDate.day)
+    let end_date = new Date(this.toDate.year, this.toDate.month, this.toDate.day)
     let startyear = String(this.fromDate.year)
     let startmonth = String(this.fromDate.month)
     let startday = String(this.fromDate.day)
     let stopyear = String(this.toDate.year)
     let stopmonth = String(this.toDate.month)
     let stopday = String(this.toDate.day)
-    if(startday.length == 1){
-      startday = '0'+startday
+    if (startday.length == 1) {
+      startday = '0' + startday
     }
-    if(startmonth.length == 1){
-      startmonth = '0'+startmonth
+    if (startmonth.length == 1) {
+      startmonth = '0' + startmonth
     }
-    this.start_date = String(startyear+'-'+startmonth+'-'+startday)
-    if(stopday.length == 1){
-      stopday = '0'+stopday
+    this.start_date = String(startyear + '-' + startmonth + '-' + startday)
+    if (stopday.length == 1) {
+      stopday = '0' + stopday
     }
-    if(stopmonth.length == 1){
-      stopmonth = '0'+stopmonth
+    if (stopmonth.length == 1) {
+      stopmonth = '0' + stopmonth
     }
-    this.stop_date = String(stopyear+'-'+stopmonth+'-'+stopday)
+    this.stop_date = String(stopyear + '-' + stopmonth + '-' + stopday)
     // console.log("f date : ",this.fromDate.year,this.fromDate.month,startday)
     // console.log("begin : ", from_date,end_date)
     // console.log("sent date : ", this.start_date,this.stop_date)
     this.select = "station"
   }
 
-  percent(){
+  percent() {
     this.select = "percent"
     this.per = "yes"
   }
-  
-  checktrue_values(){
-    if (this.dataset){
+
+  checktrue_values() {
+    if (this.dataset) {
       return false;
     }
-    else{
+    else {
       return true;
     }
   }

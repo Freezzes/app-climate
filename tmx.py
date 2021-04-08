@@ -20,7 +20,7 @@ from lib.boxplotfunction import filter_by_station2, filter_ERA_by_station, filte
 # from lib.Calculate import Calculate_service
 # from lib.Percent_different import Percent_service
 from lib.read_folder import *
-from lib.country import mask_inside_country,mask_inside_continent
+from lib.country import mask_inside_country,mask_inside_continent,mask_inside_country_npz
 
 app = Flask(__name__)
 
@@ -33,7 +33,14 @@ app.config['MONGO_URI'] = 'mongodb://localhost:27017/Project'
 mongo = PyMongo(app)
 CORS(app)
 
-
+@app.route('/check_data', methods=['GET'])
+def check_data():
+    dataset = str(request.args.get("dataset"))
+    index = str(request.args.get("index"))
+    startyear = int(request.args.get("startyear"))
+    stopyear = int(request.args.get("stopyear"))
+    c = check_range(dataset, index, startyear, stopyear)
+    return c
 #----------- Missing Value ---------------------------------------------------------------------------
 def getmiss(startyear,stopyear,station,dff):
     mask = (dff['y'] >= startyear) & (dff['y'] <= stopyear)
@@ -200,7 +207,52 @@ def anamalymap():
     else:
         unit = "°C"
     return jsonify(ano,year,namefile,unit)
+# ----------------------- Anomaly select country ---------------------------------------
+@app.route('/api/anomalycountry', methods=['GET'])
+def country_anomaly():
+    dataset = str(request.args.get("dataset"))
+    index = str(request.args.get("index"))
+    startmonth = 1 #int(request.args.get("startmonth"))
+    stopmonth = 12 #int(request.args.get("stopmonth"))
+    country = request.headers.get("country")
+    if dataset == 'cru-ts':
+        startyear = 1901 #int(request.args.get("startyear"))
+        stopyear = 2019 #int(request.args.get("stopyear"))
+    elif dataset == 'ec-earth3':
+        startyear = 1979 #int(request.args.get("startyear"))
+        stopyear = 2017 #int(request.args.get("stopyear"))
+    else:
+        startyear = 1979 #int(request.args.get("startyear"))
+        stopyear = 2014 #int(request.args.get("stopyear"))
+    df = pd.read_csv('C:/Users/ice/Documents/climate/data/index_detail.csv')
+    query = df.loc[(df['dataset']==dataset)&(df['index']==index)]
+    select = list(query[['long_name']].values[0])
 
+    f = read_folder_h(dataset, index, startyear, stopyear)
+    data_date = select_data_fromdate(f,startyear,stopyear,startmonth,stopmonth)
+    data = mask_inside_country_npz(dataset,country,data_date[1],data_date[2],data_date[0])
+    avg_year=[]
+    for i in data:
+        # a = np.round(np.nanmean(i.flatten()),4),4
+        avg_year.append(np.round(np.nanmean(i.flatten()),4))
+    baseline_start = 1981
+    baseline_end = 2011
+    start_index = baseline_start - startyear
+    end_index = baseline_end - startyear
+    baseline_sum = np.mean(avg_year[start_index:end_index])
+    print(baseline_sum)
+    anom = []
+    for i in avg_year:
+        anom.append(round((i-baseline_sum),2))
+
+    ano = {'anomaly':anom}
+    year = {'year':list(range(startyear,stopyear+1))}
+    namefile = {'name':select}
+    if index == 'pr':
+        unit = "mm"
+    else:
+        unit = "°C"
+    return jsonify(ano, year, namefile, unit)
 #----------------------- MK TEST -------------------------------------------------------
 @app.route("/api/mkstation",methods=["GET"])
 def mkstation():
@@ -518,13 +570,6 @@ def get_Avgmaptrend(dataset, index, startyear, stopyear, startmonth, stopmonth):
             val = np.mean(val, axis = 0)#.flatten()
         V.append(val.flatten())
 
-    # print("V shape >>>>> ",len(V))
-    # V1 = np.asarray(V)
-    # print("V1 >>>>>>>> ",V1.shape)
-    # dt = pd.DataFrame(V1.T)
-    # dt = dt.fillna(1E20)
-    # trend = dt.apply( lambda row: apply_test(row),  axis=1 )
-    # print("TREND shape >>>>> ",trend)
     t0 = datetime.now()
     trend = []
     for j in range(len(V[0])):
@@ -646,6 +691,9 @@ def detail():
     dataset = str(request.args.get("dataset"))
     index = str(request.args.get("index"))
     df = pd.read_csv('C:/Users/ice/Documents/climate/data/index_detail.csv')
+    # query = df.loc[(df['dataset']==dataset)&(df['index']==index)]
+    # select = query['year'][0] #.to_json(orient='records')
+    # print("yearrr",select)
     query = df.loc[(df['dataset']==dataset)&(df['index']==index)]
     select = query[['long_name','description','unit','year','color_map']].to_json(orient='records')
     select = json.loads(select)
@@ -660,12 +708,13 @@ def country_avg():
     startmonth = int(request.args.get("startmonth"))
     stopmonth = int(request.args.get("stopmonth"))
     country = request.headers.get("country")
-    # country = "Libya"
+    # country = "France"
     # print("country :",country)
-    f = read_folder(dataset, index, startyear, stopyear)
+    f = read_folder_h(dataset, index, startyear, stopyear)
     data_date = select_data_fromdate(f,startyear,stopyear,startmonth,stopmonth)
-    data = mask_inside_country(country,data_date[1],data_date[2],data_date[0])
-    # # print("mask data",data)
+    data = mask_inside_country_npz(dataset,country,data_date[1],data_date[2],data_date[0])
+    # data = mask_inside_country(country,data_date[1],data_date[2],data_date[0])
+    # print("mask data",len(data),data[0].shape)
     avg_year=[]
     for i in data:
         # a = np.round(np.nanmean(i.flatten()),4),4

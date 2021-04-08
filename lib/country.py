@@ -111,7 +111,8 @@ def mask_inside_country(country, lats, lons, data):
     mask_arr = _get_country_mask_arr(country, lats, lons)
 
     for y in range(len(data)):
-        data[y] = np.where(mask_arr==1, np.array(data[y], dtype=np.float), np.nan)
+        for m in range(len(data[y])):
+            data[y] = np.where(mask_arr==1, np.array(data[y], dtype=np.float), np.nan)
 
     return data
 
@@ -127,4 +128,20 @@ def mask_inside_continent(continent, lats, lons, data):
 
     end= time.time()
     print("mask",end-start)
+    return data
+
+def mask_inside_country_npz(dataset,country, lats, lons, data):
+    start = time.time()
+    lats = np.array(lats)
+    lons = np.array(lons)
+    path = f'C:/Users/ice/Documents/mask_country/{dataset}_high.npz'
+    file_mask =  np.load(path,allow_pickle=True)
+    mask = file_mask['mask'].tolist()
+    mask_arr = mask.get(country)
+    # mask_arr = _get_country_mask_arr(country, lats, lons)
+
+    for y in range(len(data)):
+        data[y] = np.where(mask_arr==1, np.array(data[y], dtype=np.float), np.nan)
+    end = time.time()
+    print("Time mask",end-start)
     return data
