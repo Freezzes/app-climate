@@ -100,7 +100,9 @@ export class NetcdfgraphComponent implements OnInit {
       },
       axisX:{
         title : 'Year',
-        fontSize: 12
+        fontSize: 12,
+        // labelAngle: -90,
+        // interval: 1
       },
       axisX2:{
         gridColor: "rgba(1,77,101,.1)",

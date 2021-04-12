@@ -76,16 +76,25 @@
             <div class="card-header"><i class="fas fa-info"></i>
               Selected Country Details
             </div>
-            <div>
-              <div class="h5 mb-0 text-warning">Country:
-                <span id="selectedCountryName" style="color:rgb(36, 148, 83);font-weight:400,bold;"></span>
+            <div class="card-body">
+              <div class="h6 mb-0 text-dark">Country:
+                <span class="small text-muted" id="selectedCountryName"
+                  style="font-weight:bold"></span>
               </div>
-              <hr>
-              <div class="h5 mb-0 text-success">Minimum :
-                <span id="selectedCountryMin" style="color:blue;font-weight: 300;"></span>
+              <div class="h6 mb-0 text-dark">Minimum :
+                <span id="selectedCountryMin" style="color:blue;font-weight:bold"></span>
               </div>
-              <div class="h5 mb-0 text-success">Maximum :
-                <span id="selectedCountryMax" style="color:red;font-weight:300"></span>
+
+              <div class="h6 mb-0 text-dark">Maximum :
+                <span id="selectedCountryMax" style="color:red;font-weight:bold"></span>
+              </div>
+              <div *ngIf="index=='pr'">
+                <div class="h6 mb-0 text-dark">Cumulative rainfall :
+                  <span id="selectedCountrySum" style="color:rgb(20, 126, 99);font-weight:bold"></span>
+                </div>
+              </div>
+              <div class="h6 mb-0 text-dark">Average :
+                <span id="selectedCountryAvg" style="color:rgb(20, 126, 99);font-weight:bold"></span>
               </div>
             </div>
           </div>
@@ -100,8 +109,10 @@
               TREND
             </div>
             <div class="card-body">
-              <div style="display: flex;flex-direction: row; justify-content: flex-start;align-items: center; height: 100px;">
-                <div style="display: flex;flex-direction: column; justify-content: center;align-items: flex-start; height: 100px; width: 200px;">
+              <div
+                style="display: flex;flex-direction: row; justify-content: flex-start;align-items: center; height: 100px;">
+                <div
+                  style="display: flex;flex-direction: column; justify-content: center;align-items: flex-start; height: 100px; width: 200px;">
                   <h6>
                     {{decresing}}
                   </h6>

@@ -139,8 +139,8 @@
             </div>
 
             <div style="display: flex; justify-content: center; flex-direction: row;" role="group" aria-label="Basic example">
-                <button type="button" class="buttongrid" (click)="check_data();"><i class="fas fa-map-marked-alt"></i><br>Grid</button>
-                <button type="button" class="buttongrid" (click)="get_difference()"><i class="fas fa-layer-group"></i><br>Different</button>
+                <button type="button" class="buttongrid" (click)="check_data();" [disabled]="choosedataset.controls['set'].value === 'tmd'"><i class="fas fa-map-marked-alt"></i><br>Grid</button>
+                <button type="button" class="buttongrid" (click)="get_difference()" [disabled]="choosedataset.controls['set'].value === 'tmd'"><i class="fas fa-layer-group"></i><br>Different</button>
                 <button type="button" class="buttongrid" (click)="station_thai()"><i class="fas fa-map-marker-alt"></i><br>Station</button>
             </div> 
         </div>

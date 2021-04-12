@@ -311,6 +311,10 @@ button.buttongrid{
   background-color:#bababb ;
   }
 
+.buttongrid:disabled{
+  background-color: #acbac9;
+}
+
 .active{
   background-color: #bababb;
 }

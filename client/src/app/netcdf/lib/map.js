@@ -140,18 +140,21 @@ export function select_country(targetMap, mode) {
     }
     for (var i = 0; i < features.length; i++) {
       if (poly.intersectsExtent(features[i].getGeometry().getExtent())) {
-        var obj = features[i].getProperties()
-        valueArr.push(obj.value)
+        valueArr.push(features[i].getProperties().value);
+        // var obj = features[i].getProperties()
+        // valueArr.push(obj.value)
       }
     }
     console.log(valueArr)
     var min = Math.round(Math.min.apply(null, valueArr)*100)/100;
     var max = Math.round(Math.max.apply(null, valueArr)*100)/100;
-    // var mean = Math.round(Math.mean.apply(null, valueArr));
+    var avg = Math.round(valueArr.reduce((a,b) => a + b, 0) / valueArr.length *100 )/100
+    var sum = Math.round(valueArr.reduce((a,b) => a + b, 0))
 
     $("#selectedCountryMin").text(min);
     $("#selectedCountryMax").text(max);
-    // $("#selectedCountryMean").text(mean);
+    $("#selectedCountryAvg").text(avg);
+    $("#selectedCountrySum").text(sum);
   });
 
   return select
