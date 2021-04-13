@@ -85,7 +85,7 @@ export class NetcdfComponent implements OnInit {
   plot_trend;
 
 
-  getDataLayer(data, North, South, West, East, layername) {
+  getDataLayer(data, North, South, West, East, layername,name_legend) {
     console.log("GetDataLayer")
     var lon = data[0]
     var lat = data[1]
@@ -98,7 +98,7 @@ export class NetcdfComponent implements OnInit {
     var geojson = MapLib.convert_to_geojson(value, lon, lat)
     var merge = MapLib.merge_data_to_geojson(geojson, value, North, South, West, East, 'value')
     var layer = MapLib.genGridData(
-      merge, min_, max_, color, lon_step, lat_step, 'main', layername
+      merge, min_, max_, color, lon_step, lat_step, 'main', layername,name_legend
     );
     return layer
   }
@@ -174,7 +174,7 @@ export class NetcdfComponent implements OnInit {
       if (data) {
         console.log("input Lowres", data)
         this.data_low = data
-        this.lowres_layer = this.getDataLayer(this.data_low, this.North, this.South, this.West, this.East, 'lowres_data')
+        this.lowres_layer = this.getDataLayer(this.data_low, this.North, this.South, this.West, this.East, 'lowres_data','main')
         MapLib.clearLayers(this.map);
         this.map.getLayers().insertAt(0, this.lowres_layer);
         // MapLib.setResolution(this.map,this.North, this.South, this.West, this.East)
@@ -187,7 +187,7 @@ export class NetcdfComponent implements OnInit {
       if (data) {
         console.log("input Hires", data)
         console.log("input Anomaly", data.anomaly)
-        this.hires_layer = this.getDataLayer(data.map, this.North, this.South, this.West, this.East, 'hires_data')
+        this.hires_layer = this.getDataLayer(data.map, this.North, this.South, this.West, this.East, 'hires_data','main')
         this.map.getLayers().insertAt(0, this.hires_layer);
         MapLib.setResolution(this.map)
 

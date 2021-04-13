@@ -77,7 +77,7 @@ export class DifferenceComponent implements OnInit {
     {id: 6, name: "July"},{id: 7, name: "August"},{id: 8, name: "September"},{id: 9, name: "October"},{id: 10, name: "November"},{id: 11, name: "December"}
 ];
 
-  getDataLayer(data, North, South, West, East, layername) {
+  getDataLayer(data, North, South, West, East, layername,name_legend) {
     console.log("GetDataLayer")
     var lon = data[0]
     var lat = data[1]
@@ -91,7 +91,7 @@ export class DifferenceComponent implements OnInit {
     var geojson = MapLib.convert_to_geojson(value,lon,lat)
     var merge = MapLib.merge_data_to_geojson(geojson, value, North,South,West,East,'value')
     var layer = MapLib.genGridData(
-      merge, min_, max_, color, lon_step, lat_step,'main', layername
+      merge, min_, max_, color, lon_step, lat_step,'main', layername,name_legend
     );
     return layer
   }
@@ -196,7 +196,7 @@ export class DifferenceComponent implements OnInit {
             console.log(">>>>>>>>>",resp)
             // console.log(">>>>>>>>>",resp[3])
             var val = resp[2]
-            const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data')
+            const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data','mapdif')
             // const geojson = MapLib.merge_data_to_geojson(resp[0],resp[1], val, this.North, this.South, this.West, this.East,'value');
             // console.log("geojson",geojson)
             // const datalayer = MapLib.genGridData(geojson, resp[3], resp[4], resp[7], resp[5], resp[6],'main','lowres_data');
@@ -227,7 +227,7 @@ export class DifferenceComponent implements OnInit {
             // const geojson = MapLib.merge_data_to_geojson(resp[0],resp[1], val, this.North, this.South, this.West, this.East,'value');
             // console.log("geojson",geojson)
             // var datalayer = MapLib.genGridData(geojson, resp[3], resp[4], resp[7], resp[5], resp[6],'main','lowres_data');
-            const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data')
+            const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data','mapdif')
             MapLib.clearLayers(this.map);
             this.map.getLayers().insertAt(0,data_dif);
             MapLib.select_country(this.map)
@@ -250,7 +250,7 @@ export class DifferenceComponent implements OnInit {
         console.log(">>>>>>>>>", resp)
         this.min1 = resp[3]
         this.max1 = resp[4]
-        const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data')
+        const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data','map1')
         MapLib.clearLayers(this.map1);
         this.map1.getLayers().insertAt(0, data_dif);
         MapLib.select_country(this.map1)
@@ -277,7 +277,7 @@ export class DifferenceComponent implements OnInit {
         //   merge, min_, max_, color, lon_step, lat_step,'main', layername
         // );
         // const geojson2 = MapLib.merge_data_to_geojson(resp[0], resp[1], value, this.North, this.South, this.West, this.East, 'value');
-        const datalayer2 = MapLib.genGridData(merge, this.min1, this.max1, resp[7], resp[5], resp[6], 'main', 'lowres_data');
+        const datalayer2 = MapLib.genGridData(merge, this.min1, this.max1, resp[7], resp[5], resp[6], 'main', 'lowres_data','map2');
         // const data_dif = this.getDataLayer(resp,this.North, this.South, this.West, this.East,'lowres_data')
         MapLib.clearLayers(this.map2);
         this.map2.getLayers().insertAt(0, datalayer2);
@@ -361,7 +361,7 @@ export class DifferenceComponent implements OnInit {
         console.log(">>>>>>>>>", resp)
         this.min1 = resp[3]
         this.max1 = resp[4]
-        const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data')
+        const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data','map1')
         MapLib.clearLayers(this.map1);
         this.map1.getLayers().insertAt(0, data_dif);
         MapLib.select_country(this.map1)
