@@ -63,7 +63,7 @@
                     <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">Index :</label>         
                     <select formControlName="file" style="max-width:100%;" class="form-control">
                         <option [ngValue]="null" disabled>None</option>
-                        <option *ngFor="let f of filename_cru" [value]="f.id">{{f.name}}</option>
+                        <option *ngFor="let f of index_name" [value]="f.id">{{f.name}}</option>
                     </select>
                 </form>
             </div>

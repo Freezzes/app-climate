@@ -45,15 +45,16 @@ export class HomeComponent implements OnInit {
   filename = [];
 
   dataset_name;
+  index_name;
 
   public start_date;
   public stop_date;
 
-  filename_cru = [{ id: 'tas', name: 'Averange Temperature' },
-  { id: 'tasmin', name: 'Minimum Temperature' },
-  { id: 'tasmax', name: 'Maximum Temperature' },
-  { id: 'pr', name: 'Preciptipation' }
-  ];
+  // filename_cru = [{ id: 'tas', name: 'Averange Temperature' },
+  // { id: 'tasmin', name: 'Minimum Temperature' },
+  // { id: 'tasmax', name: 'Maximum Temperature' },
+  // { id: 'pr', name: 'Preciptipation' }
+  // ];
 
   constructor(
     private router: Router,
@@ -108,8 +109,10 @@ export class HomeComponent implements OnInit {
         this.dataset_name = res
       }))
 
-    // var region = [this.North.value, this.South.value, this.West.value, this.East.value]
-    // await this.inputservice.sendRegion(region)
+    this.tempService.get_index().then(data => data.subscribe(
+      res => {
+        this.index_name = res
+      }))
   }
 
   // clearSelect() {

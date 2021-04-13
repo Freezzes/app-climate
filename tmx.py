@@ -686,6 +686,14 @@ def get_dataset():
 
     return jsonify(res)
 
+@app.route("/api/index", methods=["GET"])
+def get_index():
+    ds = pd.read_csv('C:/Users/ice/Documents/climate/data/index_name.csv')
+    res = []
+    for i in range(len(ds['id'])):
+        res.append({'id': ds['id'][i], 'name': ds['name'][i]})
+    return jsonify(res)
+
 @app.route("/api/detail", methods=['GET'])
 def detail():
     dataset = str(request.args.get("dataset"))

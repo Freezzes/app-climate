@@ -8,9 +8,6 @@ import { from } from 'rxjs'
 export class TempService {
     constructor(private http: HttpClient) { }
 
-
-
-
     async getrangeyear(station:string,startyear:string,endyear:string,startmonth:string,endmonth:string,startday:string,endday:string):Promise<Observable<any>> {   
         return this.http.get('http://127.0.0.1:5500/api' +
                          `/rangeyear?station=${station}&startyear=${startyear}&endyear=${endyear}&startmonth=${startmonth}&endmonth=${endmonth}&startday=${startday}&endday=${endday}`)
@@ -162,8 +159,11 @@ export class TempService {
     }
 
     async get_dataset(): Promise<Observable<any>>{
-        // console.log("service",this.http.get('http://127.0.0.1:5500/locat/station'))
-        return this.http.get('http://127.0.0.1:5500//api/dataset')
+        return this.http.get('http://127.0.0.1:5500/api/dataset')
+    }
+
+    async get_index(): Promise<Observable<any>> {
+        return this.http.get('http://127.0.0.1:5500/api/index')
     }
 
     getCountry(dataset:string,index:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string,country:any): Observable<any>{
@@ -191,14 +191,6 @@ export class TempService {
     }
 
     async getSelectCountry(dataset:string,index:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string): Promise<Observable<any>>{
-        // console.log("country",country)
-        // const httpOptions = {
-        //   headers: new HttpHeaders({
-        //     'country':  country,
-        //   })
-        // };
-        // console.log("country in ser",httpOptions)
-        
         return this.http.get('http://127.0.0.1:5500'+`/api/country_avg?dataset=${dataset}&index=${index}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`)
     }
 // -------------------------------------------------------------------------------------------------------
