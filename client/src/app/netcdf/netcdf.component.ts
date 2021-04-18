@@ -60,7 +60,7 @@ export class NetcdfComponent implements OnInit {
     var geojson = MapLib.convert_to_geojson(value,lon,lat)
     var merge = MapLib.merge_data_to_geojson(geojson, value, North,South,West,East,'value')
     var layer = MapLib.genGridData(
-      merge, min_, max_, color, lon_step, lat_step,'main', layername
+      merge, min_, max_, color, lon_step, lat_step,'main', layername,'main'
     );
     return layer
   }

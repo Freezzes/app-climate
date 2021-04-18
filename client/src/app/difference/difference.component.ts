@@ -56,8 +56,9 @@ export class DifferenceComponent implements OnInit {
     toyear2: new FormControl('', Validators.required)
   });
 
-  getDataLayer(data, North, South, West, East, layername) {
+  getDataLayer(data, North, South, West, East, layername,name_legend,type) {
     console.log("GetDataLayer")
+    console.log("data",data)
     var lon = data[0]
     var lat = data[1]
     var value = data[2]
@@ -67,10 +68,10 @@ export class DifferenceComponent implements OnInit {
     var min_ = data[3]
     var max_ = data[4]
     var color = data[7]
-    var geojson = MapLib.merge_data_to_geojson(lon, lat, value, North, South, West, East, 'value')
+    var geojson = MapLib.convert_to_geojson(value,lon,lat)
+    var merge = MapLib.merge_data_to_geojson(geojson, value, North,South,West,East,'value')
     var layer = MapLib.genGridData(
-      geojson, min_, max_, color, lon_step, lat_step, 'main', layername
-    );
+      merge, min_, max_, color, lon_step, lat_step, type, layername,name_legend );
     return layer
   }
 
@@ -133,6 +134,7 @@ export class DifferenceComponent implements OnInit {
         this.East = data[3]
       }
     })
+          const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data','mapdif','per')
   }
 
 
@@ -199,6 +201,7 @@ export class DifferenceComponent implements OnInit {
           }
           )))
     }
+          const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data','mapdif','main')
 
   async map_range1() {
 
@@ -212,6 +215,7 @@ export class DifferenceComponent implements OnInit {
         this.min1 = resp[3]
         this.max1 = resp[4]
         const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data')
+        const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data','map1','main')
         MapLib.clearLayers(this.map1);
         this.map1.getLayers().insertAt(0, data_dif);
         MapLib.select_country(this.map1)
@@ -224,21 +228,30 @@ export class DifferenceComponent implements OnInit {
 
   async map_range2() {
 
-    this.start1 = this.chooseyear2.controls['fromyear2'].value
-    this.stop1 = this.chooseyear2.controls['toyear2'].value
+    this.start2 = this.chooseyear2.controls['fromyear2'].value
+    this.stop2 = this.chooseyear2.controls['toyear2'].value
 
-    await this.dataService.map_range1(this.dataset, this.index, this.start1, this.stop1).then(data => data.subscribe(
+    await this.dataService.map_range2(this.dataset, this.index, this.start2, this.stop2).then(data => data.subscribe(
       (res => {
         let resp = JSON.parse(res)
         console.log(">>>>>>>>>", resp)
         var value = resp[2]
-        const geojson2 = MapLib.merge_data_to_geojson(resp[0], resp[1], value, this.North, this.South, this.West, this.East, 'value');
-        const datalayer2 = MapLib.genGridData(geojson2, this.min1, this.max1, resp[7], resp[5], resp[6], 'main', 'lowres_data');
+        var geojson = MapLib.convert_to_geojson(value,resp[0], resp[1],)
+        var merge = MapLib.merge_data_to_geojson(geojson, value, this.North, this.South, this.West, this.East,'value')
+        const datalayer2 = MapLib.genGridData(merge, this.min1, this.max1, resp[7], resp[5], resp[6], 'main', 'lowres_data','map2');
         // const data_dif = this.getDataLayer(resp,this.North, this.South, this.West, this.East,'lowres_data')
         MapLib.clearLayers(this.map2);
         this.map2.getLayers().insertAt(0, datalayer2);
         MapLib.select_country(this.map2)
-        MapLib.setzoom(this.map2)
+        // MapLib.setzoom(this.map2)
+
+        // const geojson2 = MapLib.merge_data_to_geojson(resp[0], resp[1], value, this.North, this.South, this.West, this.East, 'value');
+        // const datalayer2 = MapLib.genGridData(geojson2, this.min1, this.max1, resp[7], resp[5], resp[6], 'main', 'lowres_data');
+        // // const data_dif = this.getDataLayer(resp,this.North, this.South, this.West, this.East,'lowres_data')
+        // MapLib.clearLayers(this.map2);
+        // this.map2.getLayers().insertAt(0, datalayer2);
+        // MapLib.select_country(this.map2)
+        // MapLib.setzoom(this.map2)
 
       }
       )))
