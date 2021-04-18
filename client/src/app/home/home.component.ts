@@ -65,6 +65,10 @@ export class HomeComponent implements OnInit {
       }))
 
     
+    this.dataService.get_index().then(data => data.subscribe(
+      res => {
+        this.index_name = res
+      }))
   }
 
   clearSelect() {

@@ -33,15 +33,26 @@ database = "test"
 mongo = PyMongo(app)
 CORS(app)
 
+
 @app.route("/api/dataset", methods=["GET"])
 def get_dataset():
     ds = pd.read_csv(r'C:/Mew/Project/dataset_name.csv')
     res = []
     for i in range(len(ds['id'])):
-        res.append({'id': ds['id'][i] , 'name': ds['name'][i] })
+        res.append({'id': ds['id'][i], 'name': ds['name'][i]})
+    return jsonify(res)
 
+
+@app.route("/api/index", methods=["GET"])
+def get_index():
+    ds = pd.read_csv(r'C:/Mew/Project/index_name.csv')
+    res = []
+    for i in range(len(ds['id'])):
+        res.append({'id': ds['id'][i], 'name': ds['name'][i]})
     return jsonify(res)
 # ----------------------------------------dif-----------------------------------------------
+
+
 @app.route("/per_dif", methods=["GET"])
 def per_dif():
     start = time.time()

@@ -5,7 +5,7 @@ import { Observable } from 'rxjs'
 @Injectable()
 
 export class DataService {
-    private apiURL = 'http://127.0.0.1:5500';
+    private apiURL = 'http://127.0.0.1:5000';
     constructor(private http: HttpClient) { }
 
     async getdata_sta(df_f:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string): Promise<Observable<any>>{
@@ -110,6 +110,10 @@ export class DataService {
 
     getCountry(dataset:string,index:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string,country:any): Observable<any>{
         console.log("country",country)
+    async get_index(): Promise<Observable<any>> {
+        // console.log("service",this.http.get('http://127.0.0.1:5500/locat/station'))
+        return this.http.get('http://127.0.0.1:5000/api/index')
+    }
         const httpOptions = {
           headers: new HttpHeaders({
             'country':  country,
