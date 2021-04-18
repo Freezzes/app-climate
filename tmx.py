@@ -86,7 +86,7 @@ def locat():
     elif df_f == 'tasmax' :
         ds = pd.read_csv("C:/Users/ice/Documents/climate/data/station_column_format/tmax_1951-2016.csv") 
         color_map = 'cool_warm'
-    elif df_f == 'pre':
+    elif df_f == 'pr':
         ds = pd.read_csv("C:/Users/ice/Documents/climate/data/station_column_format/pr_1951-2018.csv")
         color_map = 'dry_wet'
 
@@ -656,25 +656,39 @@ def get_Avgmap():
 # --------------------avg global chart-----------------------
 @app.route("/api/global_avg", methods=['GET'])
 def avg_global_year():
+    start = time.time()
     dataset = str(request.args.get("dataset"))
     index = str(request.args.get("index"))
     startyear = int(request.args.get("startyear"))
     stopyear = int(request.args.get("stopyear"))
-    path = f'C:/Users/ice/Documents/climate/data/{dataset}.avg_global.csv'
-    df = pd.read_csv(path)
-    if dataset == 'cru_ts':
-        start_year = 1901
-    else:
-        start_year = 1979
-    start_index = startyear - start_year
-    end_index = stopyear - start_year
-    result = df[index][start_index:end_index+1].tolist()
-    avg = np.round(np.mean(result), 4)
+    startmonth = int(request.args.get("startmonth"))
+    stopmonth = int(request.args.get("stopmonth"))
+
+    f = read_folder_h(dataset, index, startyear, stopyear)
+    data_date = select_data_fromdate(f,startyear,stopyear,startmonth,stopmonth)
+    avg_year = []
+    for i in data_date[0]:
+        # a = np.round(np.nanmean(i.flatten()),4),4
+        avg_year.append(np.round(np.float64(np.nanmean(i.flatten())), 4))
+
+    avg = np.round(np.mean(avg_year), 4)
+    # path = f'C:/Users/ice/Documents/climate/data/{dataset}.avg_global.csv'
+    # df = pd.read_csv(path)
+    # if dataset == 'cru_ts':
+    #     start_year = 1901
+    # else:
+    #     start_year = 1979
+    # start_index = startyear - start_year
+    # end_index = stopyear - start_year
+    # result = df[index][start_index:end_index+1].tolist()
+    # avg = np.round(np.mean(result), 4)
     if index == 'pr':
         unit = "mm"
     else:
         unit = "°C"
-    return jsonify(result, avg, unit)
+    end = time.time()
+    print("time chart", end-start)
+    return jsonify(avg_year,np.round(np.float64(avg),4),unit)
 
 #----------------------- Get detials ----------------------------------
 @app.route("/api/dataset", methods=["GET"])

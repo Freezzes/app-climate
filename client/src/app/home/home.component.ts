@@ -63,7 +63,7 @@ export class HomeComponent implements OnInit {
     public formatter: NgbDateParserFormatter,
     private tempService: TempService,
     private inputservice: InputService
-  ) {}
+  ) { }
 
   choosedataset = new FormGroup({
     set: new FormControl()
@@ -119,29 +119,29 @@ export class HomeComponent implements OnInit {
   //   this.select = "";
   // }
 
-  
-  async check_data(){
+
+  async check_data() {
     this.dataset = this.choosedataset.controls['set'].value
     var index = this.choosefile.controls['file'].value
     var startyear = String(this.fromDate.year)
     var stopyear = String(this.toDate.year)
-    await this.tempService.check_data(this.dataset,index,startyear,stopyear).then(data => data.subscribe(
+    await this.tempService.check_data(this.dataset, index, startyear, stopyear).then(data => data.subscribe(
       res => {
         let resp = JSON.parse(res)
-        if (resp['check'] == 'no data'){
+        if (resp['check'] == 'no data') {
           this.errors(resp['year'])
         }
-        else if(resp['check'] == 'have data'){
+        else if (resp['check'] == 'have data') {
           this.get_raw_data()
         }
       }
     ))
   }
 
-  async errors(year){
+  async errors(year) {
     this.select = 'NoData'
     this.year = year
-  }  
+  }
 
   async get_difference() {
     this.select = 'get_dif'
@@ -154,7 +154,7 @@ export class HomeComponent implements OnInit {
         var detail = [res, data]
         this.inputservice.sendDetail(detail)
         // this.inputservice.sendDetail(res)
-        console.log("dif result : ",res)
+        console.log("dif result : ", res)
       }
     ))
   }
@@ -217,10 +217,10 @@ export class HomeComponent implements OnInit {
               )
             }
           }
-          this.anomaly = [this.Data.dataPoints, this.anomaly_name, unit,'Global']
+          this.anomaly = [this.Data.dataPoints, this.anomaly_name, unit, 'Global']
           // console.log("ano home :",send)      
 
-          // this.inputservice.sendAnomaly(send)
+          this.inputservice.sendAnomaly(this.anomaly)
         }))
 
     await this.tempService.get_Avgcsv(this.dataset, index, startyear, stopyear, startmonth, stopmonth)
@@ -251,9 +251,9 @@ export class HomeComponent implements OnInit {
               }
               console.log("point", Data.dataPoints)
               this.chart = [Data.dataPoints, res[1], res[2], 'Global']
-              var sent = {'chart':this.chart,'map':resp,'input':inputs,'anomaly':this.anomaly}
+              var sent = { 'chart': this.chart, 'map': resp, 'input': inputs, 'anomaly': this.anomaly }
               this.inputservice.sendHiRes(sent)
-              console.log("hi graph",sent)
+              console.log("hi graph", sent)
             })
             )
           // var sent = { 'chart': this.chart, 'map': resp, 'input': inputs, 'anomaly': this.anomaly }
@@ -261,33 +261,28 @@ export class HomeComponent implements OnInit {
         })
       ))
 
-    // await this.tempService.global_avg(this.dataset, index, startyear,startmonth, stopyear, stopmonth)
-    // .then(data => data.subscribe(res => {
-    //   // console.log("global",res)
-    //   var data = Number(stopyear)- Number(startyear)
-    //   // console.log("dddddd",data)
-    //   var start = Number(startyear)
-    //   for (var i =0; i<= data; i++){
-    //     Data.dataPoints.push(
-    //       {x: new Date(start, 0), y: res[0][i]},        
-    //     )
-    //     start+=1
-    //   }
-    //   // console.log("point",Data.dataPoints)
-    //   var sent = [Data.dataPoints,res[1],res[2]]
-    //   // console.log("sent data from home ",sent)
-    //   this.inputservice.sendGraph(sent)
-    //   // this.plotMean(res[1],res[2])
-    // }))
-
-
-
-
-
-
+  await this.tempService.global_avg(this.dataset, index, startyear, startmonth, stopyear, stopmonth)
+    .then(data => data.subscribe(res => {
+      var Data = {
+        dataPoints: []
+      }
+      var data = Number(stopyear) - Number(startyear)
+      var start = Number(startyear)
+      for (var i = 0; i <= data; i++) {
+        Data.dataPoints.push(
+          { x: new Date(start, 0), y: res[0][i] },
+        )
+        start += 1
+      }
+      console.log("point", Data.dataPoints)
+      this.chart = [Data.dataPoints, res[1], res[2], 'Global']
+      // var sent = { 'chart': this.chart, 'map': resp, 'input': inputs, 'anomaly': this.anomaly }
+      this.inputservice.sendGraphAvg(this.chart)
+    }))
   }
 
-  station_thai() {
+  async station_thai() {
+    this.select = "station"
     // console.log("start",this.fromDate.year)
     // console.log("end",this.toDate.year)
     // console.log("set",this.choosedataset.controls['set'].value)
@@ -300,6 +295,9 @@ export class HomeComponent implements OnInit {
     let stopyear = String(this.toDate.year)
     let stopmonth = String(this.toDate.month)
     let stopday = String(this.toDate.day)
+    this.dataset = this.choosedataset.controls['set'].value
+    var index = this.choosefile.controls['file'].value
+  
     if (startday.length == 1) {
       startday = '0' + startday
     }
@@ -317,7 +315,14 @@ export class HomeComponent implements OnInit {
     // console.log("f date : ",this.fromDate.year,this.fromDate.month,startday)
     // console.log("begin : ", from_date,end_date)
     // console.log("sent date : ", this.start_date,this.stop_date)
-    this.select = "station"
+
+    await this.tempService.getdata_sta(index,String(this.start_date),String(this.stop_date)).then(res => {
+      res.subscribe(datas => {
+        console.log("send sta : ",datas)
+        this.inputservice.sendstation(datas)
+        // this.map = MapLib2.map_sta(datas)
+      })
+    })
   }
 
   percent() {

@@ -67,13 +67,15 @@ export class NetcdfgraphComponent implements OnInit {
       }
 
     })
+    const start = new Date();
     this.sharedData.graphAvgservice.subscribe(data => {
       if (data) {
         console.log("graph", data)
         this.plotMean(data[0], data[1], data[2],this.long_name,data[3])
       }
     })
-
+    let elapsed = new Date();
+    console.log("sent data time : ",start,">>",elapsed)
      this.sharedData.anomalyservice.subscribe(data => {
       if(data){
         console.log("anomaly service",data)
@@ -124,6 +126,8 @@ export class NetcdfgraphComponent implements OnInit {
   }
 
   async plotMean(Data, Avg, unit,name,country) {
+    const start = performance.now();
+    const st = Date.now()
     var chart = new CanvasJS.Chart("chartContainer", {
       animationEnabled: true,
       title: {
@@ -150,5 +154,9 @@ export class NetcdfgraphComponent implements OnInit {
       }]
     });
     chart.render();
+    const stop = performance.now();
+    const sp = Date.now()
+    console.log("plot time >>> ",stop - start ,"ms")
+    console.log("plot time Date >> ",st," >> ", sp,"...", sp - st)
   }
 }

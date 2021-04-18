@@ -191,8 +191,8 @@ export class NetcdfComponent implements OnInit {
         this.map.getLayers().insertAt(0, this.hires_layer);
         MapLib.setResolution(this.map)
 
-        this.sharedData.sendGraphAvg(data.chart)
-        this.sharedData.sendAnomaly(data.anomaly)
+        // this.sharedData.sendGraphAvg(data.chart)
+        // this.sharedData.sendAnomaly(data.anomaly)
 
         // Get selected country data chart
         if (this.select !== null) {

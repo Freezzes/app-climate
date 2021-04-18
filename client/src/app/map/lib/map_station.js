@@ -7,7 +7,7 @@ export var station_id = '';
 
 export function map_sta(loca){
     var test = loca[0]
-    // console.log("sent",Object.values(test))
+    console.log("map.js",test)
     var locations = [];
     for (i=0; i< loca[0].length; i++){
         locations.push(Object.values(loca[0][i]))
@@ -84,7 +84,6 @@ export function map_sta(loca){
             })
         ]
     }
-    // console.log("fea",features)
     
     var vectorSource = new ol.source.Vector({ // VectorSource({
         features: features

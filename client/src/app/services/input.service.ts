@@ -84,6 +84,12 @@ export class InputService {
     this.graphcountryAvg.next(value);
   }
 
+  private mapstation = new BehaviorSubject<any>(undefined);
+  Mapstationservice = this.mapstation.asObservable();
+  async sendstation(value:any){
+    this.mapstation.next(value);
+  }
+
 
   constructor() { }
 }
