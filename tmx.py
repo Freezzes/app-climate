@@ -495,7 +495,7 @@ def per_dif():
     else:
         color = 'cool_warm'
 
-    return jsonify(y.tolist(),x.tolist(),per1.tolist(),Min,Max,lon_step,lat_step,color,)
+    return jsonify(y.tolist(),x.tolist(),per1.tolist(),np.float64(Min),np.float64(Max),lon_step,lat_step,color,)
 
 @app.route("/raw_dif", methods=["GET"])
 def raw_dif():

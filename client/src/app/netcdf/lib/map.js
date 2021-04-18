@@ -194,33 +194,35 @@ export function genGridData(geojson, min, max, color_map, lon_step, lat_step, ty
 
   var colors = [];
   var colorScale;
-  console.log("geojson", geojson)
-  console.log("min", min)
-  console.log("max", max)
-  console.log("color", color_map)
+  var title; var tickformat;
   if (color_map == 'cool_warm') {
     if (type == 'main') {
+      title = 'tempurature (°C)'
       colors = ['#bd1726', '#d42d27', '#e34933', '#f16640', '#f7844e', '#fca55d', '#fdbf71', '#fed687', '#fee99d', '#fff7b3', '#f7fcce', '#e9f6e8', '#d6eef5', '#bde2ee', '#a3d3e6', '#87bdd9', '#6ea6ce', '#588cc0', '#4471b2', '#3a54a4'].reverse()
       colorScale = d3.scaleQuantile([min, 0, max], colors)
     } else if (type == 'per') {
+      title = 'tempurature (%)'
       colors = ['#bd1726', '#d42d27', '#e34933', '#f16640', '#f7844e', '#fca55d', '#fdbf71', '#fed687', '#fee99d', '#fff7b3', '#f7fcce', '#e9f6e8', '#d6eef5', '#bde2ee', '#a3d3e6', '#87bdd9', '#6ea6ce', '#588cc0', '#4471b2', '#3a54a4'].reverse()
       // colors = ['#bd1726', '#f16640',  '#fdbf71', '#fff7b3', '#d6eef5', '#87bdd9', '#3a54a4'].reverse()
       colorScale = d3.scaleQuantile([min, 0, max], colors)
     }
   }
   else if (color_map == 'dry_wet') {
+    title = 'precipitation (mm)'
     colors = ['#8c510a', '#9e5c0b', '#bf812d', '#d49a4b', '#dfc27d', '#eedfba', '#f6e8c3', '#f5f5f5', '#c7eae5', '#80cdc1', '#35978f', '#2b7a74', '#01665e', '#005040', '#003c30', '#002820']
     // colors = ['#6e4007', '#a16518', '#ca9849', '#e7cf94', '#f6ecd1', '#f5f2e8', '#edf2f5', '#dbeaf2', '#c5dfec', '#a7d0e4', '#87beda', '#5fa5cd', '#3f8ec0', '#2f79b5', '#1f63a8', '#124984']
     // colors = ["#f7fcf0", "#e0f3db", "#ccebc5", "#a8ddb5", "#7bccc4", "#4eb3d3", "#2b8cbe", "#0868ac", "#084081"]
-    colorScale = d3.scaleQuantile([0, max], colors)
+    colorScale = d3.scaleQuantile([0,max], colors)
+    if(type == 'per'){ title = 'precipitation (%)'}
   }
+  tickformat = ".2f"
+  if(name == 'map1' || name == 'map2'){ tickformat = ".0f"}
 
-  console.log("co", colors.length)
-  createLegend(colorScale, min, max, colors.length, type, name);
-  legend_bar({
-    color: d3.scaleThreshold([2.5, 3.1, 3.5, 3.9, 6, 7, 8, 9.5], d3.schemeRdBu[9]),
-    title: "Unemployment rate (%)",
-    tickSize: 0
+  legend({
+    color: colorScale,
+    title: title,
+    tickFormat: tickformat,
+    target: name
   })
 
   var createTextStyle = function (feature) {
@@ -312,13 +314,12 @@ export function setResolution(map, North, South, West, East) {
 }
 
 
-// ------------------------test legend--------------------------------
-
-function legend_bar({
+// ------------------------ legend--------------------------------
+function legend({
   color,
   title,
   tickSize = 6,
-  width = 320,
+  width = 650, 
   height = 44 + tickSize,
   marginTop = 18,
   marginRight = 0,
@@ -326,80 +327,34 @@ function legend_bar({
   marginLeft = 0,
   ticks = width / 64,
   tickFormat,
-  tickValues
+  tickValues,
+  target
 } = {}) {
-
-  const svg = d3.create("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .attr("viewBox", [0, 0, width, height])
-    .style("overflow", "visible")
-    .style("display", "block");
-
+  if (target == 'map1' || target == 'map2'){width = 450}
   let tickAdjust = g => g.selectAll(".tick line").attr("y1", marginTop + marginBottom - height);
-  let x;
 
-  // Continuous
-  if (color.interpolate) {
-    const n = Math.min(color.domain().length, color.range().length);
+  const thresholds
+    = color.thresholds ? color.thresholds() // scaleQuantize
+      : color.quantiles ? color.quantiles() // scaleQuantile
+        : color.domain(); // scaleThreshold
 
-    x = color.copy().rangeRound(d3.quantize(d3.interpolate(marginLeft, width - marginRight), n));
+  const thresholdFormat
+    = tickFormat === undefined ? d => d
+      : typeof tickFormat === "string" ? d3.format(tickFormat)
+        : tickFormat;
 
-    svg.append("image")
-      .attr("x", marginLeft)
-      .attr("y", marginTop)
-      .attr("width", width - marginLeft - marginRight)
-      .attr("height", height - marginTop - marginBottom)
-      .attr("preserveAspectRatio", "none")
-      .attr("xlink:href", ramp(color.copy().domain(d3.quantize(d3.interpolate(0, 1), n))).toDataURL());
-  }
+  var x = d3.scaleLinear()
+    .domain([-1, color.range().length - 1])
+    .rangeRound([marginLeft, width - marginRight]);
 
-  // Sequential
-  else if (color.interpolator) {
-    x = Object.assign(color.copy()
-      .interpolator(d3.interpolateRound(marginLeft, width - marginRight)),
-      { range() { return [marginLeft, width - marginRight]; } });
-
-    svg.append("image")
-      .attr("x", marginLeft)
-      .attr("y", marginTop)
-      .attr("width", width - marginLeft - marginRight)
-      .attr("height", height - marginTop - marginBottom)
-      .attr("preserveAspectRatio", "none")
-      .attr("xlink:href", ramp(color.interpolator()).toDataURL());
-
-    // scaleSequentialQuantile doesn’t implement ticks or tickFormat.
-    if (!x.ticks) {
-      if (tickValues === undefined) {
-        const n = Math.round(ticks + 1);
-        tickValues = d3.range(n).map(i => d3.quantile(color.domain(), i / (n - 1)));
-      }
-      if (typeof tickFormat !== "function") {
-        tickFormat = d3.format(tickFormat === undefined ? ",f" : tickFormat);
-      }
-    }
-  }
-
-  // Threshold
-  else if (color.invertExtent) {
-    const thresholds
-      = color.thresholds ? color.thresholds() // scaleQuantize
-        : color.quantiles ? color.quantiles() // scaleQuantile
-          : color.domain(); // scaleThreshold
-
-    const thresholdFormat
-      = tickFormat === undefined ? d => d
-        : typeof tickFormat === "string" ? d3.format(tickFormat)
-          : tickFormat;
-
-    x = d3.scaleLinear()
-      .domain([-1, color.range().length - 1])
-      .rangeRound([marginLeft, width - marginRight]);
+    var svg = d3.select('svg.' + target + '.legend')
+    svg.selectAll('rect').remove();
+    svg.selectAll("g").remove();
 
     svg.append("g")
-      .selectAll("rect")
-      .data(color.range())
-      .join("rect")
+    .selectAll("rect")
+    .data(color.range())
+    .join("rect")
       .attr("x", (d, i) => x(i - 1))
       .attr("y", marginTop)
       .attr("width", (d, i) => x(i) - x(i - 1))
@@ -408,48 +363,27 @@ function legend_bar({
 
     tickValues = d3.range(thresholds.length);
     tickFormat = i => thresholdFormat(thresholds[i], i);
-  }
-
-  // Ordinal
-  else {
-    x = d3.scaleBand()
-      .domain(color.domain())
-      .rangeRound([marginLeft, width - marginRight]);
-
-    svg.append("g")
-      .selectAll("rect")
-      .data(color.domain())
-      .join("rect")
-      .attr("x", x)
-      .attr("y", marginTop)
-      .attr("width", Math.max(0, x.bandwidth() - 1))
-      .attr("height", height - marginTop - marginBottom)
-      .attr("fill", color);
-
-    tickAdjust = () => { };
-  }
-
 
   svg.append("g")
-    .attr("transform", `translate(0,${height - marginBottom})`)
-    .call(d3.axisBottom(x)
-      .ticks(ticks, typeof tickFormat === "string" ? tickFormat : undefined)
-      .tickFormat(typeof tickFormat === "function" ? tickFormat : undefined)
-      .tickSize(tickSize)
-      .tickValues(tickValues))
-    .call(tickAdjust)
-    .call(g => g.select(".domain").remove())
-    .call(g => g.append("text")
-      .attr("x", marginLeft)
-      .attr("y", marginTop + marginBottom - height - 6)
-      .attr("fill", "currentColor")
-      .attr("text-anchor", "start")
-      .attr("font-weight", "bold")
-      .attr("class", "title")
-      .text(title));
-
+      .attr("transform", `translate(0,${height - marginBottom})`)
+      .call(d3.axisBottom(x)
+        .ticks(ticks, typeof tickFormat === "string" ? tickFormat : undefined)
+        .tickFormat(typeof tickFormat === "function" ? tickFormat : undefined)
+        .tickSize(tickSize)
+        .tickValues(tickValues))
+      .call(tickAdjust)
+      .call(g => g.select(".domain").remove())
+      .call(g => g.append("text")
+        .attr("x", marginLeft)
+        .attr("y", marginTop + marginBottom - height - 6)
+        .attr("fill", "currentColor")
+        .attr("text-anchor", "start")
+        .attr("font-weight", "bold")
+        .attr("class", "title")
+        .text(title));
   return svg.node();
 }
+
 //---------------------------Legend-----------------------------
 function createLegend(colorScale, min, max, color, type,name) {
   if (type == 'main') {
