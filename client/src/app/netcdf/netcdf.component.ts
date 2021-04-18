@@ -122,31 +122,21 @@ export class NetcdfComponent implements OnInit {
     await this.sharedData.inputhomeservice.subscribe(data => {
       if(data){
         console.log("input2222222222",data)
+        this.plot_trend = data.plottrend
+        this.test_trend(this.plot_trend)
       }
     })
+
+    console.log("plot_trend",this.plot_trend)
 
     await this.sharedData.lowresservice.subscribe(data => {
       if(data){
-        this.data_low = data
-        this.lowres_layer = this.getDataLayer(this.data_low,this.North, this.South, this.West, this.East,'lowres_data')
+        // this.data_low = data
+        this.lowres_layer = this.getDataLayer(data.map,this.North, this.South, this.West, this.East,'lowres_data')
         MapLib.clearLayers(this.map);
         this.map.getLayers().insertAt(0,this.lowres_layer);
-        // MapLib.select_country(this.map)
-      }
-    })
-
-
-    this.sharedData.hiresservice.subscribe(data => {
-      if(data){
-        console.log("hires",data)
-        this.hires_layer = this.getDataLayer(data.map,this.North, this.South, this.West, this.East,'hires_data')
-        this.map.getLayers().insertAt(0,this.hires_layer);
-        MapLib.setResolution(this.map)
-
-        // this.chart = {
-        //   'global_avg': data.chart,
-        // }
-        this.sharedData.sendGraphAvg(data.chart)
+        // MapLib.setzoom_center(this.map,this.North, this.South, this.West, this.East)
+        // this.sharedData.sendGraphAvg(data.chart)
 
         // Get selected country data chart
         if (this.select !== null) {
@@ -176,7 +166,7 @@ export class NetcdfComponent implements OnInit {
                     start+=1
                   }
                   console.log("point",Data.dataPoints)
-                  var sent = [Data.dataPoints,res[1],res[2]]
+                  var sent = [Data.dataPoints,res[1],res[2],selectedCountry]
                   // this.inputservice.sendGraph(sent)
                   that.sharedData.sendGraphAvg(sent)
                   console.log("graph country",sent)
@@ -186,54 +176,93 @@ export class NetcdfComponent implements OnInit {
                 // value:[],
                 dataPoints : []
               }
-             // that.sharedData.inputhomeservice.subscribe(data => {
-              //   if(data){
-              //     console.log(data)
-                //   this.dataset = data[0]
-                //   this.index = data[1]
-                //   this.startyear = data[2]
-                //   this.stopyear = data[3]
-                //   this.startmonth = data[4]
-                //   this.stopmonth = data[5]
-                //   console.log("dataset",this.dataset)
-                //   that.dataService.getCountry(data[0],data[1],data[2],data[3],data[4],data[5],selectedCountry).subscribe(
-                //   (res:any) => {
-                //     console.log("resssssssss",res)
-                //     console.log("daaaaaaaaa",this.dataset)
-                //     var data = Number(this.stopyear)- Number(this.startyear)
-                //     var start = Number(this.startyear)
-                //       for (var i =0; i<= data; i++){
-                //         Data.dataPoints.push(
-                //           {x: new Date(start, 0), y: res[0][i]},        
-                //         )
-                //         start+=1
-                //       }
-                //       console.log("point",Data.dataPoints)
-                //       var sent = [Data.dataPoints,res[1],res[2]]
-                //       // this.inputservice.sendGraph(sent)
-                //       that.sharedData.sendGraphAvg(sent)
-                //       console.log("graph country",sent)
-                //     // that.sharedData.sendcountry(res)
-                //   })
-                //   var Data = {
-                //     // value:[],
-                //     dataPoints : []
-                //   }
-              //   }
-                
-              // })
-
-            // that.dataService.getCountry(selectedCountry).subscribe(
-            //   (res:any) => {
-            //     console.log("resssssssss",res)
-            //     that.sharedData.sendcountry(res)
-            //   }
-            // )
-            // console.log("dataset",this.details)
           }
         });
+        // MapLib.select_country(this.map)
       }
     })
+
+
+    this.sharedData.hiresservice.subscribe(data => {
+      if(data){
+        console.log("hires",data)
+        this.hires_layer = this.getDataLayer(data,this.North, this.South, this.West, this.East,'hires_data')
+        this.map.getLayers().insertAt(0,this.hires_layer);
+        MapLib.setResolution(this.map)
+        // MapLib.select_country_h(this.map);
+
+        // this.chart = {
+        //   'global_avg': data.chart,
+        // }
+        // this.sharedData.sendGraphAvg(data.chart)
+
+        // // Get selected country data chart
+        // if (this.select !== null) {
+        //   this.map.removeInteraction(this.select);
+        // }
+        // let that = this
+        // this.select = MapLib.select_country(this.map);
+        // this.select.on('select', function(e:any) {
+        //   // Checking if not select country change to global stat
+        //   if(e.selected.length == 0) {
+        //     console.log("NO SELECT")
+        //     that.sharedData.sendGraphAvg(data.chart)
+        //   }
+        //   else if(e.selected.length == 1) {
+        //     var selectedCountry = e.selected[0].get('name');
+        //     console.log("SELECT",selectedCountry)  
+        //     that.dataService.getCountry(data.input.dataset,data.input.index,data.input.startyear,data.input.stopyear,data.input.startmonth,data.input.stopmonth,selectedCountry).subscribe(
+        //       (res:any) => {
+        //         console.log("resssssssss",res)
+        //         console.log("countryyyyy",selectedCountry)
+        //         var value = Number(data.input.stopyear)- Number(data.input.startyear)
+        //         var start = Number(data.input.startyear)
+        //           for (var i =0; i<= value; i++){
+        //             Data.dataPoints.push(
+        //               {x: new Date(start, 0), y: res[0][i]},        
+        //             )
+        //             start+=1
+        //           }
+        //           console.log("point",Data.dataPoints)
+        //           var sent = [Data.dataPoints,res[1],res[2]]
+        //           // this.inputservice.sendGraph(sent)
+        //           that.sharedData.sendGraphAvg(sent)
+        //           console.log("graph country",sent)
+        //         // that.sharedData.sendcountry(res)
+        //       })
+        //       var Data = {
+        //         // value:[],
+        //         dataPoints : []
+        //       }
+        //   }
+        // });
+      }
+    })
+  }
+
+  test(){
+    console.log("plot_trend_sent",this.plot_trend)
+    this.plot_trend = !this.plot_trend
+    console.log("plot_trend",this.plot_trend)
+    this.test_trend(this.plot_trend)
+    
+  }
+
+
+  async test_trend(trend){
+    if(trend == true){
+      console.log("AAAAAAA")
+      this.test_click = 'plot_trend'
+      console.log("test plot trend",this.West,this.East)
+      // await this.sharedData.regionservice.subscribe(data => {
+      //   console.log("input region 444",data)
+      // })
+    }else{
+      console.log("BBBBBB")
+      this.test_click = ''
+    }
+    
+    // this.plot_trend = false
   }
 
 // -----------read npz USE!!!!!!!!!!--------------------------------
@@ -270,7 +299,7 @@ export class NetcdfComponent implements OnInit {
           console.log('min', resp[3])
          
           const geojson = MapLib.merge_data_to_geojson(resp[0],resp[1], val, this.North, this.South, this.West, this.East);
-          this.datalayer = MapLib.genGridData(geojson, resp[3], resp[4], resp[7], resp[5], resp[6],'main','lowres_data');
+          this.datalayer = MapLib.genGridData(geojson, resp[3], resp[4], resp[7], resp[5], resp[6],'main','lowres_data','main');
           // this.selectgrid = MapLib.gridselect(geojson)
           MapLib.clearLayers(this.map);
           this.map.getLayers().insertAt(0,this.datalayer);

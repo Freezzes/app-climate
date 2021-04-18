@@ -26,18 +26,11 @@ export class HomeComponent implements OnInit {
   public start_date;
   public stop_date;
   public lenght_y;
-  public verb;
-  infile = '';
-  model: any;
-  filename = [];
 
   dataset_name;
+  index_name;
 
-  filename_cru = [{ id: 'tas', name: 'Averange Temperature' },
-  { id: 'tasmin', name: 'Minimum Temperature' },
-  { id: 'tasmax', name: 'Maximum Temperature' },
-  { id: 'pr', name: 'Preciptipation' },
-  ]
+  plot_trend: boolean = true;
 
   constructor(
     private calendar: NgbCalendar,
@@ -94,103 +87,107 @@ export class HomeComponent implements OnInit {
     var region = [this.North.value, this.South.value, this.West.value, this.East.value]
     await this.inputservice.sendRegion(region)
 
-    var inputs = {'dataset':this.dataset,'index':index,'startyear':startyear,'stopyear':stopyear,'startmonth':startmonth,'stopmonth':stopmonth}
+    var inputs = { 'dataset': this.dataset, 'index': index, 'startyear': startyear, 'stopyear': stopyear, 'startmonth': startmonth, 'stopmonth': stopmonth, 'plottrend': this.plot_trend }
     await this.inputservice.sendInput(inputs)
 
     await this.dataService.detail(this.dataset, index).then(data => data.subscribe(
       res => {
-        // var detail = [res,this.dataset]
         this.inputservice.sendDetail(res)
-        // console.log("detailllllll",this.dataset)
       }
-    )
-    )
-
-  //  await this.dataService.getSelectContinent(this.dataset, index, startyear, stopyear, startmonth, stopmonth)
-  //     .then(data => data.subscribe(
-  //       res => {
-  //         console.log("continent",res)
-  //         this.inputservice.sendcontinent(res)
-  //       }))
-
-    // await this.dataService.getSelectCountry(this.dataset, index, startyear, stopyear, startmonth, stopmonth)
-    // .then(data => data.subscribe(
-    //   res => {
-    //     // console.log("continent",res)
-    //     this.inputservice.sendcountry(res)
-    //   }))
+    ))
 
     await this.dataService.get_lowres(this.dataset, index, startyear, stopyear, startmonth, stopmonth)
       .then(data => data.subscribe(
         (res => {
+          // console.log("check dataaaaaa",res)
           let resp = JSON.parse(res)
-          this.inputservice.sendLowRes(resp)
+          var inputs = { 'dataset': this.dataset, 'index': index, 'startyear': startyear, 'stopyear': stopyear, 'startmonth': startmonth, 'stopmonth': stopmonth }
+          this.dataService.global_avg(this.dataset, index, startyear, startmonth, stopyear, stopmonth)
+            .then(datas => datas.subscribe(res => {
+              var data = Number(stopyear) - Number(startyear)
+              console.log("dddddd", data)
+              var start = Number(startyear)
+              for (var i = 0; i <= data; i++) {
+                Data.dataPoints.push(
+                  { x: new Date(start, 0), y: res[0][i] },
+                )
+                start += 1
+              }
+              console.log("point", Data.dataPoints)
+              this.chart = [Data.dataPoints, res[1], res[2], 'Golbal']
+              var sent = { 'chart': this.chart, 'map': resp, 'input': inputs }
+              this.inputservice.sendLowRes(sent)
+
+            }))
         })
       ))
+
+    await this.dataService.global_avg(this.dataset, index, startyear, startmonth, stopyear, stopmonth)
+      .then(datas => datas.subscribe(res => {
+        var data = Number(stopyear) - Number(startyear)
+        console.log("dddddd", data)
+        var start = Number(startyear)
+        for (var i = 0; i <= data; i++) {
+          Data.dataPoints.push(
+            { x: new Date(start, 0), y: res[0][i] },
+          )
+          start += 1
+        }
+        console.log("point", Data.dataPoints)
+        this.chart = [Data.dataPoints, res[1], res[2], 'Golbal']
+        // var sent = { 'chart': this.chart,'input': inputs }
+        this.inputservice.sendGraphAvg(this.chart)
+
+      }))
 
     await this.dataService.get_hire(this.dataset, index, startyear, stopyear, startmonth, stopmonth)
       .then(data => data.subscribe(
         (res => {
           let resp = JSON.parse(res)
-          var inputs = {'dataset':this.dataset,'index':index,'startyear':startyear,'stopyear':stopyear,'startmonth':startmonth,'stopmonth':stopmonth}
-          this.dataService.global_avg(this.dataset, index, startyear,startmonth, stopyear, stopmonth)
-            .then(data => data.subscribe(res => {
-              var data = Number(stopyear)- Number(startyear)
-              console.log("dddddd",data)
-              var start = Number(startyear)
-              for (var i =0; i<= data; i++){
-                Data.dataPoints.push(
-                  {x: new Date(start, 0), y: res[0][i]},        
-                )
-                start+=1
-              }
-              console.log("point",Data.dataPoints)
-              this.chart = [Data.dataPoints,res[1],res[2]]
-              var sent = {'chart':this.chart,'map':resp,'input':inputs}
-              this.inputservice.sendHiRes(sent)
-              console.log("hi graph",resp)
-            }))
+          this.inputservice.sendHiRes(resp)
           // this.inputservice.sendHiRes(resp)
         })
       ))
 
-    // await this.dataService.global_avg(this.dataset, index, startyear,startmonth, stopyear, stopmonth)
-    // .then(data => data.subscribe(res => {
-    //   var data = Number(stopyear)- Number(startyear)
-    //   console.log("dddddd",data)
-    //   var start = Number(startyear)
-    //   for (var i =0; i<= data; i++){
-    //     Data.dataPoints.push(
-    //       {x: new Date(start, 0), y: res[0][i]},        
-    //     )
-    //     start+=1
-    //   }
-    //   console.log("point",Data.dataPoints)
-    //   this.chart = [Data.dataPoints,res[1],res[2]]
-    //   this.inputservice.sendGraphAvg(this.chart)
-    // }))
-
     var Data = {
-      // value:[],
-      dataPoints : []
+      dataPoints: []
     }
 
-
-    
-    
+    await this.dataService.nc_anomaly(index).then(data => data.subscribe(res => {
+      console.log('ano', res)
+      this.inputservice.sendanomaly(res)
+    }))
   }
 
-  async get_difference(){
+  async get_difference() {
     this.select = 'get_dif'
     var data = this.choosedataset.controls['set'].value
     var index = this.choosefile.controls['file'].value
-    var sent = [data,index]
-    this.inputservice.senddif(sent)
+    await this.dataService.detail(data, index).then(data => data.subscribe(
+      res => {
+        this.inputservice.sendDetail(res)
+        console.log("detail dif", res)
+        var year = res.year
+      }
+    ))
 
+    var sent = [data, index]
+    this.inputservice.senddif(sent)
   }
 
-  station_thai() {
+  async station_thai() {
     this.select = "station"
+    var index = this.choosefile.controls['file'].value
+    var startyear = String(this.fromDate.year)
+    var stopyear = String(this.toDate.year)
+    var startmonth = String(this.fromDate.month)
+    var stopmonth = String(this.toDate.month)
+    await this.dataService.getdata_sta(index,startyear,stopyear,startmonth,stopmonth).then(res => {
+        res.subscribe(datas => {
+          this.inputservice.sendstation(datas)
+        })
+
+    })
   }
 
   percent() {
