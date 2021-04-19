@@ -54,6 +54,7 @@ export class DifferenceComponent implements OnInit {
   cities = [];
   selectedItems = [];
   dropdownSettings: any = {};
+  display;
 
   constructor(
     public formatter: NgbDateParserFormatter,
@@ -126,6 +127,7 @@ export class DifferenceComponent implements OnInit {
         var start = data[0].year.split("-")[0]
         var stop = data[0].year.split("-")[1]
         this.Range(start,stop)
+        this.clear()
       } 
     })
     
@@ -146,6 +148,13 @@ export class DifferenceComponent implements OnInit {
         this.East = data[3]
       }
     })
+  }
+
+  async clear(){
+    this.display = 'clear'
+    MapLib.clearLayers(this.map1);
+    MapLib.clearLayers(this.map2);
+    MapLib.clearLayers(this.map);
   }
 
   async Range(x,y){
@@ -176,7 +185,7 @@ export class DifferenceComponent implements OnInit {
   }
 
     async per_different(){
-      // this.type = 'per'
+      this.display = 'show'
       // MapLib.add_graticule_layer(this.map)
       console.log("dat", this.index)
       console.log(this.chooseyear1.controls['fromyear1'].value)
@@ -211,6 +220,7 @@ export class DifferenceComponent implements OnInit {
     }
 
     async raw_different(){
+      this.display = 'show'
       console.log("dat", this.index)
       console.log(this.chooseyear1.controls['fromyear1'].value)
       console.time()
@@ -240,7 +250,7 @@ export class DifferenceComponent implements OnInit {
     }
 
   async map_range1() {
-
+    this.display = 'show'
     this.start1 = this.chooseyear1.controls['fromyear1'].value
     this.stop1 = this.chooseyear1.controls['toyear1'].value
 
@@ -262,7 +272,7 @@ export class DifferenceComponent implements OnInit {
   }
 
   async map_range2() {
-
+    this.display = 'show'
     this.start2 = this.chooseyear2.controls['fromyear2'].value
     this.stop2 = this.chooseyear2.controls['toyear2'].value
 
