@@ -31,7 +31,8 @@
         <div class="col-sm-6">
         <div [formGroup]="chooseyear1">
             <select formControlName="fromyear1" style="max-width:120%;" class="form-control">
-            <option selected>from year</option>
+            <!-- <option selected>from year</option> -->
+            <option selected *ngIf="Clear == 'clear'">from year</option>
             <option *ngFor="let f of lists">{{f}}</option>
             </select>
         </div>
@@ -39,7 +40,7 @@
         <div class="col-sm-6">
         <div [formGroup]="chooseyear2">
             <select formControlName="fromyear2" style="max-width:120%;" class="form-control">
-            <option selected>from year</option>
+            <option selected *ngIf="Clear == 'clear'">from year</option>
             <option *ngFor="let f of lists">{{f}}</option>
             </select>
         </div>
@@ -49,7 +50,7 @@
         <div class="col-sm-6">
         <div [formGroup]="chooseyear1">
             <select formControlName="toyear1" style="max-width:120%;" class="form-control">
-            <option selected>to year</option>
+            <option selected *ngIf="Clear == 'clear'">to year</option>
             <option *ngFor="let f of lists">{{f}}</option>
             </select>
         </div>
@@ -60,7 +61,7 @@
         <div class="col-sm-6">
         <div [formGroup]="chooseyear2">
             <select formControlName="toyear2" style="max-width:120%;" class="form-control">
-            <option selected>to year</option>
+            <option selected *ngIf="Clear == 'clear'">to year</option>
             <option *ngFor="let f of lists">{{f}}</option>
             </select>
         </div>
@@ -76,23 +77,23 @@
 <!-- <div *ngIf="per == 'yes'"> -->
 <div class="row">
     <div class="col-md-6">
-    <div class="card">
-        <div class="card-header">
-        <i class="fas fa-globe-americas"></i>
-        Year {{start1}}-{{stop1}}
-        <br>
-        <div class="small text-muted">Metadat</div>
-        </div>
-        <div class="card-body" style="background-color: rgb(255, 255, 255);">
-        <div class="row">
-            <!-- <div class="col-sm-8"> -->
-            <div id="map1" class="map_per"></div>
-            <div class="info" style="opacity: 0.8;">
-                <svg class="legend" width="1000" height="30" style="margin-top: 1em;"></svg>
+        <div class="card">
+            <div class="card-header">
+            <i class="fas fa-globe-americas"></i>
+            Year {{start1}}-{{stop1}}
+            <br>
+            <div class="small text-muted">Metadat</div>
+            </div>
+            <div class="card-body" style="background-color: rgb(255, 255, 255); height: 12.5cm;">
+            <div class="row">
+                <!-- <div class="col-sm-8"> -->
+                <div id="map1" class="map_per"></div>
+                <div class="info" style="opacity: 0.8;" *ngIf="Clear == 'show'">
+                    <svg class="map1 legend" width="1000" height="60" style="margin-top: 1em;"></svg>
+                </div>
+            </div>
             </div>
         </div>
-        </div>
-    </div>
     </div>
     <div class="col-md-6">
     <div class="card">
@@ -102,12 +103,12 @@
         <br>
         <div class="small text-muted">Metadat</div>
         </div>
-        <div class="card-body" style="background-color: rgb(255, 255, 255);">
+        <div class="card-body" style="background-color: rgb(255, 255, 255); height: 12.5cm;">
         <div class="row">
             <!-- <div class="col-sm-8"> -->
             <div id="map2" class="map_per"></div>
-            <div class="info" style="opacity: 0.8;">
-                <svg class="legend" width="1000" height="30" style="margin-top: 1em;"></svg>
+            <div class="info" style="opacity: 0.8;" *ngIf="Clear == 'show'">
+                <svg class="map2 legend" width="1000" height="60" style="margin-top: 1em;"></svg>
             </div>
         </div>
         </div>
@@ -128,11 +129,11 @@
         Different 
         <br>
         </div>
-        <div class="card-body" style="background-color: rgb(255, 255, 255);">
+        <div class="card-body" style="background-color: rgb(255, 255, 255); height: 12.5cm;">
         <div class="row">
             <div id="dif" class="map"></div>
-            <div class="info" style="opacity: 0.8;">
-            <svg class="legend" width="1000" height="30" style="margin-top: 1em;"></svg>
+            <div class="info" style="opacity: 0.8;" *ngIf="Clear == 'show'">
+            <svg class="mapdif legend" width="1000" height="60" style="margin-top: 1em;"></svg>
             </div>
             <!-- </div> -->
             <!-- <div class="col-sm-2 my-auto" style="margin-left: 2%;" *ngIf="type=='per'">
