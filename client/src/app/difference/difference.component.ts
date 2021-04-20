@@ -181,7 +181,7 @@ export class DifferenceComponent implements OnInit {
       return result;
     };
 
-    this.lists = range(start_y, stop_y, 1)
+    this.lists = range(start_y, stop_y+1, 1)
   }
 
     async per_different(){

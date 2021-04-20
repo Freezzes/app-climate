@@ -52,7 +52,7 @@
             <div> 
                 <form [formGroup]="choosedataset">
                     <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-seri;" >Datatset :</label>
-                    <select formControlName="set" style="max-width:100%;" class="form-control" >
+                    <select formControlName="set" style="max-width:100%;" class="form-control" (change)="onChangeDataset($event.target.value)">
                         <option [ngValue]="null" disabled>None</option>
                         <option *ngFor="let f of dataset_name" [value]="f.id">{{f.name}}</option>
                     </select> 
@@ -61,7 +61,7 @@
             <div>
                 <form [formGroup]="choosefile">
                     <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">Index :</label>         
-                    <select formControlName="file" style="max-width:100%;" class="form-control">
+                    <select formControlName="file" style="max-width:100%;" class="form-control" (change)="onChangeIndex($event.target.value)">
                         <option [ngValue]="null" disabled>None</option>
                         <option *ngFor="let f of index_name" [value]="f.id">{{f.name}}</option>
                     </select>
@@ -72,7 +72,7 @@
                 <div class="input-group">
                     <input name="datepicker" id="datepicker" class="form-control1" ngbDatepicker #datepicker="ngbDatepicker"
                         [autoClose]="'outside'" (dateSelect)="onDateSelection($event)" [displayMonths]="2" [dayTemplate]="t"
-                        outsideDays="hidden" [minDate]="{year: 1901, month: 1, day: 1}" >
+                        outsideDays="hidden" [minDate]="start_date" [maxDate]="stop_date" >
                     <ng-template #t let-date let-focused="focused">
                         <span class="custom-day" [class.focused]="focused" [class.range]="isRange(date)"
                             [class.faded]="isHovered(date) || isInside(date)" (mouseenter)="hoveredDate = date"
