@@ -122,10 +122,6 @@ export class TempService {
         `/api/detail?dataset=${dataset}&index=${index}`);
     }
 
-    async get_date(dataset: string): Promise<Observable<any>> {
-        // console.log("service",this.http.get('http://127.0.0.1:5500/locat/station'))
-        return this.http.get('http://127.0.0.1:5500' +`/api/date?dataset=${dataset}`)
-    }
     // ----------------------------------------different----------------------------
     async per_dif(ncfile:string,df_f:string,start1:string,stop1:string,start2:string,stop2:string):Promise<Observable<any>> {
         return this.http.get('http://127.0.0.1:5500' +

@@ -708,13 +708,6 @@ def get_index():
         res.append({'id': ds['id'][i], 'name': ds['name'][i]})
     return jsonify(res)
 
-@app.route("/api/date", methods=['GET'])
-def dates():
-    dataset = str(request.args.get("dataset"))
-    df = pd.read_csv('C:/Users/ice/Documents/climate/data/index_detail.csv')
-    query = df.loc[(df['dataset'] == dataset)]['year'].values[0]
-    return jsonify(query)
-
 @app.route("/api/detail", methods=['GET'])
 def detail():
     dataset = str(request.args.get("dataset"))
