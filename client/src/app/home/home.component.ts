@@ -23,13 +23,14 @@ export class HomeComponent implements OnInit {
   public file;
   public getdataset: any;
   public station;
-  public start_date;
-  public stop_date;
+  start_date;
+  stop_date;
   public lenght_y;
 
   dataset_name;
   index_name;
-
+  selectedDevice;
+  test;
   plot_trend: boolean = true;
 
   constructor(
@@ -50,6 +51,23 @@ export class HomeComponent implements OnInit {
   North = new FormControl('90', Validators.required);
   South = new FormControl('-90', Validators.required);
   West = new FormControl('-180', Validators.required);
+  async onChange(newValue) {
+    console.log(newValue)
+    this.test = newValue
+  }
+  async onChangeIndex(newvalue){
+    console.log("index",this.test)
+    await this.dataService.detail(this.test, newvalue).then(data => data.subscribe(
+      res => {
+        console.log("qqqqq",res.year)
+        var year = String(res.year).split("-")
+        this.start_date = {year: Number(year[0]), month: 1, day: 1}
+        this.stop_date = {year: Number(year[1]), month: 11, day: 1}
+        this.inputservice.sendDetail(res)
+      }
+    ))
+
+  }
   East = new FormControl('180', Validators.required);
 
 
@@ -94,11 +112,11 @@ export class HomeComponent implements OnInit {
     var inputs = { 'dataset': this.dataset, 'index': index, 'startyear': startyear, 'stopyear': stopyear, 'startmonth': startmonth, 'stopmonth': stopmonth, 'plottrend': this.plot_trend }
     await this.inputservice.sendInput(inputs)
 
-    await this.dataService.detail(this.dataset, index).then(data => data.subscribe(
-      res => {
-        this.inputservice.sendDetail(res)
-      }
-    ))
+    // await this.dataService.detail(this.dataset, index).then(data => data.subscribe(
+    //   res => {
+    //     this.inputservice.sendDetail(res)
+    //   }
+    // ))
 
     await this.dataService.get_lowres(this.dataset, index, startyear, stopyear, startmonth, stopmonth)
       .then(data => data.subscribe(
@@ -167,13 +185,13 @@ export class HomeComponent implements OnInit {
     this.select = 'get_dif'
     var data = this.choosedataset.controls['set'].value
     var index = this.choosefile.controls['file'].value
-    await this.dataService.detail(data, index).then(data => data.subscribe(
-      res => {
-        this.inputservice.sendDetail(res)
-        console.log("detail dif", res)
-        var year = res.year
-      }
-    ))
+    // await this.dataService.detail(data, index).then(data => data.subscribe(
+    //   res => {
+    //     this.inputservice.sendDetail(res)
+    //     console.log("detail dif", res)
+    //     var year = res.year
+    //   }
+    // ))
 
     var sent = [data, index]
     this.inputservice.senddif(sent)

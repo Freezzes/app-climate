@@ -57,23 +57,23 @@
                     <div>
                         <form [formGroup]="choosedataset">
                             <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-seri;" >Datatset :</label>
-                            <select formControlName="set" class="form-control" style="margin-left: 1.5ex;" >
+                            <select formControlName="set" class="form-control" (change)="onChange($event.target.value)" style="margin-left: 1.5ex;" >
                                 <option [ngValue]="null" disabled>None</option>
                                 <option *ngFor="let f of dataset_name" [value]="f.id">{{f.name}}</option>
                             </select> 
                         </form>      
                         <form [formGroup]="choosefile">
                             <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">Index :</label>           
-                            <select formControlName="file" class="form-control" style="margin-left: 1.5ex;">
+                            <select formControlName="file" class="form-control" (change)="onChangeIndex($event.target.value)" style="margin-left: 1.5ex;">
                                 <option [ngValue]="null" disabled>None</option>
-                                <option *ngFor="let f of filename_cru" [value]="f.id">{{f.name}}</option>
+                                <option *ngFor="let f of index_name" [value]="f.id">{{f.name}}</option>
                             </select>
                         </form>
-                        <div class="form-group hidden">
+                        <div class="form-group hidden" >
                             <div class="input-group">
                                 <input name="datepicker" id="datepicker" class="form-control1" ngbDatepicker #datepicker="ngbDatepicker"
                                     [autoClose]="'outside'" (dateSelect)="onDateSelection($event)" [displayMonths]="2" [dayTemplate]="t"
-                                    outsideDays="hidden" [minDate]="{year: 1901, month: 1, day: 1}" >
+                                    outsideDays="hidden" [minDate]="start_date" [maxDate]="stop_date">
                                 <ng-template #t let-date let-focused="focused">
                                     <span class="custom-day" [class.focused]="focused" [class.range]="isRange(date)"
                                         [class.faded]="isHovered(date) || isInside(date)" (mouseenter)="hoveredDate = date"
@@ -89,14 +89,15 @@
                                 [value]="formatter.format(fromDate)"
                                 (input)="fromDate = validateInput(fromDate, dpFromDate.value)" style="margin-left: 1.5ex;">
                             <div class="input-group-append">
-                                <button class="btn btn-outline-secondary calendar  btn-sm" (click)="datepicker.toggle(); clearSelect()"
+                                <button class="btn btn-outline-secondary calendar  btn-sm" (click)="datepicker.toggle(); "
                                     type="button" style="background-color: rgb(255, 255, 255);"><i class="far fa-calendar-alt" style="size: 2px;"></i></button>
                             </div>
                         </div>
                         <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">stop :</label>
                         <div class="input-group" style="width: 93%;">
                             <input #dpToDate class="form-control" placeholder="yyyy-mm-dd" name="dpToDate"
-                                [value]="formatter.format(toDate)" (input)="toDate = validateInput(toDate, dpToDate.value)" style="margin-left: 1.5ex;">
+                                [value]="formatter.format(toDate)" 
+                                (input)="toDate = validateInput(toDate, dpToDate.value)" style="margin-left: 1.5ex;">
                             <div class="input-group-append">
                                 <button class="btn btn-outline-secondary calendar  btn-sm" (click)="datepicker.toggle()"
                                     type="button" style="background-color: rgb(255, 255, 255);"><i class="far fa-calendar-alt"></i></button>
