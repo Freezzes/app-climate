@@ -48,14 +48,24 @@ export class HomeComponent implements OnInit {
     file: new FormControl(),
   });
 
-  North = new FormControl('90', Validators.required);
-  South = new FormControl('-90', Validators.required);
-  West = new FormControl('-180', Validators.required);
   async onChange(newValue) {
     console.log(newValue)
     this.test = newValue
+    // this.inputservice.senddataset(newValue)
+    await this.dataService.detail(this.test, this.index_).then(data => data.subscribe(
+      res => {
+        console.log("qqqqq",res.year)
+        var year = String(res.year).split("-")
+        this.start_date = {year: Number(year[0]), month: 1, day: 1}
+        this.stop_date = {year: Number(year[1]), month: 11, day: 1}
+        var sent = [res,this.test,this.index_]
+        this.inputservice.sendDetail(sent)
+      }
+    ))
+
   }
   async onChangeIndex(newvalue){
+    this.index_ = newvalue
     console.log("index",this.test)
     await this.dataService.detail(this.test, newvalue).then(data => data.subscribe(
       res => {
@@ -63,7 +73,8 @@ export class HomeComponent implements OnInit {
         var year = String(res.year).split("-")
         this.start_date = {year: Number(year[0]), month: 1, day: 1}
         this.stop_date = {year: Number(year[1]), month: 11, day: 1}
-        this.inputservice.sendDetail(res)
+        var sent = [res,this.test,this.index_]
+        this.inputservice.sendDetail(sent)
       }
     ))
 

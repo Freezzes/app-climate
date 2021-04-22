@@ -40,6 +40,10 @@ export class DifferenceComponent implements OnInit {
   dataset_name;
   public details: any;
   Clear;
+  ClearYear;
+  defaultSelected;
+  Ranges;
+  Ranges2;
 
   constructor(
     public formatter: NgbDateParserFormatter,
@@ -84,23 +88,33 @@ export class DifferenceComponent implements OnInit {
     this.sharedData.Detailservice.subscribe(data => {
       if(data){
         console.log("input Detail",data)
-        this.clear()
-        this.unit = data.unit
-        this.difinition = data.description
-        this.long_name = data.long_name
-        this.year = data.year
-        var start = data.year.split("-")[0]
-        var stop = data.year.split("-")[1]
+        this.unit = data[0].unit
+        this.difinition = data[0].description
+        this.long_name = data[0].long_name
+        this.year = data[0].year
+        var start = data[0].year.split("-")[0]
+        var stop = data[0].year.split("-")[1]
+        this.index = data[2]
+        this.dataset = data[1]
         this.Range(start,stop)
+        this.clear()
       }
     })   
+
+    // this.sharedData.datasetservice.subscribe(data => {
+    //   if(data){
+    //     this.dataset = data
+    //     this.clear()
+    //   }
+    // })
 
     this.sharedData.difservice.subscribe(data => {
       this.year = data
       if (data) {
         console.log("input dif", data)
-        this.dataset = data[0]
-        this.index = data[1]
+        // this.dataset = data[0]
+        // this.index = data[1]
+        // this.Clear = data[2]
       }
     })
 
@@ -146,7 +160,7 @@ export class DifferenceComponent implements OnInit {
       return result;
     };
 
-    this.lists = range(start_y, stop_y, 1)
+    this.lists = range(start_y, stop_y+1, 1)
   }
 
   async per_different(){
@@ -212,7 +226,8 @@ export class DifferenceComponent implements OnInit {
     this.Clear = 'show'
     this.start1 = this.chooseyear1.controls['fromyear1'].value
     this.stop1 = this.chooseyear1.controls['toyear1'].value
-
+    this.Ranges = 'Year ' + this.start1 + '-' + this.stop1 
+    console.log("ranfe",this.start1,this.stop1)
     await this.dataService.map_range1(this.dataset, this.index, this.start1, this.stop1).then(data => data.subscribe(
       (res => {
         let resp = JSON.parse(res)
@@ -235,7 +250,7 @@ export class DifferenceComponent implements OnInit {
     this.Clear = 'show'
     this.start2 = this.chooseyear2.controls['fromyear2'].value
     this.stop2 = this.chooseyear2.controls['toyear2'].value
-
+    this.Ranges2 = 'Year ' + this.start2 + '-' + this.stop2 
     await this.dataService.map_range2(this.dataset, this.index, this.start2, this.stop2).then(data => data.subscribe(
       (res => {
         let resp = JSON.parse(res)
