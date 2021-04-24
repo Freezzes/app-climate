@@ -46,7 +46,7 @@ export class HomeComponent implements OnInit {
 
   dataset_name;
   index_name;
-
+  index;
   public start_date;
   public stop_date;
 
@@ -69,36 +69,46 @@ export class HomeComponent implements OnInit {
 
   async onChangeDataset(newValue) {
     this.dataset = newValue
-    // await this.tempService.get_date(newValue).then(data => data.subscribe(
-    //   res => {
-    //     console.log("333",res)
-    //     console.log("444",String(res).split("-")[0])
-    //     var year = String(res).split("-")
-    //     this.start_date = {year: Number(year[0]), month: 1, day: 1}
-    //     this.stop_date = {year: Number(year[1]), month: 11, day: 1}
-    //   }
-    // ))
-  }
-
-  async onChangeIndex(newvalue){
-    console.log("index",this.dataset)
-    await this.tempService.detail(this.dataset, newvalue).then(data => data.subscribe(
+    if (newValue != 'tmd'){
+      (document.getElementById("station") as any).disabled = true;
+    }
+    else{
+      (document.getElementById("station") as any).disabled = false;
+    }
+    await this.tempService.detail(this.dataset, this.index).then(data => data.subscribe(
       res => {
         console.log("qqqqq",res.year)
         var year = String(res.year).split("-")
         this.start_date = {year: Number(year[0]), month: 1, day: 1}
         this.stop_date = {year: Number(year[1]), month: 11, day: 1}
-        var detail = [res, this.dataset]
+        var detail = [res, this.dataset,this.index]
         this.inputservice.sendDetail(detail)
-        // this.inputservice.sendDetail(res)
       }
     ))
-
   }
 
-  North = new FormControl('90', Validators.required);
-  South = new FormControl('-90', Validators.required);
-  West = new FormControl('-180', Validators.required);
+  async onChangeIndex(newvalue){
+    console.log("index",this.dataset)
+    this.index = newvalue
+    await this.tempService.detail(this.dataset, this.index).then(data => data.subscribe(
+      res => {
+        console.log("qqqqq",res.year)
+        var year = String(res.year).split("-")
+        this.start_date = {year: Number(year[0]), month: 1, day: 1}
+        this.stop_date = {year: Number(year[1]), month: 11, day: 1}
+        var detail = [res, this.dataset,this.index]
+        this.inputservice.sendDetail(detail)
+      }
+    ))
+  }
+
+  // North = new FormControl('90', Validators.required);
+  // South = new FormControl('-90', Validators.required);
+  // West = new FormControl('-180', Validators.required);
+  // East = new FormControl('180', Validators.required);
+  North = new FormControl('85', Validators.required);
+  South = new FormControl('-10', Validators.required);
+  West = new FormControl('20', Validators.required);
   East = new FormControl('180', Validators.required);
 
   select;
@@ -172,14 +182,6 @@ export class HomeComponent implements OnInit {
     var index = this.choosefile.controls['file'].value
     var sent = [data, index]
     this.inputservice.senddif(sent)
-    // await this.tempService.detail(data, index).then(data => data.subscribe(
-    //   res => {
-    //     var detail = [res, data]
-    //     this.inputservice.sendDetail(detail)
-    //     // this.inputservice.sendDetail(res)
-    //     console.log("dif result : ", res)
-    //   }
-    // ))
   }
 
   async get_raw_data() {
@@ -199,14 +201,6 @@ export class HomeComponent implements OnInit {
 
     var inputs = { 'dataset': this.dataset, 'index': index, 'startyear': startyear, 'stopyear': stopyear, 'startmonth': startmonth, 'stopmonth': stopmonth, 'plottrend': this.plot_trend }
     await this.inputservice.sendInput(inputs)
-
-    // await this.tempService.detail(this.dataset, index).then(data => data.subscribe(
-    //   res => {
-    //     var detail = [res, this.dataset]
-    //     this.inputservice.sendDetail(detail)
-    //   }
-    // )
-    // )
 
     await this.tempService.get_Avgcsvtrend(this.dataset, index, startyear, stopyear, startmonth, stopmonth)
       .then(data => data.subscribe(

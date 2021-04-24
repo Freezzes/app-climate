@@ -52,11 +52,14 @@ export function draw_map(target) {
     ],
     view: new ol.View({
       projection: 'EPSG:4326',
-      center: [0, 0],
-      zoom: 1.7,
+      // center: [0, 0],
+      // zoom: 1.7,
+      // minZoom: 1.7,
+      // // maxZoom:12,
+      // extent: [-180, -90, 180, 90]
+      zoom: 2.6,
       minZoom: 1.7,
-      // maxZoom:12,
-      extent: [-180, -90, 180, 90]
+      center: [100, 38]
     })
   });
 
@@ -87,6 +90,20 @@ export function hightre(map) {
 
 //-----------------------Select Country----------------------------------
 export function select_country(targetMap, mode) {
+
+  var name = ''
+  var value = ''
+  var min = ''
+  var max = ''
+  var avg = ''
+  var sum = '' 
+  $("#selectedCountryName").text(name);
+  $("#selectedCountryValue").text(value);
+  $("#selectedCountryMin").text(min);
+  $("#selectedCountryMax").text(max);
+  $("#selectedCountryAvg").text(avg);
+  $("#selectedCountrySum").text(sum);
+
   var features, baselayer;
   targetMap.getLayers().forEach(function (layers) {
     console.log("name layer", layers.get('name'))
@@ -124,38 +141,43 @@ export function select_country(targetMap, mode) {
   targetMap.addInteraction(select);
 
   select.on('select', function (e) {
-    var selectedCountry = e.selected[0];
-    var poly = e.selected[0].getGeometry()
-    var valueArr = [];
+    if (e.selected.length != 0) {
+      var selectedCountry = e.selected[0];
+      var poly = e.selected[0].getGeometry()
+      console.log("geometry", poly)
+      // console.log(poly.a())
+      console.log("select", selectedCountry)
+      var valueArr = [];
 
-    if (selectedCountry != undefined) {
-      var name = selectedCountry.get('name');
-      var value = selectedCountry.get('value')
-      $("#selectedCountryName").text(name);
-      $("#selectedCountryValue").text(value);
-    }
-    else {
-      $("#selectedCountryName").text("None");
-      $("#selectedCountryValue").text("-");
-    }
-    for (var i = 0; i < features.length; i++) {
-      if (poly.intersectsExtent(features[i].getGeometry().getExtent())) {
-        valueArr.push(features[i].getProperties().value);
-        // var obj = features[i].getProperties()
-        // valueArr.push(obj.value)
+      if (selectedCountry != undefined) {
+        var name = selectedCountry.get('name');
+        var value = selectedCountry.get('value')
+        $("#selectedCountryName").text(name);
+        $("#selectedCountryValue").text(value);
       }
-    }
-    console.log(valueArr)
-    var min = Math.round(Math.min.apply(null, valueArr) * 100) / 100;
-    var max = Math.round(Math.max.apply(null, valueArr) * 100) / 100;
-    var avg = Math.round(valueArr.reduce((a, b) => a + b, 0) / valueArr.length * 100) / 100
-    var sum = Math.round(valueArr.reduce((a, b) => a + b, 0))
+      else {
+        $("#selectedCountryName").text("None");
+        $("#selectedCountryValue").text("-");
+      }
+      for (var i = 0; i < features.length; i++) {
+        if (poly.intersectsExtent(features[i].getGeometry().getExtent())) {
+          valueArr.push(features[i].getProperties().value);
+          // var obj = features[i].getProperties()
+          // valueArr.push(obj.value)
+        }
+      }
+      console.log(valueArr)
+      var min = Math.round(Math.min.apply(null, valueArr) * 100) / 100;
+      var max = Math.round(Math.max.apply(null, valueArr) * 100) / 100;
+      var avg = Math.round(valueArr.reduce((a, b) => a + b, 0) / valueArr.length * 100) / 100
+      var sum = Math.round(valueArr.reduce((a, b) => a + b, 0))
 
-    $("#selectedCountryMin").text(min);
-    $("#selectedCountryMax").text(max);
-    $("#selectedCountryAvg").text(avg);
-    $("#selectedCountrySum").text(sum);
-  });
+      $("#selectedCountryMin").text(min);
+      $("#selectedCountryMax").text(max);
+      $("#selectedCountryAvg").text(avg);
+      $("#selectedCountrySum").text(sum);
+    }
+  })
 
   return select
 }
@@ -197,11 +219,11 @@ export function genGridData(geojson, min, max, color_map, lon_step, lat_step, ty
   var title; var tickformat;
   if (color_map == 'cool_warm') {
     if (type == 'main') {
-      title = 'tempurature (°C)'
+      title = 'temperature (°C)'
       colors = ['#bd1726', '#d42d27', '#e34933', '#f16640', '#f7844e', '#fca55d', '#fdbf71', '#fed687', '#fee99d', '#fff7b3', '#f7fcce', '#e9f6e8', '#d6eef5', '#bde2ee', '#a3d3e6', '#87bdd9', '#6ea6ce', '#588cc0', '#4471b2', '#3a54a4'].reverse()
       colorScale = d3.scaleQuantile([min, 0, max], colors)
     } else if (type == 'per') {
-      title = 'tempurature (%)'
+      title = 'temperature (%)'
       colors = ['#bd1726', '#d42d27', '#e34933', '#f16640', '#f7844e', '#fca55d', '#fdbf71', '#fed687', '#fee99d', '#fff7b3', '#f7fcce', '#e9f6e8', '#d6eef5', '#bde2ee', '#a3d3e6', '#87bdd9', '#6ea6ce', '#588cc0', '#4471b2', '#3a54a4'].reverse()
       // colors = ['#bd1726', '#f16640',  '#fdbf71', '#fff7b3', '#d6eef5', '#87bdd9', '#3a54a4'].reverse()
       colorScale = d3.scaleQuantile([min, 0, max], colors)
@@ -215,13 +237,13 @@ export function genGridData(geojson, min, max, color_map, lon_step, lat_step, ty
     colorScale = d3.scaleQuantile([0,max], colors)
     if(type == 'per'){ title = 'precipitation (%)'}
   }
-  tickformat = ".2f"
-  if(name == 'map1' || name == 'map2'){ tickformat = ".0f"}
+  // tickformat = ".2f"
+  // if(name == 'map1' || name == 'map2'){ tickformat = ".0f"}
 
   legend({
     color: colorScale,
     title: title,
-    tickFormat: tickformat,
+    tickFormat: ".0f",
     target: name
   })
 
@@ -567,6 +589,9 @@ export function merge_data_to_geojson(geojsondata, data, North, South, West, Eas
       geojsondata['features'][i]['geometry']['coordinates'][1] >= South &&
       geojsondata['features'][i]['geometry']['coordinates'][1] <= North) {
       geojsondata["features"][i]["properties"] = { "value": temp[i] }
+    }
+    else{
+      geojsondata["features"][i]["properties"] = { "value": null }
     }
   }
 

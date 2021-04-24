@@ -126,8 +126,6 @@ export class NetcdfgraphComponent implements OnInit {
   }
 
   async plotMean(Data, Avg, unit,name,country) {
-    const start = performance.now();
-    const st = Date.now()
     var chart = new CanvasJS.Chart("chartContainer", {
       animationEnabled: true,
       title: {
@@ -154,9 +152,5 @@ export class NetcdfgraphComponent implements OnInit {
       }]
     });
     chart.render();
-    const stop = performance.now();
-    const sp = Date.now()
-    console.log("plot time >>> ",stop - start ,"ms")
-    console.log("plot time Date >> ",st," >> ", sp,"...", sp - st)
   }
 }
