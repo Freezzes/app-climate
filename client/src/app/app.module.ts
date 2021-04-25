@@ -28,6 +28,8 @@ import { NetcdfgraphComponent } from './netcdfgraph/netcdfgraph.component';
 import { DifferenceComponent } from './difference/difference.component';
 import { NgxSpinnerModule } from "ngx-spinner";
 import { AlertComponent } from './alert/alert.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 PlotlyModule.plotlyjs = PlotlyJS;
 
 @NgModule({
@@ -59,7 +61,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     ChartModule,
     NgMultiSelectDropDownModule.forRoot(),
     MatRadioModule,
-    NgxSpinnerModule
+    NgxSpinnerModule,
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
 
   ],
   providers: [],

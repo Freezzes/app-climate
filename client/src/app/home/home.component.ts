@@ -43,12 +43,34 @@ export class HomeComponent implements OnInit {
   infile = '';
   model: any;
   filename = [];
-
+  public test;
   dataset_name;
   index_name;
   index;
   public start_date;
   public stop_date;
+  North = new FormControl('85', Validators.required);
+  South = new FormControl('-10', Validators.required);
+  West = new FormControl('20', Validators.required);
+  East = new FormControl('180', Validators.required);
+
+  select;
+  per;
+  selectGrid;
+  chart;
+
+  public anomaly_year
+  public anomaly_name
+  public anomalydata
+  anomaly: any;
+  public anomalyyear
+  public fileanomaly
+  plot_trend;
+  public Data;
+
+  public value;
+  public year;
+  public name;
 
   constructor(
     private router: Router,
@@ -102,26 +124,22 @@ export class HomeComponent implements OnInit {
     ))
   }
 
+  async onChange(newValue) {
+    console.log(newValue)
+    this.test = newValue
+    if (newValue != 'tmd'){
+      (document.getElementById("station") as any).disabled = true;
+    }
+    else{
+      (document.getElementById("station") as any).disabled = false;
+    }
+  }
+
   // North = new FormControl('90', Validators.required);
   // South = new FormControl('-90', Validators.required);
   // West = new FormControl('-180', Validators.required);
   // East = new FormControl('180', Validators.required);
-  North = new FormControl('85', Validators.required);
-  South = new FormControl('-10', Validators.required);
-  West = new FormControl('20', Validators.required);
-  East = new FormControl('180', Validators.required);
-
-  select;
-  per;
-  selectGrid;
-  chart;
-
-  public anomaly_year
-  public anomaly_name
-  public anomalydata
-  anomaly: any;
-  public anomalyyear
-  public fileanomaly
+  
 
   // public anomaly_year = []
   // public anomaly_name = [];
@@ -129,12 +147,6 @@ export class HomeComponent implements OnInit {
   // public anomaly = []
   // public anomalyyear = []
   // public fileanomaly = [];
-  plot_trend;
-  public Data;
-
-  public value;
-  public year;
-  public name;
 
   async ngOnInit() {
     this.tempService.get_dataset().then(data => data.subscribe(
