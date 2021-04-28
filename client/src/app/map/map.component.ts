@@ -47,25 +47,21 @@ export class MapComponent implements OnInit {
       res.subscribe(datas => {
         // console.log(datas)
         this.map = MapLib2.map_sta(datas)
+    this.map = MapLib.draw_map('map')
+    await this.sharedData.Mapstationservice.subscribe(data => {
+      console.log("map station :",data)
+      if(data){
         
-      })
+        var icon = MapLib.add_data(data)
+        MapLib.clearLayers(this.map)
+        this.map.addLayer(icon)
+        MapLib.popup(this.map)
      
-   })
-
-  //  this.map.on('dblclick', (evt) => {
-  //     // const feature = this.map.forEachFeatureAtPixel(evt.pixel, (feat, layer) => {
-  //     //   // you can add a condition on layer to restrict the listener
-  //     //   return feat;
-  //     // });
-  //     console.log("dbclick")
-  //     var names = this.map.forEachFeatureAtPixel(evt.pixel, function(feature) {
-  //       return feature.get('names');
-  //     })
-
-  //     if (names) {
-  //       this.router.navigateByUrl('/mock');
-  //     }
-  //   });
+        console.log(this.map.getLayers())
+   
+        
+      }
+    })
   }
  
 }
