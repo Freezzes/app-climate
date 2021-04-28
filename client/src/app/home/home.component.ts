@@ -51,6 +51,12 @@ export class HomeComponent implements OnInit {
   async onChange(newValue) {
     console.log(newValue)
     this.test = newValue
+    if (newValue != 'tmd'){
+      (document.getElementById("station") as any).disabled = true;
+    }
+    else{
+      (document.getElementById("station") as any).disabled = false;
+    }
     // this.inputservice.senddataset(newValue)
     await this.dataService.detail(this.test, this.index_).then(data => data.subscribe(
       res => {
