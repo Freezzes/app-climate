@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, OnChanges,DoCheck } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NgbDate, NgbCalendar, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -30,9 +30,9 @@ export class HomeComponent implements OnInit {
   dataset_name;
   index_name;
   selectedDevice;
-  test;
+  dataset_input;
+  index_;
   plot_trend: boolean = true;
-
   constructor(
     private calendar: NgbCalendar,
     public formatter: NgbDateParserFormatter,
@@ -44,42 +44,53 @@ export class HomeComponent implements OnInit {
     set: new FormControl()
   });
 
-  choosefile = new FormGroup({
+  chooseindex = new FormGroup({
     file: new FormControl(),
   });
 
   async onChange(newValue) {
     console.log(newValue)
-    this.test = newValue
+    this.dataset_input = newValue
+
+    this.chooseindex.patchValue({
+      file: null
+    })
+
     if (newValue != 'tmd'){
       (document.getElementById("station") as any).disabled = true;
     }
     else{
       (document.getElementById("station") as any).disabled = false;
     }
-    // this.inputservice.senddataset(newValue)
-    await this.dataService.detail(this.test, this.index_).then(data => data.subscribe(
+   
+    await this.dataService.detail(this.dataset_input, this.index_).then(data => data.subscribe(
       res => {
         console.log("qqqqq",res.year)
         var year = String(res.year).split("-")
         this.start_date = {year: Number(year[0]), month: 1, day: 1}
         this.stop_date = {year: Number(year[1]), month: 11, day: 1}
-        var sent = [res,this.test,this.index_]
+        var sent = [res,this.dataset_input,this.index_]
         this.inputservice.sendDetail(sent)
+      }
+    ))
+
+    this.dataService.get_index(this.dataset_input).then(data => data.subscribe(
+      res => {
+        this.index_name = res
       }
     ))
 
   }
   async onChangeIndex(newvalue){
     this.index_ = newvalue
-    console.log("index",this.test)
-    await this.dataService.detail(this.test, newvalue).then(data => data.subscribe(
+    console.log("index",newvalue)
+    await this.dataService.detail(this.dataset_input, newvalue).then(data => data.subscribe(
       res => {
         console.log("qqqqq",res.year)
         var year = String(res.year).split("-")
         this.start_date = {year: Number(year[0]), month: 1, day: 1}
         this.stop_date = {year: Number(year[1]), month: 11, day: 1}
-        var sent = [res,this.test,this.index_]
+        var sent = [res,this.dataset_input,this.index_]
         this.inputservice.sendDetail(sent)
       }
     ))
@@ -93,11 +104,15 @@ export class HomeComponent implements OnInit {
   chart;
 
   async ngOnInit(){
+  async ngOnInit() {
 
     this.dataService.get_dataset().then(data => data.subscribe(
       res => {
         this.dataset_name = res
-      }))
+      })
+    )
+
+  }
 
     
     this.dataService.get_index().then(data => data.subscribe(
@@ -114,7 +129,7 @@ export class HomeComponent implements OnInit {
     this.select = 'get_data'
     console.log("get_data")
     this.dataset = this.choosedataset.controls['set'].value
-    var index = this.choosefile.controls['file'].value
+    var index = this.chooseindex.controls['file'].value
     var startyear = String(this.fromDate.year)
     var stopyear = String(this.toDate.year)
     var startmonth = String(this.fromDate.month)
@@ -201,7 +216,7 @@ export class HomeComponent implements OnInit {
   async get_difference() {
     this.select = 'get_dif'
     var data = this.choosedataset.controls['set'].value
-    var index = this.choosefile.controls['file'].value
+    var index = this.chooseindex.controls['file'].value
     // await this.dataService.detail(data, index).then(data => data.subscribe(
     //   res => {
     //     this.inputservice.sendDetail(res)
@@ -216,7 +231,7 @@ export class HomeComponent implements OnInit {
 
   async station_thai() {
     this.select = "station"
-    var index = this.choosefile.controls['file'].value
+    var index = this.chooseindex.controls['file'].value
     var startyear = String(this.fromDate.year)
     var stopyear = String(this.toDate.year)
     var startmonth = String(this.fromDate.month)

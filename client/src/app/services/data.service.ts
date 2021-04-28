@@ -110,9 +110,9 @@ export class DataService {
 
     getCountry(dataset:string,index:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string,country:any): Observable<any>{
         console.log("country",country)
-    async get_index(): Promise<Observable<any>> {
+    async get_index(dataset: string): Promise<Observable<any>> {
         // console.log("service",this.http.get('http://127.0.0.1:5500/locat/station'))
-        return this.http.get('http://127.0.0.1:5000/api/index')
+        return this.http.get(this.apiURL +`/api/index?dataset=${dataset}`)
     }
         const httpOptions = {
           headers: new HttpHeaders({

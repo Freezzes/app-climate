@@ -45,11 +45,16 @@ def get_dataset():
 
 @app.route("/api/index", methods=["GET"])
 def get_index():
-    ds = pd.read_csv(r'C:/Mew/Project/index_name.csv')
-    res = []
-    for i in range(len(ds['id'])):
-        res.append({'id': ds['id'][i], 'name': ds['name'][i]})
-    return jsonify(res)
+    dataset = str(request.args.get("dataset"))
+    ds = pd.read_csv(r'C:/Mew/Project/index_detail.csv')
+    a = ds.loc[ds['dataset'] == dataset]
+    select = a[['index', 'name']].to_json(orient='records',force_ascii=0)
+    # select
+    select = json.loads(select)
+    # res = []
+    # for i in range(len(ds['id'])):
+    #     res.append({'id': ds['id'][i], 'name': ds['name'][i]})
+    return jsonify(select)
 # ----------------------------------------dif-----------------------------------------------
 
 

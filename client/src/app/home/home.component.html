@@ -62,11 +62,11 @@
                                 <option *ngFor="let f of dataset_name" [value]="f.id">{{f.name}}</option>
                             </select> 
                         </form>      
-                        <form [formGroup]="choosefile">
+                        <form [formGroup]="chooseindex">
                             <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">Index :</label>           
                             <select formControlName="file" class="form-control" (change)="onChangeIndex($event.target.value)" style="margin-left: 1.5ex;">
                                 <option [ngValue]="null" disabled>None</option>
-                                <option *ngFor="let f of index_name" [value]="f.id">{{f.name}}</option>
+                                <option *ngFor="let f of index_name" [value]="f.index">{{f.name}}</option>
                             </select>
                         </form>
                         <div class="form-group hidden" >
@@ -146,11 +146,11 @@
         <div class="flex-column" style="margin-bottom: 5%;margin-left: 10%;">
             <div *ngIf="select == 'get_data'">
                 <!-- <div style="border-bottom: 2px;"> -->
-                    <app-netcdf [index]="choosefile.controls['file'].value"  ></app-netcdf>
+                    <app-netcdf [index]="chooseindex.controls['file'].value" ></app-netcdf>
                 <!-- </div> -->
                 <div style="margin-top: 10px;">
                 <app-graph [data]="choosedataset.controls['set'].value"
-                           [file]="choosefile.controls['file'].value" 
+                           [file]="chooseindex.controls['file'].value" 
                            [startyear]="this.fromDate.year"
                            [stopyear]="this.toDate.year"
                            [startmonth]="this.fromDate.month"
@@ -166,7 +166,7 @@
         </div>
        
         <div *ngIf="select == 'station'">
-                <app-map  [file]="choosefile.controls['file'].value"
+                <app-map  [file]="chooseindex.controls['file'].value"
                         [startyear]="this.fromDate.year"
                         [stopyear]="this.toDate.year"
                         [startmonth]="this.fromDate.month"
