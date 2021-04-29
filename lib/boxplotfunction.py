@@ -111,19 +111,7 @@ def byear(df,station,start_date,end_date):
     
     name = Q1.index
     for i in name :
-        xname.append(str(i))
-    
-    outbox = []
-    for i in listbox:
-        for j in outliers:
-            for r in j:
-                if str(i['station']) == str(r['station']):
-                    for v in r['value']:
-                        outbox.append(v['value'])
-                    
-                    i['outliers']= outbox
-                    outbox = []
-    
+        xname.append(str(i))    
 
     return dataout,xname,outliers
 
@@ -231,17 +219,7 @@ def boxplotyear(df,station,start_date,end_date):
     
     name = Q1.index
     for i in name :
-        xname.append(str(i))
-    outbox = []
-    for i in listbox:
-        for j in outliers:
-            for r in j:
-                if str(i['station']) == str(r['station']):
-                    for v in r['value']:
-                        outbox.append(v['value'])
-                    i['outliers']= outbox
-                    outbox = []
-    
+        xname.append(str(i))  
 
     return dataout,xname,outliers
 
@@ -305,6 +283,8 @@ def boxplotseason(df,station,start_date,end_date):
     Lower_Bound = Q1 - 1.5*IQR
     minvalue = data.groupby(pd.Grouper(key='season')).min() 
     maxvalue = data.groupby(pd.Grouper(key='season')).max() 
+    minvalue = minvalue.reindex(['DJF','JJA','MAM','SON'])
+    maxvalue = maxvalue.reindex(['DJF','JJA','MAM','SON'])
     lower = Lower_Bound.iloc[:,:-4]
     lowest = minvalue.iloc[:,:-4]
     Upper = Upper_Bound.iloc[:,:-4]
@@ -348,15 +328,6 @@ def boxplotseason(df,station,start_date,end_date):
     name = Q1.index
     for i in name :
         xname.append(str(i))
-    outbox = []
-    for i in listbox:
-        for j in outliers:
-            for r in j:
-                if str(i['station']) == str(r['station']):
-                    for v in r['value']:
-                        outbox.append(v['value'])
-                    i['outliers']= outbox
-                    outbox = []
 
     return dataout,xname,outliers
 
@@ -461,16 +432,6 @@ def boxplotera(df,station,start_date,end_date):
     
     name = Q1.index
     for i in name :
-        xname.append(str(i))
-    outbox = []
-    for i in listbox:
-        for j in outliers:
-            for r in j:
-                if str(i['station']) == str(r['station']):
-                    for v in r['value']:
-                        outbox.append(v['value'])
-                    i['outliers']= outbox
-                    outbox = []
-    
+        xname.append(str(i))    
 
     return dataout,xname,outliers
