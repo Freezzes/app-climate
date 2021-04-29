@@ -4,8 +4,8 @@ import { HttpClient, HttpClientModule } from '@angular/common/http'
 import * as L from 'leaflet';
 import { latLng, MapOptions, tileLayer, Marker, icon } from 'leaflet';
 import 'ol/ol.css';
-// import * as MapLib from './lib/mapthai.js';
-import * as MapLib2 from './lib/map_station.js';
+import * as MapLib from './lib/map_station.js';
+// import * as MapLib2 from './lib/map_station.js';
 import { Circle, Fill, Style } from 'ol/style';
 import { Feature, Map, Overlay, View } from 'ol/index';
 import { OSM, Vector as VectorSource } from 'ol/source';
@@ -47,6 +47,7 @@ export class MapComponent implements OnInit {
     console.log("on")
     console.log("file : ", this.file)
     console.log("DATE : ", this.start_date, this.stop_date)
+    this.map = MapLib.draw_map('map') // ละเพิ่มนี่
     // await this.tempService.getdata_sta(this.file, String(this.start_date), String(this.stop_date)).then(res => {
     //   res.subscribe(datas => {
 
@@ -57,12 +58,15 @@ export class MapComponent implements OnInit {
     await this.sharedData.Mapstationservice.subscribe(data => {
       console.log("map station :",data)
       if(data){
-        this.map = MapLib2.map_sta(data)
+        // this.map = MapLib.map_sta(data)   ของไอซ์ตอนแรก
+
+        var icon = MapLib.add_data(data)  //อันนี้ของมิว
+        MapLib.clearLayers(this.map)
+        this.map.addLayer(icon)
+        MapLib.popup(this.map)
+        console.log("pop up",icon)
       }
     })
-
-
-    // this.checkplot = ''
   }
 
 }

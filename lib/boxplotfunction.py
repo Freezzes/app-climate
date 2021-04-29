@@ -212,7 +212,7 @@ def boxplotyear(df,station,start_date,end_date):
 
     for i in station:
         st = str(i)
-        listall = lower[st], Q1[st], Q2[st], Q3[st], Upper[st]
+        listall = round(lower[st],2), round(Q1[st],2), round(Q2[st],2), round(Q3[st],2), round(Upper[st],2)
         for i in range(len(listall[0])):
             temp = []
             for j in range(len(listall)):
@@ -328,7 +328,7 @@ def boxplotseason(df,station,start_date,end_date):
 
     for i in station:
         st = str(i)
-        listall = lower[st], Q1[st], Q2[st], Q3[st], Upper[st]
+        listall = round(lower[st],2), round(Q1[st],2), round(Q2[st],2), round(Q3[st],2), round(Upper[st],2)
         for i in range(len(listall[0])):
             temp = []
             for j in range(len(listall)):
@@ -442,7 +442,7 @@ def boxplotera(df,station,start_date,end_date):
 
     for i in station:
         st = str(i)
-        listall = lower[st], Q1[st], Q2[st], Q3[st], Upper[st]
+        listall = round(lower[st],2), round(Q1[st],2), round(Q2[st],2), round(Q3[st],2), round(Upper[st],2)
         for i in range(len(listall[0])):
             temp = []
             for j in range(len(listall)):

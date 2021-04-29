@@ -39,9 +39,9 @@ export class TempService {
             })
         return result;
     }
-    async getmissing(sta:string,startyear:string,stopyear:string,dff:string):Promise<Observable<any>>{
+    async getmissing(dff:string):Promise<Observable<any>>{
         return this.http.get('http://127.0.0.1:5500/api'+
-                        `/selectmissing?sta=${sta}&startyear=${startyear}&stopyear=${stopyear}&dff=${dff}`
+                        `/selectmissing?&dff=${dff}`
         )}
 
     async getanomaly(station:string,dff:string){

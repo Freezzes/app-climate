@@ -62,12 +62,11 @@ def getmiss(startyear,stopyear,station,dff):
 @app.route('/api/selectmissing', methods=['GET'])
 def selectmissing():
     dff = str(request.args.get("dff"))
-    startyear = int(request.args.get("startyear"))
-    stopyear = int(request.args.get("stopyear"))
-    sta = str(request.args.get("sta"))
-    res = sta.strip('][').split(',') 
     readfile = pd.read_csv(f"C:/Users/ice/Documents/climate/data/missing-{dff}.csv")
-    v = getmiss(startyear,stopyear,res,readfile)
+    station = list(set(readfile['station']))
+    startyear = readfile['y'][0]
+    stopyear = readfile['y'][readfile.index[-1]]
+    v = getmiss(startyear,stopyear,station,readfile)
     return jsonify(v)
 
 #---------------------- Map Thailand station---------------------------------------
@@ -225,6 +224,7 @@ def country_anomaly():
         startyear = 1979 #int(request.args.get("startyear"))
         stopyear = 2014 #int(request.args.get("stopyear"))
     df = pd.read_csv('C:/Users/ice/Documents/climate/data/index_detail.csv')
+    
     query = df.loc[(df['dataset']==dataset)&(df['index']==index)]
     select = list(query[['long_name']].values[0])
 
@@ -541,8 +541,6 @@ def raw_dif():
         color = 'dry_wet'
     else:
         color = 'cool_warm'
-
-
     return jsonify(y.tolist(),x.tolist(),raw1.tolist(),np.float64(Min),np.float64(Max),lon_step,lat_step,color,)
 
 #------------------------ map trend ------------------------------------------
@@ -570,7 +568,6 @@ def get_Avgmaptrend(dataset, index, startyear, stopyear, startmonth, stopmonth):
             val = np.mean(val, axis = 0)#.flatten()
         V.append(val.flatten())
 
-    t0 = datetime.now()
     trend = []
     for j in range(len(V[0])):
         lis = []
@@ -585,7 +582,6 @@ def get_Avgmaptrend(dataset, index, startyear, stopyear, startmonth, stopmonth):
             trend.append(0)
         else :
             trend.append(-1)
-    t1 = datetime.now()
     x = np.repeat(ds['lat'], ds['lon'].shape[0])
     y = np.tile(ds['lon'], ds['lat'].shape[0])
     lat_step = ds['lat'][-1] - ds['lat'][-2]
@@ -595,9 +591,7 @@ def get_Avgmaptrend(dataset, index, startyear, stopyear, startmonth, stopmonth):
         color = 'dry_wet'
     else:
         color = 'cool_warm'
-    # l = trend.tolist()
-    # print(type(l))
-    print("time >>>>>>>> ",t1 - t0)
+
     return y.tolist(),x.tolist(),trend,-1,1,lon_step,lat_step,color
 
 @app.route('/nc_avgtrend', methods=['GET'])
@@ -749,7 +743,6 @@ def country_avg():
         unit = "°C"
 
     return jsonify(avg_year, avg, unit)
-
 #----------------------------------------------------------------------
 if __name__ == '__main__':
     app.run(debug=True, port= 5500)

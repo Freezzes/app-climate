@@ -90,6 +90,12 @@ export class InputService {
     this.mapstation.next(value);
   }
 
+  private missedvalue = new BehaviorSubject<any>(undefined);
+  missedvalueservice = this.missedvalue.asObservable();
+  async sendMissedvalue(value:any){
+    this.missedvalue.next(value);
+  }
+
 
   constructor() { }
 }

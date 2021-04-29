@@ -72,6 +72,8 @@ export class HomeComponent implements OnInit {
   public year;
   public name;
 
+  public missdata = []
+  public percentplot = []
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -312,10 +314,6 @@ export class HomeComponent implements OnInit {
 
   async station_thai() {
     this.select = "station"
-    // console.log("start",this.fromDate.year)
-    // console.log("end",this.toDate.year)
-    // console.log("set",this.choosedataset.controls['set'].value)
-    // console.log("sent",this.choosefile.controls['file'].value)
     let from_date = new Date(this.fromDate.year, this.fromDate.month, this.fromDate.day)
     let end_date = new Date(this.toDate.year, this.toDate.month, this.toDate.day)
     let startyear = String(this.fromDate.year)
@@ -341,15 +339,43 @@ export class HomeComponent implements OnInit {
       stopmonth = '0' + stopmonth
     }
     this.stop_date = String(stopyear + '-' + stopmonth + '-' + stopday)
-    // console.log("f date : ",this.fromDate.year,this.fromDate.month,startday)
-    // console.log("begin : ", from_date,end_date)
-    // console.log("sent date : ", this.start_date,this.stop_date)
 
     await this.tempService.getdata_sta(index,String(this.start_date),String(this.stop_date)).then(res => {
       res.subscribe(datas => {
         console.log("send sta : ",datas)
         this.inputservice.sendstation(datas)
         // this.map = MapLib2.map_sta(datas)
+      })
+    })
+
+    await this.tempService.getmissing(index).then(res =>{
+      res.subscribe(datas => {
+        this.missdata = [];
+        this.missdata.push(datas)
+        console.log("missdata home: ",this.missdata)
+        this.missdata.map(u => { 
+          let val = []
+          const a = {}
+          let count = 0
+          u.map(v =>{
+            for (let n in v.value){   
+              if (String(v.value[n]) == String("-") ){
+                 v.value = null
+              }else{
+                 v.value = v.value
+           }
+        }
+        val.push(v.x,v.y,v.value)
+        a[count] = val
+        count += 1
+        val = []
+          })
+          for (let i in a){
+            this.percentplot.push(a[i])
+         }
+        })
+        console.log("percent home plot >>>",this.percentplot)
+        this.inputservice.sendMissedvalue(this.percentplot)
       })
     })
   }
