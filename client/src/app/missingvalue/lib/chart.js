@@ -35,10 +35,10 @@ export function missing_chart(percentplot){
               style: {
                   fontSize:'7px'
                }
-           },
-           title: {
-            text: 'Station ID.'
-        }
+            },
+            title: {
+               text: 'Station ID.'
+            }
          },
          yAxis : {
            categories: [1951,1952,1953,1954,1955,1956,1957,1958,1959,1960,1961,1962,1963,1964,1965,1966,1967,1968,1969,1970,1971,1972,1973,1974,
@@ -46,8 +46,8 @@ export function missing_chart(percentplot){
             2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015],
             title: {
                text: 'Year'
-           }
-         },
+            }
+         },   
          colorAxis : {
            min: 0,
            max:100,
@@ -62,13 +62,12 @@ export function missing_chart(percentplot){
            y: 25,
            symbolHeight: 280
         },
-        tooltip : {
-           formatter: function () {
-              return '</b> missing <br><b>' +
-                 this.point.value +'</b> % <br><b>' 
-   
-           }
-        },
+        tooltip: {
+         formatter: function () { //ลอง 
+           return 'Station <b>'  + this.series.xAxis.categories[this.point.x] +  '</b> <br> Missing <b>' +
+             this.point.value + '% </b><br> in year<b>' + this.point.y + '</b>';
+         }
+       },
         series : [{
            name: 'missing',
            borderWidth: 1,
