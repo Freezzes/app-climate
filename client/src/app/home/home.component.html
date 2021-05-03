@@ -60,7 +60,7 @@
             </div>
             <div>
                 <form [formGroup]="choosefile">
-                    <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">Index :</label>         
+                    <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">Indices :</label>         
                     <select formControlName="file" style="max-width:100%;" class="form-control" (change)="onChangeIndex($event.target.value)">
                         <option [ngValue]="null" disabled>None</option>
                         <option *ngFor="let f of index_name" [value]="f.id">{{f.name}}</option>
@@ -83,7 +83,7 @@
                 </div>
             </div>                               
             
-            <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-seri;" >start : </label>
+            <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-seri;" >from : </label>
             <div class="input-group">
                 <input #dpFromDate class="form-control" placeholder="yyyy-mm-dd" name="dpFromDate"
                     [value]="formatter.format(fromDate)"
@@ -94,7 +94,7 @@
                 </div>
             </div>
             
-            <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">stop :</label>
+            <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">to :</label>
             <div class="input-group">
                 
                 <input #dpToDate class="form-control" placeholder="yyyy-mm-dd" name="dpToDate"
