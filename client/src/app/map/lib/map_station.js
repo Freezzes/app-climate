@@ -2,6 +2,9 @@ import 'ol/ol.css';
 import * as ol from 'openlayers';
 import * as d3 from 'C:/Users/ice/Documents/climate/data/d3/d3';;
 import { Router, ActivatedRoute } from '@angular/router';
+import Overlay from 'ol/Overlay';
+import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
+import OSM from 'ol/source/OSM';
 
 export var station_id = '';
 export function draw_map(target) {
@@ -34,9 +37,11 @@ export function draw_map(target) {
         ],
         view: new ol.View({
         projection: 'EPSG:4326',
-        center: [100.523186, 13.736717],
-        zoom: 5.5,
-        minZoom: 5.5,
+        center: [102.523186, 12.736717],
+        position: ol.proj.fromLonLat([100, 10]),
+        positioning: 'center-center',
+        zoom: 6.0,
+        minZoom: 6.0,
         maxZoom: 12,
         })
 
@@ -132,7 +137,7 @@ export function popup(map){
 
     var overlay = new ol.Overlay({
         element: container,
-        autoPan: true,
+        autoPan: false,
         // autoPanAnimation: {
         //     duration: 0
         // }

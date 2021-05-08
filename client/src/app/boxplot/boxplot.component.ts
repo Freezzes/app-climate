@@ -174,7 +174,6 @@ export class BoxplotComponent implements OnInit {
               if(String(v[i]) == String('-')){
                 v[i] = null
               }
-            // console.log("i in v[i] : ",v[i])
           }
           this.boxval.push(v)
           this.checkbox = 'check';          
@@ -199,9 +198,7 @@ export class BoxplotComponent implements OnInit {
                   }          
                 }
               this.outval.push(v[i][j][k])
-              }
-  
-              
+              } 
             }
          }
          if(fil == 'pr'){

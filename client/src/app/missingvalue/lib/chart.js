@@ -48,22 +48,66 @@ export function missing_chart(percentplot){
                text: 'Year'
             }
          },   
-         colorAxis : {
-           min: 0,
-           max:100,
-           minColor: '#0661CC',
-           maxColor: '#FFFFFF'
-        },
+      //    colorAxis : {
+      //      min: 0,
+      //      max:100,
+      //      minColor: '#0661CC',
+      //      maxColor: '#FFFFFF',
+      //   },
+      colorAxis: {
+         min: 0,
+         max:100,
+         minColor: '#0661CC',
+         maxColor: '#FFFFFF',
+         dataClasses: [{
+            from: null,
+            to: null,
+            name: "Don't Collect data",
+            color: "#000000"
+         },{ from: 0,   to: 10
+         },{ from: 10,  to: 20
+         },{ from: 20,  to: 30
+         },{ from: 30,  to: 40
+         },{ from: 40,  to: 50
+         },{ from: 50,  to: 60
+         },{ from: 60,  to: 70
+         },{ from: 70,  to: 80
+         },{ from: 80,  to: 90
+         },{ from: 90,  to: 100
+         }
+      ],
+     },
         legend : {
-           align: 'right',
-           layout: 'vertical',
-           margin: 0,
-           verticalAlign: 'top',
-           y: 25,
-           symbolHeight: 280
+            title: {
+                  text: 'Percent Missing Value',
+                  style: {
+                     fontSize:'20px'
+                  }
+            },
+            // backgroundColor: '#FCFFC5',
+            padding: 15,
+            borderColor: '#0661CC',
+            borderRadius: 5,
+            borderWidth: 1,
+            verticalAlign: 'bottom',
+            align: 'right',
+            layout: 'vertical',
+            margin: 1,
+            valueDecimals: 0,
+            verticalAlign: 'top',
+            y: 25,
+            symbolRadius: 0,
+            symbolHeight: 14,
+            labelFormatter: function () {
+               if(this.name != "Don't Collect data"){
+                  return this.name + ' %';
+              }else{
+                  return this.name
+              }               
+           }
         },
         tooltip: {
-         formatter: function () { //ลอง 
+         formatter: function () { 
            return 'Station <b>'  + this.series.xAxis.categories[this.point.x] +  '</b> <br> Missing <b>' +
              this.point.value + '% </b><br> in year<b>' + this.point.y + '</b>';
          }

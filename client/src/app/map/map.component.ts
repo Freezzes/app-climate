@@ -43,24 +43,15 @@ export class MapComponent implements OnInit {
   capitals: string = '../../assets/station_input.geojson';
 
   async ngOnInit() {
-    // this.checkplot = 'check'
     console.log("on")
     console.log("file : ", this.file)
     console.log("DATE : ", this.start_date, this.stop_date)
-    this.map = MapLib.draw_map('map') // ละเพิ่มนี่
-    // await this.tempService.getdata_sta(this.file, String(this.start_date), String(this.stop_date)).then(res => {
-    //   res.subscribe(datas => {
-
-    //     this.map = MapLib2.map_sta(datas)
-    //   })
-    // })
+    this.map = MapLib.draw_map('map')
 
     await this.sharedData.Mapstationservice.subscribe(data => {
       console.log("map station :",data)
       if(data){
-        // this.map = MapLib.map_sta(data)   ของไอซ์ตอนแรก
-
-        var icon = MapLib.add_data(data)  //อันนี้ของมิว
+        var icon = MapLib.add_data(data)
         MapLib.clearLayers(this.map)
         this.map.addLayer(icon)
         MapLib.popup(this.map)

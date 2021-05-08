@@ -724,16 +724,15 @@ def country_avg():
     startmonth = int(request.args.get("startmonth"))
     stopmonth = int(request.args.get("stopmonth"))
     country = request.headers.get("country")
-    # country = "France"
-    # print("country :",country)
+    # country = 'Thailand'
     f = read_folder_h(dataset, index, startyear, stopyear)
     data_date = select_data_fromdate(f,startyear,stopyear,startmonth,stopmonth)
     data = mask_inside_country_npz(dataset,country,data_date[1],data_date[2],data_date[0])
     # data = mask_inside_country(country,data_date[1],data_date[2],data_date[0])
     # print("mask data",len(data),data[0].shape)
+    print("data avg", data_date) 
     avg_year=[]
     for i in data:
-        # a = np.round(np.nanmean(i.flatten()),4),4
         avg_year.append(np.round(np.nanmean(i.flatten()),4))
   
     avg = np.round(np.mean(avg_year), 4)
