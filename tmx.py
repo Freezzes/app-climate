@@ -15,7 +15,7 @@ import pymannkendall as mk
 from datetime import datetime
 import os
 
-from lib.function import range_boxplot
+from lib.function import *
 from lib.boxplotfunction import filter_by_station2, filter_ERA_by_station, filterseason_by_station, filteryear_by_station,boxplotera, boxplotseason,boxplotyear,byear
 # from lib.Calculate import Calculate_service
 # from lib.Percent_different import Percent_service
@@ -285,7 +285,7 @@ def map_range1():
     range1 = res.flatten()
     val1 = np.where(np.isnan(range1), None, range1)
 
-    Min , Max = np.float64(range_boxplot(range1,index))
+    Min , Max = np.float64(range_boxplot(range1))
 
     x = np.repeat(ds['lat'], ds['lon'].shape[0])
     y = np.tile(ds['lon'], ds['lat'].shape[0])
@@ -323,7 +323,7 @@ def map_range1month():
     range1 = res.flatten()
     val1 = np.where(np.isnan(range1), None, range1)
 
-    Min , Max = np.float64(range_boxplot(range1,index))
+    Min , Max = np.float64(range_boxplot(range1))
 
     x = np.repeat(ds['lat'], ds['lon'].shape[0])
     y = np.tile(ds['lon'], ds['lat'].shape[0])
@@ -354,7 +354,7 @@ def map_range2():
     range1 = res.flatten()
     val1 = np.where(np.isnan(range1), None, range1)
 
-    Min , Max = np.float64(range_boxplot(range1,index))
+    Min , Max = np.float64(range_boxplot(range1))
 
     x = np.repeat(ds['lat'], ds['lon'].shape[0])
     y = np.tile(ds['lon'], ds['lat'].shape[0])
@@ -391,7 +391,7 @@ def map_range2month():
     range1 = res.flatten()
     val1 = np.where(np.isnan(range1), None, range1)
 
-    Min , Max = np.float64(range_boxplot(range1,index))
+    Min , Max = np.float64(range_boxplot(range1))
 
     x = np.repeat(ds['lat'], ds['lon'].shape[0])
     y = np.tile(ds['lon'], ds['lat'].shape[0])
@@ -404,49 +404,6 @@ def map_range2month():
 
     return jsonify(y.tolist(),x.tolist(),val1.tolist(),Min,Max,lon_step,lat_step,color)
 
-#--------------- high resolution ------------------------
-
-@app.route('/nc_avg_hire', methods=['GET'])
-def get_Avgmap_h():
-    ncfile = str(request.args.get("ncfile"))
-    df_f = str(request.args.get("df_f"))
-    startyear = int(request.args.get("startyear"))
-    stopyear = int(request.args.get("stopyear"))
-    startmonth = int(request.args.get("startmonth"))
-    stopmonth = int(request.args.get("stopmonth"))
-
-    f = read_folder_h(ncfile, df_f, startyear, stopyear)
-    V = []
-    for i in range(len(f)):
-        ds = np.load(f[i])
-        if f[i][:-4].split("-")[1] == str(startyear):
-            val = ds['value'][startmonth-1:12]
-            val = np.mean(val, axis = 0)#.flatten()
-        elif f[i][:-4].split("-")[1] == str(stopyear):
-            val = ds['value'][:stopmonth]
-            val = np.mean(val, axis = 0)
-        else:
-            val = ds['value'][0:12]
-            val = np.mean(val, axis = 0)#.flatten()
-
-        V.append(val)
-        
-    res = np.nanmean(V[:], axis = 0).flatten()
-    resp = np.where(np.isnan(res), None, res)
-    max_ = np.round(np.nanmax(res), 4)
-
-    Min , Max = range_boxplot(res,df_f)
-
-    x = np.repeat(ds['lat'], ds['lon'].shape[0])
-    y = np.tile(ds['lon'], ds['lat'].shape[0])
-    lat_step = ds['lat'][-1] - ds['lat'][-2]
-    lon_step = ds['lon'][-1] - ds['lon'][-2] 
-    if df_f == 'pr':
-        color = 'dry_wet'
-    else:
-        color = 'cool_warm'
-
-    return jsonify(y.tolist(),x.tolist(),resp.tolist(),np.float64(Min),np.float64(Max),np.float64(lon_step),np.float64(lat_step),color)
 
 #--------------------------------- Low resolution---------------------------------------------------
 # -----------------------------------------------per-----------------------------------------------
@@ -484,7 +441,7 @@ def per_dif():
     per1 = np.where(np.isnan(per), None, per)
     
 
-    Min , Max = range_boxplot(per,index)
+    Min , Max = range_boxplot(per)
 
     x = np.repeat(ds['lat'], ds['lon'].shape[0])
     y = np.tile(ds['lon'], ds['lat'].shape[0])
@@ -531,7 +488,7 @@ def raw_dif():
     raw = np.subtract(res1,res).flatten()
     # per = ((dif/res)*100).flatten()
     raw1 = np.where(np.isnan(raw), None, raw)
-    Min , Max = range_boxplot(raw,index)
+    Min , Max = range_boxplot(raw)
 
     x = np.repeat(ds['lat'], ds['lon'].shape[0])
     y = np.tile(ds['lon'], ds['lat'].shape[0])
@@ -553,7 +510,7 @@ def apply_test(row):
         return 0
     return -1
 def get_Avgmaptrend(dataset, index, startyear, stopyear, startmonth, stopmonth):
-    f = read_folder(dataset, index, startyear, stopyear)
+    f = read_folder(dataset, index, startyear, stopyear,'l')
     V = []
     for i in range(len(f)):
         ds = np.load(f[i])
@@ -614,38 +571,42 @@ def get_Avgmap():
     stopyear = int(request.args.get("stopyear"))
     startmonth = int(request.args.get("startmonth"))
     stopmonth = int(request.args.get("stopmonth"))
-    # start = time.time()
-    f = read_folder(dataset, index, startyear, stopyear)
-    V = []
-    for i in range(len(f)):
-        ds = np.load(f[i])
-        if f[i][:-4].split("-")[1] == str(startyear): #เช็คชื่อไฟล์ว่าปีตรงกับพี่เริ่ม 
-            val = ds['value'][startmonth-1:12] #เอาค่าตั้งแต่ startmonth ถึง เดือน12
-            val = np.mean(val, axis = 0) #เฉลี่ยทั้งหมด shape (lat,lon)
-        elif f[i][:-4].split("-")[1] == str(stopyear):
-            val = ds['value'][:stopmonth]
-            val = np.mean(val, axis = 0)
-        else:
-            val = ds['value'][0:12]
-            val = np.mean(val, axis = 0)#.flatten()
+    f_l = read_folder(dataset, index, startyear, stopyear,'l')
+    f_h = read_folder(dataset, index, startyear, stopyear,'h')
+    get_data_l = select_data_fromdate(f_l, startyear, stopyear, startmonth, stopmonth)    
+    get_data_h = select_data_fromdate(f_h, startyear, stopyear, startmonth, stopmonth)    
 
-        V.append(val)
-    res = np.nanmean(V[:], axis = 0).flatten() #เฉลี่ยแต่ละจุดของทุกปี shape (จำนวนจุด)    
-    resp = np.where(np.isnan(res), None, res)
-    max_ = np.round(np.nanmax(res), 4)
+    data_l = data_to_map(get_data_l)
+    data_h = data_to_map(get_data_h)
+    res = {'low' : data_l, 'high' : data_h}
+  
+    end = time.time()
+    return jsonify(res)
 
-    Min , Max = range_boxplot(res,index)
-    
-    x = np.repeat(ds['lat'], ds['lon'].shape[0])
-    y = np.tile(ds['lon'], ds['lat'].shape[0])
+@app.route('/map_rcp', methods=['GET'])
+def get_Avgmap_rcp():
+    dataset = str(request.args.get("dataset"))
+    type_ = str(request.args.get("type_"))
+    rcp = str(request.args.get('rcp'))
+    index = str(request.args.get("index"))
+    startyear = int(request.args.get("startyear"))
+    stopyear = int(request.args.get("stopyear"))
+    startmonth = int(request.args.get("startmonth"))
+    stopmonth = int(request.args.get("stopmonth"))
+    f_l = read_folder_rcp(dataset, index, type_,rcp,startyear, stopyear,'l')
+    f_h = read_folder_rcp(dataset, index, type_,rcp,startyear, stopyear,'h')
+    if type_ == 'y':
+        get_data_l = select_data_fromdate_year(f_l)
+        get_data_h = select_data_fromdate_year(f_h)
+    elif type_ == 'm':
+        get_data_l = select_data_fromdate(f_l, startyear, stopyear, startmonth, stopmonth)
+        get_data_h = select_data_fromdate(f_h, startyear, stopyear, startmonth, stopmonth)
 
-    lat_step = ds['lat'][-1] - ds['lat'][-2]
-    lon_step = ds['lon'][-1] - ds['lon'][-2]
-    if index == 'pr':
-        color = 'dry_wet'
-    else:
-        color = 'cool_warm'
-    return jsonify(y.tolist(),x.tolist(),resp.tolist(),np.float64(Min),np.float64(Max),lon_step,lat_step,color)
+    data_l = data_to_map(get_data_l)
+    data_h = data_to_map(get_data_h)
+
+    res = {'low' : data_l, 'high' : data_h}
+    return jsonify(res)
 
 # --------------------avg global chart-----------------------
 @app.route("/api/global_avg", methods=['GET'])
@@ -684,36 +645,33 @@ def avg_global_year():
     print("time chart", end-start)
     return jsonify(avg_year,np.round(np.float64(avg),4),unit)
 
-#----------------------- Get detials ----------------------------------
-@app.route("/api/dataset", methods=["GET"])
-def get_dataset():
-    ds = pd.read_csv("C:/Users/ice/Documents/climate/data/dataset_name.csv")
-    res = []
-    for i in range(len(ds['id'])):
-        res.append({'id': ds['id'][i] , 'name': ds['name'][i] })
-
-    return jsonify(res)
-
-@app.route("/api/index", methods=["GET"])
-def get_index():
-    ds = pd.read_csv('C:/Users/ice/Documents/climate/data/index_name.csv')
-    res = []
-    for i in range(len(ds['id'])):
-        res.append({'id': ds['id'][i], 'name': ds['name'][i]})
-    return jsonify(res)
-
-@app.route("/api/detail", methods=['GET'])
-def detail():
+@app.route("/api/global_avg_rcp", methods=['GET'])
+def avg_global_year_rcp():
     dataset = str(request.args.get("dataset"))
     index = str(request.args.get("index"))
-    df = pd.read_csv('C:/Users/ice/Documents/climate/data/index_detail.csv')
-    # query = df.loc[(df['dataset']==dataset)&(df['index']==index)]
-    # select = query['year'][0] #.to_json(orient='records')
-    # print("yearrr",select)
-    query = df.loc[(df['dataset']==dataset)&(df['index']==index)]
-    select = query[['long_name','description','unit','year','color_map']].to_json(orient='records')
-    select = json.loads(select)
-    return select[0]
+    type_ = str(request.args.get("type_"))
+    rcp = str(request.args.get('rcp'))
+    startyear = int(request.args.get("startyear"))
+    startmonth = int(request.args.get("startmonth"))
+    stopyear = int(request.args.get("stopyear"))
+    stopmonth = int(request.args.get("stopmonth"))
+    f = read_folder_rcp(dataset, index, type_,rcp,startyear, stopyear,'h')
+    if type_ == 'y':
+        get_data = select_data_fromdate_year(f)
+    elif type_ == 'm':
+        get_data = select_data_fromdate(f, startyear, stopyear, startmonth, stopmonth)
+    avg_year = []
+    for i in get_data[0]:
+        avg_year.append(np.round(np.float64(np.nanmean(i.flatten())), 4))
+
+    avg = np.round(np.mean(avg_year), 4)
+    print("avg",avg)
+    if index == 'pr':
+        unit = "mm"
+    else:
+        unit = "°C"
+
+    return jsonify(avg_year,np.round(np.float64(avg),4),unit)
 
 @app.route("/api/country_avg",methods=['GET'])
 def country_avg():
@@ -742,6 +700,106 @@ def country_avg():
         unit = "°C"
 
     return jsonify(avg_year, avg, unit)
+
+@app.route("/api/country_avg_rcp", methods=['GET'])
+def country_avg_rcp():
+    dataset = str(request.args.get("dataset"))
+    index = str(request.args.get("index"))
+    type_ = str(request.args.get("type_"))
+    rcp = str(request.args.get('rcp'))
+    startyear = int(request.args.get("startyear"))
+    stopyear = int(request.args.get("stopyear"))
+    startmonth = int(request.args.get("startmonth"))
+    stopmonth = int(request.args.get("stopmonth"))
+    country = request.headers.get("country")
+    # country = "India"
+    f = read_folder_rcp(dataset, index, type_, rcp, startyear, stopyear, 'h')
+    # print("type",type_)
+    if type_ == 'y':
+        data_date = select_data_fromdate_year(f)
+        print("shape",data_date[0][0])
+    elif type_ == 'm':
+        data_date = select_data_fromdate(f, startyear, stopyear, startmonth, stopmonth)
+    # data_date = select_data_fromdate(f, startyear, stopyear, startmonth, stopmonth)
+    data = mask_inside_country_npz(dataset+'_'+ rcp, country, data_date[1], data_date[2], data_date[0])
+    # print("data",data[0])
+    avg_year = []
+    for i in data:
+        # a = np.round(np.nanmean(i.flatten()),4),4
+        avg_year.append(np.round(np.nanmean(i.flatten()), 4))
+    avg = np.round(np.mean(avg_year), 4)
+    if index == 'pr':
+        unit = "mm"
+    else:
+        unit = "°C"
+
+    return jsonify(avg_year, avg, unit)
+
+#----------------------- Get detials ----------------------------------
+@app.route("/api/dataset", methods=["GET"])
+def get_dataset():
+    ds = pd.read_csv("C:/Users/ice/Documents/climate/data/dataset_name.csv")
+    res = []
+    for i in range(len(ds['id'])):
+        res.append({'id': ds['id'][i] , 'name': ds['name'][i] })
+
+    return jsonify(res)
+
+@app.route("/api/index", methods=["GET"])
+def get_index():
+    dataset = str(request.args.get("dataset"))
+    print("dataset",dataset)
+    ds = pd.read_csv('C:/Users/ice/Documents/climate/data/index_detail.csv')
+    a = ds.loc[ds['dataset'] == dataset]
+    select = a[['index', 'name']].to_json(orient='records',force_ascii=0)
+    select = json.loads(select)
+    return jsonify(select)
+
+@app.route("/api/detail", methods=['GET'])
+def detail():
+    dataset = str(request.args.get("dataset"))
+    index = str(request.args.get("index"))
+    df = pd.read_csv('C:/Users/ice/Documents/climate/data/index_detail.csv')
+    # query = df.loc[(df['dataset']==dataset)&(df['index']==index)]
+    # select = query['year'][0] #.to_json(orient='records')
+    # print("yearrr",select)
+    query = df.loc[(df['dataset']==dataset)&(df['index']==index)]
+    select = query[['long_name','description','unit','year','color_map']].to_json(orient='records')
+    select = json.loads(select)
+    return select[0]
+
+@app.route("/api/dataset_rcp", methods=["GET"])
+def get_dataset_rcp():
+    ds = pd.read_csv('C:/Users/ice/Documents/climate/data/dataset_rcp.csv')
+    res = []
+    for i in range(len(ds['id'])):
+        res.append({'id': ds['id'][i], 'name': ds['name'][i]})
+    return jsonify(res)
+
+@app.route("/api/index_rcp", methods=["GET"])
+def get_index_rcp():
+    type_ = str(request.args.get("type_"))
+    print("type",type_)
+    ds = pd.read_csv('C:/Users/ice/Documents/climate/data/detail_rcp.csv')
+    a = ds.loc[ds['type_'] == type_]
+    select = a[['index', 'name']].to_json(orient='records',force_ascii=0)
+    select = json.loads(select)
+    return jsonify(select)
+
+@app.route("/api/detail_rcp", methods=['GET'])
+def detail_rcp():
+    dataset = str(request.args.get("dataset"))
+    index = str(request.args.get("index"))
+    type_ = str(request.args.get('type_'))
+    df = pd.read_csv('C:/Users/ice/Documents/climate/data/detail_rcp.csv')
+    query = df.loc[(df['type_'] == type_) & (df['index'] == index)]
+    select = query[['long_name', 'description', 'unit', 'year',
+                    'color_map']].to_json(orient='records')
+    print(select)
+    select = json.loads(select)
+    
+    return select[0]
+
 #----------------------------------------------------------------------
 if __name__ == '__main__':
     app.run(debug=True, port= 5500)

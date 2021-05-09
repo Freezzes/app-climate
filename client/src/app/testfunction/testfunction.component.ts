@@ -77,10 +77,10 @@ export class TestfunctionComponent  implements OnInit{
         this.dataset_name = res
       }))
 
-    this.tempService.get_index().then(data => data.subscribe(
-      res => {
-        this.index_name = res
-      }))
+    // this.tempService.get_index().then(data => data.subscribe(
+    //   res => {
+    //     this.index_name = res
+    //   }))
   }
 
   onDateSelection(date: NgbDate) {

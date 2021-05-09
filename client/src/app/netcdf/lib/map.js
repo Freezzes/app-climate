@@ -212,50 +212,63 @@ export function add_graticule_layer(target) {
 }
 
 //-------------------------Gen grid-----------------------------
-export function genGridData(geojson, min, max, color_map, lon_step, lat_step, type, layername = '',name) {
+export function genGridData(geojson, min, max, color_map,unit, lon_step, lat_step, type, layername = '',name) {
+  var colors = []; var colorScale; var title; var tickformat;
 
-  var colors = [];
-  var colorScale;
-  var title; var tickformat;
+  console.log("color",color_map)
   if (color_map == 'cool_warm') {
+    colors = ['#bd1726', '#d42d27', '#e34933', '#f16640', '#f7844e', '#fca55d', '#fdbf71', '#fed687', '#fee99d', '#fff7b3', '#f7fcce', '#e9f6e8', '#d6eef5', '#bde2ee', '#a3d3e6', '#87bdd9', '#6ea6ce', '#588cc0', '#4471b2', '#3a54a4'].reverse()
     if (type == 'main') {
-      title = 'temperature (°C)'
-      colors = ['#bd1726', '#d42d27', '#e34933', '#f16640', '#f7844e', '#fca55d', '#fdbf71', '#fed687', '#fee99d', '#fff7b3', '#f7fcce', '#e9f6e8', '#d6eef5', '#bde2ee', '#a3d3e6', '#87bdd9', '#6ea6ce', '#588cc0', '#4471b2', '#3a54a4'].reverse()
+      title = 'tempurature (°C)'
       colorScale = d3.scaleQuantile([min, 0, max], colors)
     } else if (type == 'per') {
-      title = 'temperature (%)'
-      colors = ['#bd1726', '#d42d27', '#e34933', '#f16640', '#f7844e', '#fca55d', '#fdbf71', '#fed687', '#fee99d', '#fff7b3', '#f7fcce', '#e9f6e8', '#d6eef5', '#bde2ee', '#a3d3e6', '#87bdd9', '#6ea6ce', '#588cc0', '#4471b2', '#3a54a4'].reverse()
-      // colors = ['#bd1726', '#f16640',  '#fdbf71', '#fff7b3', '#d6eef5', '#87bdd9', '#3a54a4'].reverse()
+      title = 'tempurature (%)'
+      colorScale = d3.scaleQuantile([min, 0, max], colors)
+    }
+  }else if (color_map=='warm_cool') {
+    colors = ["#a50026", "#d73027", "#f46d43", "#fdae61", "#fee090", "#ffffbf", "#e0f3f8", "#abd9e9", "#74add1", "#4575b4", "#313695"]  //d3.schemeRdYlBu[11]
+    if(type == 'main'){
+      title = 'tempurature (°C)'
+      colorScale = d3.scaleQuantile([min, max], colors)
+    }else if (type == 'per') {
+      title = 'tempurature (%)'
       colorScale = d3.scaleQuantile([min, 0, max], colors)
     }
   }
   else if (color_map == 'dry_wet') {
-    title = 'precipitation (mm)'
-    colors = ['#8c510a', '#9e5c0b', '#bf812d', '#d49a4b', '#dfc27d', '#eedfba', '#f6e8c3', '#f5f5f5', '#c7eae5', '#80cdc1', '#35978f', '#2b7a74', '#01665e', '#005040', '#003c30', '#002820']
-    // colors = ['#6e4007', '#a16518', '#ca9849', '#e7cf94', '#f6ecd1', '#f5f2e8', '#edf2f5', '#dbeaf2', '#c5dfec', '#a7d0e4', '#87beda', '#5fa5cd', '#3f8ec0', '#2f79b5', '#1f63a8', '#124984']
-    // colors = ["#f7fcf0", "#e0f3db", "#ccebc5", "#a8ddb5", "#7bccc4", "#4eb3d3", "#2b8cbe", "#0868ac", "#084081"]
-    colorScale = d3.scaleQuantile([0,max], colors)
-    if(type == 'per'){ title = 'precipitation (%)'}
+    colors = ['#8c510a', '#9e5c0b', '#bf812d', '#d49a4b', '#dfc27d', '#eedfba', '#fcf4e1','#f5f5f5', '#d6eef5', '#bde2ee', '#a3d3e6', '#87bdd9', '#6ea6ce', '#588cc0', '#4471b2', '#3a54a4']
+    if (type == 'main'){
+      title = 'precipitation (mm)'
+      // colors = ['#8c510a', '#9e5c0b', '#bf812d', '#d49a4b', '#dfc27d', '#eedfba', '#f6e8c3', '#f5f5f5', '#c7eae5', '#80cdc1', '#35978f', '#2b7a74', '#01665e', '#005040', '#003c30', '#002820']
+      // colors = ['#6e4007', '#a16518', '#ca9849', '#e7cf94', '#f6ecd1', '#f5f2e8', '#edf2f5', '#dbeaf2', '#c5dfec', '#a7d0e4', '#87beda', '#5fa5cd', '#3f8ec0', '#2f79b5', '#1f63a8', '#124984']
+      // colors = ["#f7fcf0", "#e0f3db", "#ccebc5", "#a8ddb5", "#7bccc4", "#4eb3d3", "#2b8cbe", "#0868ac", "#084081"]
+      colorScale = d3.scaleQuantile([0,max], colors)
+    } else if (type == 'per'){
+      title = 'precipitation (%)'
+      colorScale = d3.scaleQuantile([min, 0, max], colors)
+    }
   }
+  else if (color_map=='wet_dry') {
+
+    colors = ['#714108', '#8d520b', '#a96c1e', '#c28633', '#d3aa5f', '#e2c787', '#efdcad', '#f6ebcd', '#f5f2e8'].reverse()
+    if(type == 'main'){
+      // color = ['#714108', '#8d520b', '#a96c1e', '#c28633', '#d3aa5f', '#e2c787', '#efdcad', '#f6ebcd', '#f5f2e8'].reverse()
+      colorScale = d3.scaleQuantile([0, max], colors)
+    } else if(type == 'per'){
+      title = 'precipitation (%)'
+      // color = ["#a6611a", "#dfc27d", "#f5f5f5", "#80cdc1", "#018571"].reverse()
+      colorScale = d3.scaleQuantile([min, 0, max], colors)
+    }
+  } 
   // tickformat = ".2f"
   // if(name == 'map1' || name == 'map2'){ tickformat = ".0f"}
 
   legend({
     color: colorScale,
     title: title,
-    tickFormat: ".0f",
+    tickFormat: ".2f",
     target: name
   })
-
-  var createTextStyle = function (feature) {
-    return new ol.style.Text({
-      textAlign: "center",
-      text: feature.getProperties().trend,
-      fill: new ol.style.Fill({ color: "black" }),
-      stroke: new ol.style.Stroke({ color: "black", width: 1 }),
-      placement: "point",
-    });
-  };
 
   var gridStyle = function (feature) {
     var coordinate = feature.getGeometry().getCoordinates(),
@@ -279,7 +292,6 @@ export function genGridData(geojson, min, max, color_map, lon_step, lat_step, ty
         geometry: new ol.geom.Polygon([[
           [x, y], [x, y + lat_step], [x + lon_step, y + lat_step], [x + lon_step, y], [x, y]
         ]]),
-        // text: createTextStyle(feature)
       })
     ];
   };

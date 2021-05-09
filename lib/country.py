@@ -134,7 +134,7 @@ def mask_inside_country_npz(dataset,country, lats, lons, data):
     start = time.time()
     lats = np.array(lats)
     lons = np.array(lons)
-    path = f'C:/Users/ice/Documents/mask_country/{dataset}_high.npz'
+    path = f'E:/ice/mask_country/{dataset}_high.npz'
     file_mask =  np.load(path,allow_pickle=True)
     mask = file_mask['mask'].tolist()
     mask_arr = mask.get(country)

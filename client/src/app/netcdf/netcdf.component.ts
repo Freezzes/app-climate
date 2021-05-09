@@ -52,6 +52,11 @@ export class NetcdfComponent implements OnInit {
   unit;
   year;
 
+  details;
+  color_map;
+  dataset_type;
+
+
   // type;
   // percent;    
   // value_db;
@@ -85,7 +90,7 @@ export class NetcdfComponent implements OnInit {
   plot_trend;
 
 
-  getDataLayer(data, North, South, West, East, layername,name_legend) {
+  getDataLayer(data, North, South, West, East, layername, color, unit) {
     console.log("GetDataLayer")
     var lon = data[0]
     var lat = data[1]
@@ -94,11 +99,12 @@ export class NetcdfComponent implements OnInit {
     var lat_step = data[6]
     var min_ = data[3]
     var max_ = data[4]
-    var color = data[7]
+    var color = color
+    var unit = unit
     var geojson = MapLib.convert_to_geojson(value, lon, lat)
     var merge = MapLib.merge_data_to_geojson(geojson, value, North, South, West, East, 'value')
     var layer = MapLib.genGridData(
-      merge, min_, max_, color, lon_step, lat_step, 'main', layername,name_legend
+      merge, min_, max_, color, unit, lon_step, lat_step, 'main', layername, 'main'
     );
     return layer
   }
@@ -133,6 +139,15 @@ export class NetcdfComponent implements OnInit {
 
     this.map = MapLib.draw_map('map')
 
+    await this.sharedData.regionservice.subscribe(data => {
+      console.log("input region", data)
+      this.North = data[0]
+      this.South = data[1]
+      this.West = data[2]
+      this.East = data[3]
+      this.dataset_type = data[4]
+    })
+
     await this.sharedData.Detailservice.subscribe(data => {
       if (data) {
         console.log("input Detail", data)
@@ -146,53 +161,70 @@ export class NetcdfComponent implements OnInit {
     })
 
     // this.plot(this.data,this.index)
-    this.plot_ser()
+    // this.plot_ser()
+    this.plot_gridraw()
 
   }
 
-  async plot_ser() {
-    // this.SpinnerService.show();  
-
-    this.sharedData.regionservice.subscribe(data => {
-      console.log("input region", data)
-      this.North = data[0]
-      this.South = data[1]
-      this.West = data[2]
-      this.East = data[3]
+  async plot_gridraw() {
+    // this.noselect = 'no select'
+    await this.sharedData.Detailservice.subscribe(data => {
+      this.details = data
+      // this.color_map = data.color_map
+      console.log("input Detail", data[0])
+      if (data) {
+        // console.log("input Detail",data)
+        this.unit = data[0].unit
+        this.difinition = data[0].description
+        this.long_name = data[0].long_name
+        this.year = data[0].year
+        this.dataset_name = data[0].dataset
+        this.color_map = data[0].color_map
+        this.index = data[2].index
+        console.log("difinition", this.difinition)
+      }
     })
+    console.log("444444444444444444444444444444444", this.dataset_type)
+    // await this.sharedData.regionservice.subscribe(data => {
+    //   console.log("input region",data)
+    //   this.North = data[0]
+    //   this.South = data[1]
+    //   this.West = data[2]
+    //   this.East = data[3]
+    // })
 
     await this.sharedData.inputhomeservice.subscribe(data => {
       if (data) {
         console.log("input2222222222", data)
         this.plot_trend = data.plottrend
-        this.plotTrand(this.plot_trend)
+        // this.plotTrand(this.plot_trend)
       }
     })
 
 
-    this.sharedData.lowresservice.subscribe(data => {
+    // console.log("plot_trend",this.plot_trend)
+
+    await this.sharedData.lowresservice.subscribe(data => {
       if (data) {
-        console.log("input Lowres", data)
-        this.data_low = data
-        this.lowres_layer = this.getDataLayer(this.data_low, this.North, this.South, this.West, this.East, 'lowres_data','main')
+
+        console.log("ICEEEEEEEEEEEE", data)
+        // this.data_low = data
+        this.lowres_layer = this.getDataLayer(data.map, this.North, this.South, this.West, this.East, 'lowres_data', this.color_map, this.unit)
         MapLib.clearLayers(this.map);
+        console.log("lowlayer", this.lowres_layer)
         this.map.getLayers().insertAt(0, this.lowres_layer);
-        // MapLib.setResolution(this.map,this.North, this.South, this.West, this.East)
-        // MapLib.select_country(this.map)
-        // MapLib.clearLayers(this.map);
-      }
-    })
-
-    await this.sharedData.hiresservice.subscribe(data => {
-      if (data) {
-        console.log("input Hires", data)
-        console.log("input Anomaly", data.anomaly)
-        this.hires_layer = this.getDataLayer(data.map, this.North, this.South, this.West, this.East, 'hires_data','main')
-        this.map.getLayers().insertAt(0, this.hires_layer);
-        MapLib.setResolution(this.map)
-
+        this.sharedData.hiresservice.subscribe(data => {
+          if (data) {
+            console.log("hires", data)
+            this.hires_layer = this.getDataLayer(data, this.North, this.South, this.West, this.East, 'hires_data', this.color_map, this.unit)
+            console.log("h_mpi", this.hires_layer)
+            this.map.getLayers().insertAt(0, this.hires_layer);
+            MapLib.setResolution(this.map)
+          }
+        })
+        // console.log("layer mappppp",this.map.getLayers())
+        // MapLib.setzoom_center(this.map,this.North, this.South, this.West, this.East)
         // this.sharedData.sendGraphAvg(data.chart)
-        // this.sharedData.sendAnomaly(data.anomaly)
 
         // Get selected country data chart
         if (this.select !== null) {
@@ -203,75 +235,189 @@ export class NetcdfComponent implements OnInit {
         this.select.on('select', function (e: any) {
           // Checking if not select country change to global stat
           if (e.selected.length == 0) {
+            this.noselect = 'no select'
             console.log("NO SELECT")
             that.sharedData.sendGraphAvg(data.chart)
-            that.sharedData.sendAnomaly(data.anomaly)
           }
           else if (e.selected.length == 1) {
+            this.noselect = 'select'
             var selectedCountry = e.selected[0].get('name');
             console.log("SELECT", selectedCountry)
-            that.tempService.getCountry(data.input.dataset, data.input.index, data.input.startyear, data.input.stopyear, data.input.startmonth, data.input.stopmonth, selectedCountry).subscribe(
-              (res: any) => {
-                console.log("resssssssss", res)
-                console.log("countryyyyy", selectedCountry)
-                var value = Number(data.input.stopyear) - Number(data.input.startyear)
-                var start = Number(data.input.startyear)
-                for (var i = 0; i <= value; i++) {
-                  Data.dataPoints.push(
-                    { x: new Date(start, 0), y: res[0][i] },
-                  )
-                  start += 1
-                }
-                console.log("point", Data.dataPoints)
-                var sent = [Data.dataPoints, res[1], res[2], selectedCountry]
-                // this.inputservice.sendGraph(sent)
-                that.sharedData.sendGraphAvg(sent)
-                console.log("graph country", sent)
-                // that.sharedData.sendcountry(res)
-              })
+            if (that.dataset_type == 'rcp') {
+              console.log("RCPPPPPPPPPP")
+              that.tempService.getCountry_rcp(data.input.dataset, data.input.index, data.input.startyear, data.input.stopyear, data.input.startmonth, data.input.stopmonth, selectedCountry, data.input.rcp, data.input.type).subscribe(
+                (res: any) => {
+                  var value = Number(data.input.stopyear) - Number(data.input.startyear)
+                  var start = Number(data.input.startyear)
+                  for (var i = 0; i <= value; i++) {
+                    Data.dataPoints.push(
+                      { x: new Date(start, 0), y: res[0][i] },
+                    )
+                    start += 1
+                  }
+                  console.log("point", Data.dataPoints)
+                  var sent = [Data.dataPoints, res[1], res[2], selectedCountry]
+                  that.sharedData.sendGraphAvg(sent)
+                })
+            }
+            else if (that.dataset_type == 'raw') {
+              that.tempService.getCountry(data.input.dataset, data.input.index, data.input.startyear, data.input.stopyear, data.input.startmonth, data.input.stopmonth, selectedCountry).subscribe(
+                (res: any) => {
+                  var value = Number(data.input.stopyear) - Number(data.input.startyear)
+                  var start = Number(data.input.startyear)
+                  for (var i = 0; i <= value; i++) {
+                    Data.dataPoints.push(
+                      { x: new Date(start, 0), y: res[0][i] },
+                    )
+                    start += 1
+                  }
+                  console.log("point", Data.dataPoints)
+                  var sent = [Data.dataPoints, res[1], res[2], selectedCountry]
+                  // this.inputservice.sendGraph(sent)
+                  that.sharedData.sendGraphAvg(sent)
+                  // console.log("graph country",sent)
+                  // that.sharedData.sendcountry(res)
+                })
+            }
             var Data = {
               // value:[],
               dataPoints: []
             }
-
-            that.tempService.anomalyCountry(data.input.dataset, data.input.index, selectedCountry).subscribe(
-              (res: any) => {
-                console.log("anoooooo",res)
-                console.log("anooooo country >", selectedCountry)
-                this.anomalydata = res[0].anomaly
-                this.anomaly_year = res[1].year
-                this.anomaly_name = res[2].name
-                var unit = res[3]
-                var Data = {
-                  dataPoints: []
-                }
-                for (var i = 0; i < this.anomalydata.length; i++) {
-                  if (this.anomalydata[i] > 0) {
-                    Data.dataPoints.push(
-                      { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'red' }
-                    )
-                  }
-                  else if (this.anomalydata[i] < 0) {
-                    Data.dataPoints.push(
-                      { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'blue' }
-                    )
-                  }
-                }
-                var send = [Data.dataPoints, this.anomaly_name, unit,selectedCountry]
-                console.log("ano home :", send)
-
-                that.sharedData.sendAnomaly(send)
-              })
-
           }
         });
+        // MapLib.select_country(this.map)
       }
     })
 
     await this.sharedData.trendservice.subscribe(data => {
-      this.data_trend = data
-    })
+          this.data_trend = data
+          console.log("TTTTT",this.data_trend)
+        })
   }
+
+
+  // async plot_ser() {
+  //   // this.SpinnerService.show();  
+
+  //   this.sharedData.regionservice.subscribe(data => {
+  //     console.log("input region", data)
+  //     this.North = data[0]
+  //     this.South = data[1]
+  //     this.West = data[2]
+  //     this.East = data[3]
+  //   })
+
+  //   await this.sharedData.inputhomeservice.subscribe(data => {
+  //     if (data) {
+  //       console.log("input2222222222", data)
+  //       this.plot_trend = data.plottrend
+  //       this.plotTrand(this.plot_trend)
+  //     }
+  //   })
+
+
+  //   this.sharedData.lowresservice.subscribe(data => {
+  //     if (data) {
+  //       console.log("input Lowres", data)
+  //       this.data_low = data
+  //       this.lowres_layer = this.getDataLayer(this.data_low, this.North, this.South, this.West, this.East, 'lowres_data','main')
+  //       MapLib.clearLayers(this.map);
+  //       this.map.getLayers().insertAt(0, this.lowres_layer);
+  //       // MapLib.setResolution(this.map,this.North, this.South, this.West, this.East)
+  //       // MapLib.select_country(this.map)
+  //       // MapLib.clearLayers(this.map);
+  //     }
+  //   })
+
+  //   await this.sharedData.hiresservice.subscribe(data => {
+  //     if (data) {
+  //       console.log("input Hires", data)
+  //       console.log("input Anomaly", data.anomaly)
+  //       this.hires_layer = this.getDataLayer(data.map, this.North, this.South, this.West, this.East, 'hires_data','main')
+  //       this.map.getLayers().insertAt(0, this.hires_layer);
+  //       MapLib.setResolution(this.map)
+
+  //       // this.sharedData.sendGraphAvg(data.chart)
+  //       // this.sharedData.sendAnomaly(data.anomaly)
+
+  //       // Get selected country data chart
+  //       if (this.select !== null) {
+  //         this.map.removeInteraction(this.select);
+  //       }
+  //       let that = this
+  //       this.select = MapLib.select_country(this.map);
+  //       this.select.on('select', function (e: any) {
+  //         // Checking if not select country change to global stat
+  //         if (e.selected.length == 0) {
+  //           console.log("NO SELECT")
+  //           that.sharedData.sendGraphAvg(data.chart)
+  //           that.sharedData.sendAnomaly(data.anomaly)
+  //         }
+  //         else if (e.selected.length == 1) {
+  //           var selectedCountry = e.selected[0].get('name');
+  //           console.log("SELECT", selectedCountry)
+  //           that.tempService.getCountry(data.input.dataset, data.input.index, data.input.startyear, data.input.stopyear, data.input.startmonth, data.input.stopmonth, selectedCountry).subscribe(
+  //             (res: any) => {
+  //               console.log("resssssssss", res)
+  //               console.log("countryyyyy", selectedCountry)
+  //               var value = Number(data.input.stopyear) - Number(data.input.startyear)
+  //               var start = Number(data.input.startyear)
+  //               for (var i = 0; i <= value; i++) {
+  //                 Data.dataPoints.push(
+  //                   { x: new Date(start, 0), y: res[0][i] },
+  //                 )
+  //                 start += 1
+  //               }
+  //               console.log("point", Data.dataPoints)
+  //               var sent = [Data.dataPoints, res[1], res[2], selectedCountry]
+  //               // this.inputservice.sendGraph(sent)
+  //               that.sharedData.sendGraphAvg(sent)
+  //               console.log("graph country", sent)
+  //               // that.sharedData.sendcountry(res)
+  //             })
+  //           var Data = {
+  //             // value:[],
+  //             dataPoints: []
+  //           }
+
+  //           that.tempService.anomalyCountry(data.input.dataset, data.input.index, selectedCountry).subscribe(
+  //             (res: any) => {
+  //               console.log("anoooooo",res)
+  //               console.log("anooooo country >", selectedCountry)
+  //               this.anomalydata = res[0].anomaly
+  //               this.anomaly_year = res[1].year
+  //               this.anomaly_name = res[2].name
+  //               var unit = res[3]
+  //               var Data = {
+  //                 dataPoints: []
+  //               }
+  //               for (var i = 0; i < this.anomalydata.length; i++) {
+  //                 if (this.anomalydata[i] > 0) {
+  //                   Data.dataPoints.push(
+  //                     { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'red' }
+  //                   )
+  //                 }
+  //                 else if (this.anomalydata[i] < 0) {
+  //                   Data.dataPoints.push(
+  //                     { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'blue' }
+  //                   )
+  //                 }
+  //               }
+  //               var send = [Data.dataPoints, this.anomaly_name, unit,selectedCountry]
+  //               console.log("ano home :", send)
+
+  //               that.sharedData.sendAnomaly(send)
+  //             })
+
+  //         }
+  //       });
+  //     }
+  //   })
+
+  //   await this.sharedData.trendservice.subscribe(data => {
+  //     this.data_trend = data
+  //   })
+  // }
 
 
   Trand() {

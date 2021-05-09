@@ -6,6 +6,7 @@ import { from } from 'rxjs'
 
 @Injectable()
 export class TempService {
+    private apiURL = 'http://127.0.0.1:5500'
     constructor(private http: HttpClient) { }
 
     async getrangeyear(station:string,startyear:string,endyear:string,startmonth:string,endmonth:string,startday:string,endday:string):Promise<Observable<any>> {   
@@ -77,6 +78,14 @@ export class TempService {
         ,{responseType:"text"});
         return response
     }
+
+    async get_lowres_rcp(dataset: string, index: string, startyear: string, stopyear: string, startmonth: string, stopmonth: string,rcp:string,type_:string) {
+        const response = this.http.get(this.apiURL +
+            `/map_rcp?dataset=${dataset}&index=${index}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}&rcp=${rcp}&type_=${type_}`
+            , { responseType: "text" });
+
+        return response
+    }
     async get_Avgcsvtrend(ncfile:string,df_f:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string){
         const response = this.http.get('http://127.0.0.1:5500' +
         `/nc_avgtrend?ncfile=${ncfile}&df_f=${df_f}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`
@@ -117,10 +126,12 @@ export class TempService {
         return response
     }
 
-    async detail(dataset:string,index:string):Promise<Observable<any>> {
-        return this.http.get('http://127.0.0.1:5500' +
-        `/api/detail?dataset=${dataset}&index=${index}`);
+    async global_avg_rcp(dataset: string, index: string, startyear: string, startmonth: string, stopyear: string, stopmonth: string,rcp:string,type_:string) {
+        const response = this.http.get(this.apiURL +
+            `/api/global_avg_rcp?dataset=${dataset}&index=${index}&startyear=${startyear}&startmonth=${startmonth}&stopyear=${stopyear}&stopmonth=${stopmonth}&rcp=${rcp}&type_=${type_}`)
+        return response
     }
+
 
     // ----------------------------------------different----------------------------
     async per_dif(ncfile:string,df_f:string,start1:string,stop1:string,start2:string,stop2:string):Promise<Observable<any>> {
@@ -158,14 +169,41 @@ export class TempService {
         `/map_range2month?dataset=${dataset}&index=${index}&start=${start}&stop=${stop}&month=${month}`
         ,{responseType:"text"});
     }
-
+// -------------------------------dataset index detail --------------------------------------------
     async get_dataset(): Promise<Observable<any>>{
         return this.http.get('http://127.0.0.1:5500/api/dataset')
     }
 
-    async get_index(): Promise<Observable<any>> {
-        return this.http.get('http://127.0.0.1:5500/api/index')
+    // async get_index(): Promise<Observable<any>> {
+    //     return this.http.get('http://127.0.0.1:5500/api/index')
+    // }
+
+    async get_index(dataset: string): Promise<Observable<any>> {
+        // console.log("service",this.http.get('http://127.0.0.1:5500/locat/station'))
+        return this.http.get(this.apiURL +`/api/index?dataset=${dataset}`)
     }
+
+
+    async detail(dataset:string,index:string):Promise<Observable<any>> {
+        return this.http.get('http://127.0.0.1:5500' +
+        `/api/detail?dataset=${dataset}&index=${index}`);
+    }
+
+    async get_dataset_rcp(): Promise<Observable<any>> {
+        return this.http.get('http://127.0.0.1:5500/api/dataset_rcp')
+    }
+
+    async get_index_rcp(type_: string): Promise<Observable<any>> {
+        // console.log("service",this.http.get('http://127.0.0.1:5500/locat/station'))
+        return this.http.get(this.apiURL +`/api/index_rcp?type_=${type_}`)
+    }
+
+    async detail_rcp(dataset: string, index: string,type_:string): Promise<Observable<any>> {
+        return this.http.get(this.apiURL +
+            `/api/detail_rcp?dataset=${dataset}&index=${index}&type_=${type_}`);
+    }
+
+    // -------------------------------------------------------------------------------------------
 
     getCountry(dataset:string,index:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string,country:any): Observable<any>{
         console.log("country",country)
@@ -178,6 +216,17 @@ export class TempService {
         
         return this.http.get('http://127.0.0.1:5500'+`/api/country_avg?dataset=${dataset}&index=${index}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`,httpOptions)
     }
+
+    getCountry_rcp(dataset: string, index: string, startyear: string, stopyear: string, startmonth: string, stopmonth: string, country: any,rcp:string,type_:string): Observable<any> {
+        console.log("country", country)
+        const httpOptions = {
+            headers: new HttpHeaders({
+                'country': country,
+            })
+        };
+        return this.http.get(this.apiURL + `/api/country_avg_rcp?dataset=${dataset}&index=${index}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}&rcp=${rcp}&type_=${type_}`, httpOptions)
+    }
+
 
     anomalyCountry(dataset:string,index:string,country:any): Observable<any>{
         console.log("country",country)
