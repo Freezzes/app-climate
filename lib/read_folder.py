@@ -3,7 +3,7 @@ import os
 import pandas as pd
 
 def check_range(dataset,index,startyear,stopyear):
-    df = pd.read_csv('C:/Users/ice/Documents/climate/data/index_detail.csv')
+    df = pd.read_csv('E:/ice/climate/data/index_detail.csv')
     query = df.loc[(df['dataset']==dataset)&(df['index']==index)]
     select = query['year'].values #.to_json(orient='records')
     spl = select[0].split('-')
@@ -39,6 +39,19 @@ def read_folder_rcp(dataset, index,type_,rcp, startyear, stopyear,res):
     # print("path",l_path)
     return l_path
 
+def read_folder_difrcp(dataset, index,type_,rcp, start1,stop1, start2,stop2):
+    l_path1 = []
+    l_path2 = []
+    folder = f"E:/ice/managenc/{dataset}_{rcp}_{type_}_h_file/"
+    for _file in os.listdir(folder):
+        for y1 ,y2  in zip(range(start1,stop1+1), range(start2,stop2+1)):
+            if _file[:-4].split("-")[0] == index and _file[:-4].split("-")[1] == str(y1) :
+                path = f'{folder}{_file}'
+                l_path1.append(path)
+            elif _file[:-4].split("-")[0] == index and _file[:-4].split("-")[1] == str(y2) :
+                path = f'{folder}{_file}'
+                l_path2.append(path)
+    return l_path1,l_path2
 # def read_folder_anomaly(dataset, index):
 #     folder = f"C:/Users/ice/Documents/managenc/{dataset}_l_file/"
 #     l_path = []

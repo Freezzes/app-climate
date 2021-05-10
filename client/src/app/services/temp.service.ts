@@ -134,22 +134,28 @@ export class TempService {
 
 
     // ----------------------------------------different----------------------------
-    async per_dif(ncfile:string,df_f:string,start1:string,stop1:string,start2:string,stop2:string):Promise<Observable<any>> {
-        return this.http.get('http://127.0.0.1:5500' +
-        `/per_dif?ncfile=${ncfile}&df_f=${df_f}&start1=${start1}&stop1=${stop1}&start2=${start2}&stop2=${stop2}`
-        ,{responseType:"text"});
+    async per_dif(ncfile: string, df_f: string, start1: string, stop1: string, start2: string, stop2: string,rcp:string,type_:string): Promise<Observable<any>> {
+        return this.http.get(this.apiURL +
+            `/per_dif?ncfile=${ncfile}&df_f=${df_f}&start1=${start1}&stop1=${stop1}&start2=${start2}&stop2=${stop2}&rcp=${rcp}&type_=${type_}`
+            , { responseType: "text" });
     }
 
-    async raw_dif(ncfile:string,df_f:string,start1:string,stop1:string,start2:string,stop2:string):Promise<Observable<any>> {
-        return this.http.get('http://127.0.0.1:5500' +
-        `/raw_dif?ncfile=${ncfile}&df_f=${df_f}&start1=${start1}&stop1=${stop1}&start2=${start2}&stop2=${stop2}`
-        ,{responseType:"text"});
+    async raw_dif(ncfile: string, df_f: string, start1: string, stop1: string, start2: string, stop2: string,rcp:string,type_:string): Promise<Observable<any>> {
+        return this.http.get(this.apiURL +
+            `/raw_dif?ncfile=${ncfile}&df_f=${df_f}&start1=${start1}&stop1=${stop1}&start2=${start2}&stop2=${stop2}&rcp=${rcp}&type_=${type_}`
+            , { responseType: "text" });
     }
 
-    async map_range1(dataset:string,index:string,start:string,stop:string):Promise<Observable<any>> {
-        return this.http.get('http://127.0.0.1:5500' +
-        `/map_range1?dataset=${dataset}&index=${index}&start=${start}&stop=${stop}`
-        ,{responseType:"text"});
+    async map_range1(dataset: string, index: string, start: string, stop: string,rcp:string,type_:string): Promise<Observable<any>> {
+        return this.http.get(this.apiURL +
+            `/map_range1?dataset=${dataset}&index=${index}&start=${start}&stop=${stop}&rcp=${rcp}&type_=${type_}`
+            , { responseType: "text" });
+    }
+
+    async map_range2(dataset: string, index: string, start: string, stop: string,rcp:string,type_:string): Promise<Observable<any>> {
+        return this.http.get(this.apiURL +
+            `/map_range2?dataset=${dataset}&index=${index}&start=${start}&stop=${stop}&rcp=${rcp}&type_=${type_}`
+            , { responseType: "text" });
     }
 
     async map_range1month(dataset:string,index:string,start:string,stop:string,month:string):Promise<Observable<any>> {
@@ -158,11 +164,7 @@ export class TempService {
         ,{responseType:"text"});
     }
 
-    async map_range2(dataset:string,index:string,start:string,stop:string):Promise<Observable<any>> {
-        return this.http.get('http://127.0.0.1:5500' +
-        `/map_range2?dataset=${dataset}&index=${index}&start=${start}&stop=${stop}`
-        ,{responseType:"text"});
-    }
+ 
 
     async map_range2month(dataset:string,index:string,start:string,stop:string,month:string):Promise<Observable<any>> {
         return this.http.get('http://127.0.0.1:5500' +

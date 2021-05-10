@@ -57,6 +57,9 @@ export class DifferenceComponent implements OnInit {
   display;
   Ranges;
   Ranges2;
+  Input;
+  color_map;
+  
 
   constructor(
     public formatter: NgbDateParserFormatter,
@@ -80,24 +83,22 @@ export class DifferenceComponent implements OnInit {
     {id: 6, name: "July"},{id: 7, name: "August"},{id: 8, name: "September"},{id: 9, name: "October"},{id: 10, name: "November"},{id: 11, name: "December"}
 ];
 
-  getDataLayer(data, North, South, West, East, layername,name_legend,type) {
-    console.log("GetDataLayer")
-    var lon = data[0]
-    var lat = data[1]
-    var value = data[2]
-    console.log("value", value)
-    var lon_step = data[5]
-    var lat_step = data[6]
-    var min_ = data[3]
-    var max_ = data[4]
-    var color = data[7]
-    var geojson = MapLib.convert_to_geojson(value,lon,lat)
-    var merge = MapLib.merge_data_to_geojson(geojson, value, North,South,West,East,'value')
-    var layer = MapLib.genGridData(
-      merge, min_, max_, color, lon_step, lat_step,type, layername,name_legend
-    );
-    return layer
-  }
+getDataLayer(data, North, South, West, East, layername, name_legend, type, color, unit) {
+  var lon = data[0]
+  var lat = data[1]
+  var value = data[2]
+  var lon_step = data[5]
+  var lat_step = data[6]
+  var min_ = data[3]
+  var max_ = data[4]
+  var color = color
+  var unit = unit
+  var geojson = MapLib.convert_to_geojson(value, lon, lat)
+  var merge = MapLib.merge_data_to_geojson(geojson, value, North, South, West, East, 'value')
+  var layer = MapLib.genGridData(
+    merge, min_, max_, color, unit, lon_step, lat_step, type, layername, name_legend);
+  return layer
+}
 
   async ngOnInit() {
 
@@ -119,21 +120,23 @@ export class DifferenceComponent implements OnInit {
     this.map2 = MapLib.draw_map('map2')
     this.map = MapLib.draw_map('dif')
 
-    await this.sharedData.Detailservice.subscribe(data => {
-      if(data){
-        console.log("input G Detail",data)
+    this.sharedData.Detailservice.subscribe(data => {
+      if (data) {
+        console.log("input Detail", data)
         this.unit = data[0].unit
         this.difinition = data[0].description
         this.long_name = data[0].long_name
+        this.color_map = data[0].color_map
         this.year = data[0].year
         var start = data[0].year.split("-")[0]
         var stop = data[0].year.split("-")[1]
         this.index = data[2]
         this.dataset = data[1]
-        this.Range(start,stop)
+        this.Range(start, stop)
         this.clear()
-      } 
+      }
     })
+
     
     await this.sharedData.difservice.subscribe(data => {
       if (data) {
@@ -152,6 +155,13 @@ export class DifferenceComponent implements OnInit {
         this.East = data[3]
       }
     })
+
+    this.sharedData.difservice.subscribe(data => {
+      if (data) {
+        console.log("input dif", data)
+        this.Input = data[0]
+      }
+    })
   }
 
   async clear(){
@@ -161,116 +171,35 @@ export class DifferenceComponent implements OnInit {
     MapLib.clearLayers(this.map);
   }
 
-  async Range(x,y){
+  async Range(x, y) {
     var start_y = Number(x)
     var stop_y = Number(y)
-    function range(start, stop, step) {
-      if (typeof stop == 'undefined') {
-        // one param defined
-        stop = start;
-        start = 0;
-      }
-      if (typeof step == 'undefined') {
-        step = 1;
-      }
-      if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) {
-        return [];
-      }
-
+    function counter(start: number, stop: number) {
       var result = [];
-      for (var i = start; step > 0 ? i < stop : i > stop; i += step) {
-        result.push(i);
+      for (var i = start; 1 > 0 ? i < stop : i > stop; i += 1) {
+        result.push(i)
       }
-
       return result;
-    };
-
-    this.lists = range(start_y, stop_y+1, 1)
+    }
+    this.lists = counter(start_y, stop_y + 1)
   }
 
-    async per_different(){
-      this.display = 'show'
-      // MapLib.add_graticule_layer(this.map)
-      console.log("dat", this.index)
-      console.log(this.chooseyear1.controls['fromyear1'].value)
-      // this.percent = "Work"
-      console.time()
-      this.start1 = this.chooseyear1.controls['fromyear1'].value
-      this.stop1 = this.chooseyear1.controls['toyear1'].value
-      this.start2 = this.chooseyear2.controls['fromyear2'].value
-      this.stop2 = this.chooseyear2.controls['toyear2'].value
-      let v
-      let L = []
-      console.log("-----",this.index)
-      await this.tempService.per_dif(this.dataset, this.index,this.start1, this.stop1,this.start2, this.stop2).then(data => data.subscribe(
-          (res => { 
-            // console.log(">>>>>>>>>>",res)
-            let resp = JSON.parse(res)
-            console.log(">>>>>>>>>",resp)
-            // console.log(">>>>>>>>>",resp[3])
-            var val = resp[2]
-            const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data','mapdif','per')
-            // const geojson = MapLib.merge_data_to_geojson(resp[0],resp[1], val, this.North, this.South, this.West, this.East,'value');
-            // console.log("geojson",geojson)
-            // const datalayer = MapLib.genGridData(geojson, resp[3], resp[4], resp[7], resp[5], resp[6],'main','lowres_data');
-            MapLib.clearLayers(this.map);
-            this.map.getLayers().insertAt(0,data_dif);
-            MapLib.select_country(this.map)
-            console.log("finish")
-            console.timeEnd()
 
-          }
-          )))
-    }
-
-    async raw_different(){
-      this.display = 'show'
-      console.log("dat", this.index)
-      console.log(this.chooseyear1.controls['fromyear1'].value)
-      console.time()
-      this.start1 = this.chooseyear1.controls['fromyear1'].value
-      this.stop1 = this.chooseyear1.controls['toyear1'].value
-      this.start2 = this.chooseyear2.controls['fromyear2'].value
-      this.stop2 = this.chooseyear2.controls['toyear2'].value
-
-      await this.tempService.raw_dif(this.dataset, this.index,this.start1, this.stop1,this.start2, this.stop2).then(data => data.subscribe(
-          (res => { 
-            let resp = JSON.parse(res)
-            console.log(">>>>>>>>>",resp)
-            var val = resp[2]
-            // const geojson = MapLib.merge_data_to_geojson(resp[0],resp[1], val, this.North, this.South, this.West, this.East,'value');
-            // console.log("geojson",geojson)
-            // var datalayer = MapLib.genGridData(geojson, resp[3], resp[4], resp[7], resp[5], resp[6],'main','lowres_data');
-            const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data','mapdif','main')
-            MapLib.clearLayers(this.map);
-            this.map.getLayers().insertAt(0,data_dif);
-            MapLib.select_country(this.map)
-
-            console.log("finish")
-            console.timeEnd()
-
-          }
-          )))
-    }
-
+  
   async map_range1() {
     this.display = 'show'
     this.start1 = this.chooseyear1.controls['fromyear1'].value
     this.stop1 = this.chooseyear1.controls['toyear1'].value
-    this.Ranges = 'Year ' + this.start1 + '-' + this.stop1 
-    await this.tempService.map_range1(this.dataset, this.index, this.start1, this.stop1).then(data => data.subscribe(
+    this.Ranges = 'Year ' + this.start1 + '-' + this.stop1
+    await this.tempService.map_range1(this.Input.dataset, this.Input.index, this.start1, this.stop1, this.Input.rcp, this.Input.types).then(data => data.subscribe(
       (res => {
         let resp = JSON.parse(res)
-        console.log(">>>>>>>>>", resp)
         this.min1 = resp[3]
         this.max1 = resp[4]
-        const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data','map1','main')
+        const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data', 'map1', 'main', this.color_map, this.unit)
         MapLib.clearLayers(this.map1);
         this.map1.getLayers().insertAt(0, data_dif);
         MapLib.select_country(this.map1)
-        MapLib.setzoom(this.map1)
-
-        console.log("finish")
       })
     ))
   }
@@ -279,28 +208,176 @@ export class DifferenceComponent implements OnInit {
     this.display = 'show'
     this.start2 = this.chooseyear2.controls['fromyear2'].value
     this.stop2 = this.chooseyear2.controls['toyear2'].value
-    this.Ranges2 = 'Year ' + this.start2 + '-' + this.stop2 
-    await this.tempService.map_range2(this.dataset, this.index, this.start2, this.stop2).then(data => data.subscribe(
+    this.Ranges2 = 'Year ' + this.start2 + '-' + this.stop2
+    await this.tempService.map_range2(this.Input.dataset, this.Input.index, this.start1, this.stop1, this.Input.rcp, this.Input.types).then(data => data.subscribe(
       (res => {
         let resp = JSON.parse(res)
-        console.log(">>>>>>>>>", resp[7])
         var value = resp[2]
-        var geojson = MapLib.convert_to_geojson(value,resp[0], resp[1],)
-        var merge = MapLib.merge_data_to_geojson(geojson, value, this.North, this.South, this.West, this.East,'value')
-        // var layer = MapLib.genGridData(
-        //   merge, min_, max_, color, lon_step, lat_step,'main', layername
-        // );
-        // const geojson2 = MapLib.merge_data_to_geojson(resp[0], resp[1], value, this.North, this.South, this.West, this.East, 'value');
-        const datalayer2 = MapLib.genGridData(merge, this.min1, this.max1, resp[7], resp[5], resp[6], 'main', 'lowres_data','map2');
-        // const data_dif = this.getDataLayer(resp,this.North, this.South, this.West, this.East,'lowres_data')
+        var geojson = MapLib.convert_to_geojson(value, resp[0], resp[1],)
+        var merge = MapLib.merge_data_to_geojson(geojson, value, this.North, this.South, this.West, this.East, 'value')
+        const datalayer2 = MapLib.genGridData(merge, this.min1, this.max1, this.color_map, this.unit, resp[5], resp[6], 'main', 'lowres_data', 'map2');
         MapLib.clearLayers(this.map2);
         this.map2.getLayers().insertAt(0, datalayer2);
         MapLib.select_country(this.map2)
-        MapLib.setzoom(this.map2)
-
-      }
-      )))
+      })
+    ))
   }
+
+  async per_different() {
+    this.display= 'show'
+    this.start1 = this.chooseyear1.controls['fromyear1'].value
+    this.stop1 = this.chooseyear1.controls['toyear1'].value
+    this.start2 = this.chooseyear2.controls['fromyear2'].value
+    this.stop2 = this.chooseyear2.controls['toyear2'].value
+    await this.tempService.per_dif(this.Input.dataset, this.Input.index, this.start1, this.stop1, this.start2, this.stop2, this.Input.rcp, this.Input.types).then(data => data.subscribe(
+      (res => {
+        let resp = JSON.parse(res)
+        const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data', 'mapdif', 'per', this.color_map, this.unit)
+        MapLib.clearLayers(this.map);
+        this.map.getLayers().insertAt(0, data_dif);
+        MapLib.select_country(this.map)
+      })
+    ))
+  }
+
+  async raw_different() {
+    this.display = 'show'
+    this.start1 = this.chooseyear1.controls['fromyear1'].value
+    this.stop1 = this.chooseyear1.controls['toyear1'].value
+    this.start2 = this.chooseyear2.controls['fromyear2'].value
+    this.stop2 = this.chooseyear2.controls['toyear2'].value
+
+    await this.tempService.raw_dif(this.Input.dataset, this.Input.index, this.start1, this.stop1, this.start2, this.stop2, this.Input.rcp, this.Input.types).then(data => data.subscribe(
+      (res => {
+        let resp = JSON.parse(res)
+        console.log(">>>>>>>>>", resp)
+        // const geojson = MapLib.merge_data_to_geojson(resp[0],resp[1], val, this.North, this.South, this.West, this.East,'value');
+        // console.log("geojson",geojson)
+        // var datalayer = MapLib.genGridData(geojson, resp[3], resp[4], resp[7], resp[5], resp[6],'main','lowres_data');
+        const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data', 'mapdif', 'main', this.color_map, this.unit)
+        MapLib.clearLayers(this.map);
+        this.map.getLayers().insertAt(0, data_dif);
+        MapLib.select_country(this.map)
+        console.log("finish")
+        console.timeEnd()
+
+      })
+    ))
+  }
+
+    // async per_different(){
+    //   this.display = 'show'
+    //   // MapLib.add_graticule_layer(this.map)
+    //   console.log("dat", this.index)
+    //   console.log(this.chooseyear1.controls['fromyear1'].value)
+    //   // this.percent = "Work"
+    //   console.time()
+    //   this.start1 = this.chooseyear1.controls['fromyear1'].value
+    //   this.stop1 = this.chooseyear1.controls['toyear1'].value
+    //   this.start2 = this.chooseyear2.controls['fromyear2'].value
+    //   this.stop2 = this.chooseyear2.controls['toyear2'].value
+    //   let v
+    //   let L = []
+    //   console.log("-----",this.index)
+    //   await this.tempService.per_dif(this.dataset, this.index,this.start1, this.stop1,this.start2, this.stop2).then(data => data.subscribe(
+    //       (res => { 
+    //         // console.log(">>>>>>>>>>",res)
+    //         let resp = JSON.parse(res)
+    //         console.log(">>>>>>>>>",resp)
+    //         // console.log(">>>>>>>>>",resp[3])
+    //         var val = resp[2]
+    //         const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data','mapdif','per')
+    //         // const geojson = MapLib.merge_data_to_geojson(resp[0],resp[1], val, this.North, this.South, this.West, this.East,'value');
+    //         // console.log("geojson",geojson)
+    //         // const datalayer = MapLib.genGridData(geojson, resp[3], resp[4], resp[7], resp[5], resp[6],'main','lowres_data');
+    //         MapLib.clearLayers(this.map);
+    //         this.map.getLayers().insertAt(0,data_dif);
+    //         MapLib.select_country(this.map)
+    //         console.log("finish")
+    //         console.timeEnd()
+
+    //       }
+    //       )))
+    // }
+
+    // async raw_different(){
+    //   this.display = 'show'
+    //   console.log("dat", this.index)
+    //   console.log(this.chooseyear1.controls['fromyear1'].value)
+    //   console.time()
+    //   this.start1 = this.chooseyear1.controls['fromyear1'].value
+    //   this.stop1 = this.chooseyear1.controls['toyear1'].value
+    //   this.start2 = this.chooseyear2.controls['fromyear2'].value
+    //   this.stop2 = this.chooseyear2.controls['toyear2'].value
+
+    //   await this.tempService.raw_dif(this.dataset, this.index,this.start1, this.stop1,this.start2, this.stop2).then(data => data.subscribe(
+    //       (res => { 
+    //         let resp = JSON.parse(res)
+    //         console.log(">>>>>>>>>",resp)
+    //         var val = resp[2]
+    //         // const geojson = MapLib.merge_data_to_geojson(resp[0],resp[1], val, this.North, this.South, this.West, this.East,'value');
+    //         // console.log("geojson",geojson)
+    //         // var datalayer = MapLib.genGridData(geojson, resp[3], resp[4], resp[7], resp[5], resp[6],'main','lowres_data');
+    //         const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data','mapdif','main')
+    //         MapLib.clearLayers(this.map);
+    //         this.map.getLayers().insertAt(0,data_dif);
+    //         MapLib.select_country(this.map)
+
+    //         console.log("finish")
+    //         console.timeEnd()
+
+    //       }
+    //       )))
+    // }
+
+  // async map_range1() {
+  //   this.display = 'show'
+  //   this.start1 = this.chooseyear1.controls['fromyear1'].value
+  //   this.stop1 = this.chooseyear1.controls['toyear1'].value
+  //   this.Ranges = 'Year ' + this.start1 + '-' + this.stop1 
+  //   await this.tempService.map_range1(this.dataset, this.index, this.start1, this.stop1).then(data => data.subscribe(
+  //     (res => {
+  //       let resp = JSON.parse(res)
+  //       console.log(">>>>>>>>>", resp)
+  //       this.min1 = resp[3]
+  //       this.max1 = resp[4]
+  //       const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data','map1','main')
+  //       MapLib.clearLayers(this.map1);
+  //       this.map1.getLayers().insertAt(0, data_dif);
+  //       MapLib.select_country(this.map1)
+  //       MapLib.setzoom(this.map1)
+
+  //       console.log("finish")
+  //     })
+  //   ))
+  // }
+
+  // async map_range2() {
+  //   this.display = 'show'
+  //   this.start2 = this.chooseyear2.controls['fromyear2'].value
+  //   this.stop2 = this.chooseyear2.controls['toyear2'].value
+  //   this.Ranges2 = 'Year ' + this.start2 + '-' + this.stop2 
+  //   await this.tempService.map_range2(this.dataset, this.index, this.start2, this.stop2).then(data => data.subscribe(
+  //     (res => {
+  //       let resp = JSON.parse(res)
+  //       console.log(">>>>>>>>>", resp[7])
+  //       var value = resp[2]
+  //       var geojson = MapLib.convert_to_geojson(value,resp[0], resp[1],)
+  //       var merge = MapLib.merge_data_to_geojson(geojson, value, this.North, this.South, this.West, this.East,'value')
+  //       // var layer = MapLib.genGridData(
+  //       //   merge, min_, max_, color, lon_step, lat_step,'main', layername
+  //       // );
+  //       // const geojson2 = MapLib.merge_data_to_geojson(resp[0], resp[1], value, this.North, this.South, this.West, this.East, 'value');
+  //       const datalayer2 = MapLib.genGridData(merge, this.min1, this.max1, resp[7], resp[5], resp[6], 'main', 'lowres_data','map2');
+  //       // const data_dif = this.getDataLayer(resp,this.North, this.South, this.West, this.East,'lowres_data')
+  //       MapLib.clearLayers(this.map2);
+  //       this.map2.getLayers().insertAt(0, datalayer2);
+  //       MapLib.select_country(this.map2)
+  //       MapLib.setzoom(this.map2)
+
+  //     }
+  //     )))
+  // }
 
   // select specific month ---------------------------------------------------------------------------------------- 
 
@@ -375,7 +452,7 @@ export class DifferenceComponent implements OnInit {
         console.log(">>>>>>>>>", resp)
         this.min1 = resp[3]
         this.max1 = resp[4]
-        const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data','map1','main')
+        const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data', 'map1', 'main', this.color_map, this.unit)
         MapLib.clearLayers(this.map1);
         this.map1.getLayers().insertAt(0, data_dif);
         MapLib.select_country(this.map1)

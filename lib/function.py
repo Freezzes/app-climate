@@ -84,3 +84,14 @@ def select_data_fromdate_year(f):
         val = ds['value'][:]
         V.append(val)
     return V,ds['lat'],ds['lon']
+
+def map_month(f):
+    print("month",len(f))
+    V = []
+    for i in range(len(f)):
+        ds = np.load(f[i])
+        val = ds['value'][:]
+        val = np.nanmean(val, axis=0)  # .flatten()
+        V.append(val)
+
+    return V,ds['lat'],ds['lon']

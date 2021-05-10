@@ -62,7 +62,7 @@ def getmiss(startyear,stopyear,station,dff):
 @app.route('/api/selectmissing', methods=['GET'])
 def selectmissing():
     dff = str(request.args.get("dff"))
-    readfile = pd.read_csv(f"C:/Users/ice/Documents/climate/data/missing-{dff}.csv")
+    readfile = pd.read_csv(f"E:/ice/climate/data/missing-{dff}.csv")
     station = list(set(readfile['station']))
     startyear = readfile['y'][0]
     stopyear = readfile['y'][readfile.index[-1]]
@@ -77,20 +77,20 @@ def locat():
     stopdate = str(request.args.get("stopdate"))      # '1981-02-28'
 
     if df_f == 'tas':
-        ds = pd.read_csv("C:/Users/ice/Documents/climate/data/station_column_format/tmean_1951-2015.csv")
+        ds = pd.read_csv("E:/ice/climate/data/station_column_format/tmean_1951-2015.csv")
         color_map = 'cool_warm'
     elif df_f == 'tasmin' :
-        ds = pd.read_csv("C:/Users/ice/Documents/climate/data/station_column_format/tmin_1951-2016.csv")
+        ds = pd.read_csv("E:/ice/climate/data/station_column_format/tmin_1951-2016.csv")
         color_map = 'cool_warm'
     elif df_f == 'tasmax' :
-        ds = pd.read_csv("C:/Users/ice/Documents/climate/data/station_column_format/tmax_1951-2016.csv") 
+        ds = pd.read_csv("E:/ice/climate/data/station_column_format/tmax_1951-2016.csv") 
         color_map = 'cool_warm'
     elif df_f == 'pr':
-        ds = pd.read_csv("C:/Users/ice/Documents/climate/data/station_column_format/pr_1951-2018.csv")
+        ds = pd.read_csv("E:/ice/climate/data/station_column_format/pr_1951-2018.csv")
         color_map = 'dry_wet'
 
         
-    df = pd.read_csv("C:/Users/ice/Documents/climate/data/station_column_format/station_ThailandTMD.csv")
+    df = pd.read_csv("E:/ice/climate/data/station_column_format/station_ThailandTMD.csv")
     df['Avg_val'] = "" 
     ds['date'] = pd.to_datetime(ds['date'] , format='%Y-%m-%d')
     col = ds.columns[3:-1]
@@ -110,7 +110,7 @@ def selectboxplot2():
     start_date = str(request.args.get("start_date"))
     end_date = str(request.args.get("end_date"))
     res = station.strip('][').split(',') 
-    dff = pd.read_csv(f'C:/Users/ice/Documents/climate/data/{df}-{showtype}.csv')
+    dff = pd.read_csv(f'E:/ice/climate/data/{df}-{showtype}.csv')
         
     # calculate value
     if showtype =='year':
@@ -129,9 +129,9 @@ def selectboxplot2():
 def anomalyplot():    
     dff = str(request.args.get("dff"))
     station = int(request.args.get("station"))
-    region = pd.read_csv('C:/Users/ice/Documents/climate/data/station_Thailand_region.csv')
+    region = pd.read_csv('E:/ice/climate/data/station_Thailand_region.csv')
     re = region.loc[region['id']==station]['region'].values
-    df = pd.read_csv(f'C:/Users/ice/Documents/climate/data/{dff}_station_{re[0].lower()}_Thailand.csv')
+    df = pd.read_csv(f'E:/ice/climate/data/{dff}_station_{re[0].lower()}_Thailand.csv')
 
     mask = (df['year'] >= 1961) & (df['year'] <= 1990)
     baseline = df.loc[mask]
@@ -149,47 +149,12 @@ def anomalyplot():
     return jsonify(ana,year,list(re))
 
 #-------------------------- NC anomaly ------------------------------------------------------
-# ------------------- don't know why and now this function error ---------------------
-def anomalyNC():
-    df = Dataset("C:/Users/ice/Documents/climate/data/cru_ts4.04.1901.2019.tmp.dat.nc")
-    temp = df.variables['tmp'][:]
-    # lat = df.variables['lat'][:]
-    # lon = df.variables['lon'][:]
-    # time = df.variables['time'][:]
-
-    # baseline 1961 -1990
-    baseline_start = 1961
-    baseline_end = 1991
-    start_year = 1901
-    end_year = 2019
-    start_index = baseline_start - start_year
-    end_index = baseline_end - start_year
-    # num_baseline_year = baseline_end - baseline_start
-
-    # calculate baseline
-    baseline = np.nanmean(temp[start_index:end_index], axis=(1,2))
-    baseline_sum = np.sum(baseline)
-
-    baseline = baseline_sum/(baseline.shape)
-
-    # all value
-    global_average= np.nanmean(temp[:,:,:],axis=(1,2)) 
-    annual_temp = np.mean(np.reshape(global_average,(119,12)), axis = 1)
-
-    # calculate anomaly
-    anomaly = annual_temp - baseline
-    year = list(range(start_year,end_year+1))
-
-    ana = {'anomaly':anomaly}
-    year = {'year':year}
-    return jsonify(ana,year)
-
 @app.route('/api/anomalyNC', methods=["GET"])
 def anamalymap():
     ncfile = str(request.args.get("ncfile"))
     filename = str(request.args.get("filename"))
     readfile = pd.read_csv(f'C:/Users/ice/Documents/climate/manage_nc/{filename}_{ncfile}.csv')
-    df = pd.read_csv('C:/Users/ice/Documents/climate/data/index_detail.csv')
+    df = pd.read_csv('E:/ice/climate/data/index_detail.csv')
     query = df.loc[(df['dataset']==ncfile)&(df['index']==filename)]
     select = list(query[['long_name']].values[0])
     an = []
@@ -223,7 +188,7 @@ def country_anomaly():
     else:
         startyear = 1979 #int(request.args.get("startyear"))
         stopyear = 2014 #int(request.args.get("stopyear"))
-    df = pd.read_csv('C:/Users/ice/Documents/climate/data/index_detail.csv')
+    df = pd.read_csv('E:/ice/climate/data/index_detail.csv')
     
     query = df.loc[(df['dataset']==dataset)&(df['index']==index)]
     select = list(query[['long_name']].values[0])
@@ -269,34 +234,71 @@ def mkstation():
 # ----------------------------------map different-----------------------------------------
 @app.route("/map_range1", methods=["GET"])
 def map_range1():
-    
+    start = time.time()
     dataset = str(request.args.get("dataset"))
+    type_ = str(request.args.get("type_"))
+    rcp = str(request.args.get('rcp'))
     index = str(request.args.get("index"))
     start = int(request.args.get("start"))
     stop = int(request.args.get("stop"))
-    f = read_folder(dataset, index, start, stop)
-    V = []
-    for i in range(len(f)):
-        ds = np.load(f[i])
-        val = ds['value'][:]
-        val = np.mean(val, axis = 0)#.flatten()
-        V.append(val)
-    res = np.nanmean(V[:], axis = 0)#.flatten()
+    if rcp == 'None' and type_ == 'None':
+        f = read_folder(dataset, index, start, stop,'l')
+        V = map_month(f)
+    else:
+        f = read_folder_rcp(dataset, index, type_,rcp,start, stop,'l')
+        if type_ == 'y':
+            V = select_data_fromdate_year(f)
+        elif type_ == 'm':
+            V = map_month(f)
+   
+   
+    res = np.nanmean(V[0][:], axis=0)  # .flatten()
     range1 = res.flatten()
     val1 = np.where(np.isnan(range1), None, range1)
 
-    Min , Max = np.float64(range_boxplot(range1))
+    Min, Max = np.float64(range_boxplot(range1))
+    lat = V[1]
+    lon = V[2]
+    x = np.repeat(lat, lon.shape[0])
+    y = np.tile(lon, lat.shape[0])
+    lat_step = lat[-1] - lat[-2]
+    lon_step = lon[-1] - lon[-2]
 
-    x = np.repeat(ds['lat'], ds['lon'].shape[0])
-    y = np.tile(ds['lon'], ds['lat'].shape[0])
-    lat_step = ds['lat'][-1] - ds['lat'][-2]
-    lon_step = ds['lon'][-1] - ds['lon'][-2]   
-    if index == 'pr':
-        color = 'dry_wet'
+    return jsonify(y.tolist(), x.tolist(), val1.tolist(), Min, Max, lon_step, lat_step)
+
+@app.route("/map_range2", methods=["GET"])
+def map_range2():
+    start = time.time()
+    dataset = str(request.args.get("dataset"))
+    type_ = str(request.args.get("type_"))
+    rcp = str(request.args.get('rcp'))
+    index = str(request.args.get("index"))
+    start = int(request.args.get("start"))
+    stop = int(request.args.get("stop"))
+    if rcp == 'None' and type_ == 'None':
+        f = read_folder(dataset, index, start, stop,'l')
+        V = map_month(f)
     else:
-        color = 'cool_warm'
+        f = read_folder_rcp(dataset, index, type_,rcp,start, stop,'l')
+        if type_ == 'y':
+            V = select_data_fromdate_year(f)
+        elif type_ == 'm':
+            V = map_month(f)
+   
+   
+    res = np.nanmean(V[0][:], axis=0)  # .flatten()
+    range1 = res.flatten()
+    val1 = np.where(np.isnan(range1), None, range1)
 
-    return jsonify(y.tolist(),x.tolist(),val1.tolist(),Min,Max,lon_step,lat_step,color)
+    Min, Max = np.float64(range_boxplot(range1))
+    lat = V[1]
+    lon = V[2]
+    x = np.repeat(lat, lon.shape[0])
+    y = np.tile(lon, lat.shape[0])
+    lat_step = lat[-1] - lat[-2]
+    lon_step = lon[-1] - lon[-2]
+
+    return jsonify(y.tolist(), x.tolist(), val1.tolist(), Min, Max, lon_step, lat_step)
 
 @app.route("/map_range1month", methods=["GET"])
 def map_range1month():
@@ -317,37 +319,6 @@ def map_range1month():
     for i in range(len(f)):
         ds = np.load(f[i])
         val = ds['value'][selectmonth]
-        val = np.mean(val, axis = 0)#.flatten()
-        V.append(val)
-    res = np.nanmean(V[:], axis = 0)#.flatten()
-    range1 = res.flatten()
-    val1 = np.where(np.isnan(range1), None, range1)
-
-    Min , Max = np.float64(range_boxplot(range1))
-
-    x = np.repeat(ds['lat'], ds['lon'].shape[0])
-    y = np.tile(ds['lon'], ds['lat'].shape[0])
-    lat_step = ds['lat'][-1] - ds['lat'][-2]
-    lon_step = ds['lon'][-1] - ds['lon'][-2]  
-    if index == 'pr':
-        color = 'dry_wet'
-    else:
-        color = 'cool_warm'
-
-    return jsonify(y.tolist(),x.tolist(),val1.tolist(),Min,Max,lon_step,lat_step,color)
-
-
-@app.route("/map_range2", methods=["GET"])
-def map_range2():
-    dataset = str(request.args.get("dataset"))
-    index = str(request.args.get("index"))
-    start = int(request.args.get("start"))
-    stop = int(request.args.get("stop"))
-    f = read_folder(dataset, index, start, stop)
-    V = []
-    for i in range(len(f)):
-        ds = np.load(f[i])
-        val = ds['value'][:]
         val = np.mean(val, axis = 0)#.flatten()
         V.append(val)
     res = np.nanmean(V[:], axis = 0)#.flatten()
@@ -404,101 +375,92 @@ def map_range2month():
 
     return jsonify(y.tolist(),x.tolist(),val1.tolist(),Min,Max,lon_step,lat_step,color)
 
-
-#--------------------------------- Low resolution---------------------------------------------------
 # -----------------------------------------------per-----------------------------------------------
-
 
 @app.route("/per_dif", methods=["GET"])
 def per_dif():
-    # start = time.time()
+    start = time.time()
     dataset = str(request.args.get("ncfile"))
     index = str(request.args.get("df_f"))
+    type_ = str(request.args.get("type_"))
+    rcp = str(request.args.get('rcp'))
     start1 = int(request.args.get("start1"))
     stop1 = int(request.args.get("stop1"))
     start2 = int(request.args.get("start2"))
     stop2 = int(request.args.get("stop2"))
-    f = read_folder_dif(dataset, index, start1, stop1,start2,stop2)
-    
-    V = []
-    for i in range(len(f[0])):
-        ds = np.load(f[0][i])
-        val = ds['value'][:]
-        val = np.mean(val, axis = 0)#.flatten()
-        V.append(val)
-    res = np.nanmean(V[:], axis = 0)#.flatten()
 
-    V1 = []
-    for i in range(len(f[1])):
-        ds = np.load(f[1][i])
-        val = ds['value'][:]
-        val = np.mean(val, axis = 0)#.flatten()
-        V1.append(val)
-    res1 = np.nanmean(V1[:], axis = 0)#.flatten()
-
-    dif = np.subtract(res1,res)
+    if rcp == 'None' and type_ == 'None':
+        f = read_folder_dif(dataset, index, start1, stop1, start2, stop2)
+        V = map_month(f[0])
+        V1 = map_month(f[1])
+    else:
+        f = read_folder_difrcp(dataset, index, type_, rcp, start1, stop1, start2, stop2)
+        if type_ == 'y':
+            V = select_data_fromdate_year(f[0])
+            V1 = select_data_fromdate_year(f[1])
+        elif type_ == 'm':
+            V = map_month(f[0])
+            V1 = map_month(f[1])
+   
+    res = np.nanmean(V[0][:], axis=0)  # .flatten()
+    res1 = np.nanmean(V1[0][:], axis=0)  # .flatten()
+   
+    dif = np.subtract(res1, res)
     per = ((dif/res)*100).flatten()
     per1 = np.where(np.isnan(per), None, per)
-    
+  
+    Min, Max = range_boxplot(per)
+    lat = V[1]
+    lon = V[2]
+    x = np.repeat(lat, lon.shape[0])
+    y = np.tile(lon, lat.shape[0])
+    lat_step = lat[-1] - lat[-2]
+    lon_step = lon[-1] - lon[-2]
 
-    Min , Max = range_boxplot(per)
-
-    x = np.repeat(ds['lat'], ds['lon'].shape[0])
-    y = np.tile(ds['lon'], ds['lat'].shape[0])
-    lat_step = ds['lat'][-1] - ds['lat'][-2]
-    lon_step = ds['lon'][-1] - ds['lon'][-2]
-    if index == 'pr':
-        color = 'dry_wet'
-    else:
-        color = 'cool_warm'
-
-    return jsonify(y.tolist(),x.tolist(),per1.tolist(),np.float64(Min),np.float64(Max),lon_step,lat_step,color,)
+    return jsonify(y.tolist(), x.tolist(), per1.tolist(), Min, Max, lon_step, lat_step)
 
 @app.route("/raw_dif", methods=["GET"])
 def raw_dif():
-    # start = time.time()
+    start = time.time()
     dataset = str(request.args.get("ncfile"))
     index = str(request.args.get("df_f"))
+    type_ = str(request.args.get("type_"))
+    rcp = str(request.args.get('rcp'))
     start1 = int(request.args.get("start1"))
     stop1 = int(request.args.get("stop1"))
     start2 = int(request.args.get("start2"))
     stop2 = int(request.args.get("stop2"))
-    f = read_folder_dif(dataset, index, start1, stop1,start2,stop2)
-
-    V = []
-    for i in range(len(f[0])):
-        ds = np.load(f[0][i])
-        val = ds['value'][:]
-        val = np.mean(val, axis = 0)#.flatten()
-        V.append(val)
-    res = np.nanmean(V[:], axis = 0)#.flatten()
-    # range1 = res.flatten()
-    # val1 = np.where(np.isnan(range1), None, range1)
-
-    V1 = []
-    for i in range(len(f[1])):
-        ds = np.load(f[1][i])
-        val = ds['value'][:]
-        val = np.mean(val, axis = 0)#.flatten()
-        V1.append(val)
-    res1 = np.nanmean(V1[:], axis = 0)#.flatten()
-    # range2 = res1.flatten()
-    # val2 = np.where(np.isnan(range2), None, range2)
-
-    raw = np.subtract(res1,res).flatten()
-    # per = ((dif/res)*100).flatten()
-    raw1 = np.where(np.isnan(raw), None, raw)
-    Min , Max = range_boxplot(raw)
-
-    x = np.repeat(ds['lat'], ds['lon'].shape[0])
-    y = np.tile(ds['lon'], ds['lat'].shape[0])
-    lat_step = ds['lat'][-1] - ds['lat'][-2]
-    lon_step = ds['lon'][-1] - ds['lon'][-2]
-    if index == 'pr':
-        color = 'dry_wet'
+    
+    if rcp == 'None' and type_ == 'None':
+        f = read_folder_dif(dataset, index, start1, stop1, start2, stop2)
+        V = map_month(f[0])
+        V1 = map_month(f[1])
     else:
-        color = 'cool_warm'
-    return jsonify(y.tolist(),x.tolist(),raw1.tolist(),np.float64(Min),np.float64(Max),lon_step,lat_step,color,)
+        f = read_folder_difrcp(dataset, index, type_, rcp, start1, stop1, start2, stop2)
+        if type_ == 'y':
+            V = select_data_fromdate_year(f[0])
+            V1 = select_data_fromdate_year(f[1])
+        elif type_ == 'm':
+            V = map_month(f[0])
+            V1 = map_month(f[1])
+   
+    res = np.nanmean(V[0][:], axis=0)  # .flatten()
+    res1 = np.nanmean(V1[0][:], axis=0)  # .flatten()
+
+    raw = np.subtract(res1, res).flatten()
+    raw1 = np.where(np.isnan(raw), None, raw)
+
+    Min, Max = np.float64(range_boxplot(raw))
+
+    lat = V[1]
+    lon = V[2]
+    x = np.repeat(lat, lon.shape[0])
+    y = np.tile(lon, lat.shape[0])
+    lat_step = lat[-1] - lat[-2]
+    lon_step = lon[-1] - lon[-2]
+
+
+    return jsonify(y.tolist(), x.tolist(), raw1.tolist(), Min, Max, lon_step, lat_step)
 
 #------------------------ map trend ------------------------------------------
 #-------------------- trend function -----------------------------------------
@@ -738,7 +700,7 @@ def country_avg_rcp():
 #----------------------- Get detials ----------------------------------
 @app.route("/api/dataset", methods=["GET"])
 def get_dataset():
-    ds = pd.read_csv("C:/Users/ice/Documents/climate/data/dataset_name.csv")
+    ds = pd.read_csv("E:/ice/climate/data/dataset_name.csv")
     res = []
     for i in range(len(ds['id'])):
         res.append({'id': ds['id'][i] , 'name': ds['name'][i] })
@@ -749,7 +711,7 @@ def get_dataset():
 def get_index():
     dataset = str(request.args.get("dataset"))
     print("dataset",dataset)
-    ds = pd.read_csv('C:/Users/ice/Documents/climate/data/index_detail.csv')
+    ds = pd.read_csv('E:/ice/climate/data/index_detail.csv')
     a = ds.loc[ds['dataset'] == dataset]
     select = a[['index', 'name']].to_json(orient='records',force_ascii=0)
     select = json.loads(select)
@@ -759,7 +721,7 @@ def get_index():
 def detail():
     dataset = str(request.args.get("dataset"))
     index = str(request.args.get("index"))
-    df = pd.read_csv('C:/Users/ice/Documents/climate/data/index_detail.csv')
+    df = pd.read_csv('E:/ice/climate/data/index_detail.csv')
     # query = df.loc[(df['dataset']==dataset)&(df['index']==index)]
     # select = query['year'][0] #.to_json(orient='records')
     # print("yearrr",select)
@@ -770,7 +732,7 @@ def detail():
 
 @app.route("/api/dataset_rcp", methods=["GET"])
 def get_dataset_rcp():
-    ds = pd.read_csv('C:/Users/ice/Documents/climate/data/dataset_rcp.csv')
+    ds = pd.read_csv('E:/ice/climate/data/dataset_rcp.csv')
     res = []
     for i in range(len(ds['id'])):
         res.append({'id': ds['id'][i], 'name': ds['name'][i]})
@@ -780,7 +742,7 @@ def get_dataset_rcp():
 def get_index_rcp():
     type_ = str(request.args.get("type_"))
     print("type",type_)
-    ds = pd.read_csv('C:/Users/ice/Documents/climate/data/detail_rcp.csv')
+    ds = pd.read_csv('E:/ice/climate/data/detail_rcp.csv')
     a = ds.loc[ds['type_'] == type_]
     select = a[['index', 'name']].to_json(orient='records',force_ascii=0)
     select = json.loads(select)
@@ -791,7 +753,7 @@ def detail_rcp():
     dataset = str(request.args.get("dataset"))
     index = str(request.args.get("index"))
     type_ = str(request.args.get('type_'))
-    df = pd.read_csv('C:/Users/ice/Documents/climate/data/detail_rcp.csv')
+    df = pd.read_csv('E:/ice/climate/data/detail_rcp.csv')
     query = df.loc[(df['type_'] == type_) & (df['index'] == index)]
     select = query[['long_name', 'description', 'unit', 'year',
                     'color_map']].to_json(orient='records')

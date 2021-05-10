@@ -275,9 +275,30 @@ export class HomeComponent implements OnInit {
 
   async get_difference() {
     this.select = 'get_dif'
-    var data = this.choosedataset.controls['raw'].value
+    var dataset = this.choosedataset.controls['raw'].value
     var index = this.chooseindex.controls['index'].value
-    var sent = [data, index]
+    var rcp ='None'
+    var types = 'None'
+
+    var region = [this.North.value, this.South.value, this.West.value, this.East.value]
+    await this.inputservice.sendRegion(region)
+    var clear = 'clear'
+    var sent = [{'dataset':dataset,'index': index,'rcp':rcp,'types':types,'clear':clear}]
+    // var sent = [dataset, index, clear]
+    this.inputservice.senddif(sent)
+  }
+
+  async getrcp_difference() {
+    this.select = 'get_dif'
+    var dataset = this.choosedataset.controls['rcp'].value
+    var index = this.chooseindex.controls['indices'].value
+    var rcp = this.chooseRCM.controls['rcp'].value
+    var types = this.choose_m_y.controls['m_y'].value
+
+    var region = [90, -90, -180, 180]
+    await this.inputservice.sendRegion(region)
+    var clear = 'clear'
+    var sent = [{'dataset':dataset,'index': index,'rcp':rcp,'types':types,'clear':clear}]
     this.inputservice.senddif(sent)
   }
 
