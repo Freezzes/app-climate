@@ -353,17 +353,13 @@ export class HomeComponent implements OnInit {
               this.inputservice.sendLowRes(sent)
 
             }))
-
-          this.tempService.getanomaly_global_rcp(dataset, index, types, rcp).then(datas =>
-            // datas.subscribe(res =>{
-              console.log("rcp in data home res >>> ",datas)
-            )
+          
         })
       ))
 
     await this.tempService.getanomaly_global_rcp(dataset, index, types, rcp).then(datas =>
         datas.subscribe(res =>{
-          console.log("rcp home res >>> ",res)
+          console.log("rcp await home res >>> ",res)
           this.anomalydata = res[0].anomaly
           this.anomaly_year = res[1].year
           this.anomaly_name = res[2].name
@@ -377,7 +373,12 @@ export class HomeComponent implements OnInit {
                 { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'red' }
               )
             }
-            else if (this.anomalydata[i] < 0) {
+            else if (this.anomalydata[i] <= 0) {
+              this.Data.dataPoints.push(
+                { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'blue' }
+              )
+            }
+            else if (String(this.anomalydata[i]) == String("-")) {
               this.Data.dataPoints.push(
                 { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'blue' }
               )

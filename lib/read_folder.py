@@ -3,7 +3,7 @@ import os
 import pandas as pd
 
 def check_range(dataset,index,startyear,stopyear):
-    df = pd.read_csv('E:/ice/climate/data/index_detail.csv')
+    df = pd.read_csv('C:/Users/ice/climate/data/index_detail.csv')
     query = df.loc[(df['dataset']==dataset)&(df['index']==index)]
     select = query['year'].values #.to_json(orient='records')
     spl = select[0].split('-')
@@ -17,7 +17,7 @@ def check_range(dataset,index,startyear,stopyear):
         return {'check':'no data','year':select[0]}
 
 def read_folder(dataset, index, startyear, stopyear,res):
-    folder = f"E:/ice/managenc/{dataset}_{res}_file/"
+    folder = f"C:/Users/ice/managenc/{dataset}_{res}_file/"
     l_path = []
     for _file in os.listdir(folder):
         for t in range(startyear,stopyear+1):
@@ -28,7 +28,7 @@ def read_folder(dataset, index, startyear, stopyear,res):
     return l_path
 
 def read_folder_rcp(dataset, index,type_,rcp, startyear, stopyear,res):
-    folder = f"E:/ice/managenc/{dataset}_{rcp}_{type_}_{res}_file/"
+    folder = f"C:/Users/ice/managenc/{dataset}_{rcp}_{type_}_{res}_file/"
     # print("folder",folder)
     l_path = []
     for _file in os.listdir(folder):
@@ -42,7 +42,7 @@ def read_folder_rcp(dataset, index,type_,rcp, startyear, stopyear,res):
 def read_folder_difrcp(dataset, index,type_,rcp, start1,stop1, start2,stop2):
     l_path1 = []
     l_path2 = []
-    folder = f"E:/ice/managenc/{dataset}_{rcp}_{type_}_h_file/"
+    folder = f"C:/Users/ice/managenc/{dataset}_{rcp}_{type_}_h_file/"
     for _file in os.listdir(folder):
         for y1 ,y2  in zip(range(start1,stop1+1), range(start2,stop2+1)):
             if _file[:-4].split("-")[0] == index and _file[:-4].split("-")[1] == str(y1) :
@@ -61,7 +61,7 @@ def read_folder_difrcp(dataset, index,type_,rcp, start1,stop1, start2,stop2):
 #     return l_path
 
 def read_folder_h(dataset, index, startyear, stopyear):
-    folder = f"E:/ice/managenc/{dataset}_h_file/"
+    folder = f"C:/Users/ice/managenc/{dataset}_h_file/"
     l_path = []
     for _file in os.listdir(folder):
         for t in range(startyear,stopyear+1):
@@ -73,7 +73,7 @@ def read_folder_h(dataset, index, startyear, stopyear):
 def read_folder_dif(dataset, index, start1,stop1, start2,stop2):
     l_path1 = []
     l_path2 = []
-    folder = f"E:/ice/managenc/{dataset}_l_file/"
+    folder = f"C:/Users/ice/managenc/{dataset}_l_file/"
     for _file in os.listdir(folder):
         for y1 ,y2  in zip(range(start1,stop1+1), range(start2,stop2+1)):
             if _file[:-4].split("-")[0] == index and _file[:-4].split("-")[1] == str(y1) :

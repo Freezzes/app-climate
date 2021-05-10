@@ -62,7 +62,7 @@ def getmiss(startyear,stopyear,station,dff):
 @app.route('/api/selectmissing', methods=['GET'])
 def selectmissing():
     dff = str(request.args.get("dff"))
-    readfile = pd.read_csv(f"E:/ice/climate/data/missing-{dff}.csv")
+    readfile = pd.read_csv(f"C:/Users/ice/climate/data/missing-{dff}.csv")
     station = list(set(readfile['station']))
     startyear = readfile['y'][0]
     stopyear = readfile['y'][readfile.index[-1]]
@@ -77,20 +77,20 @@ def locat():
     stopdate = str(request.args.get("stopdate"))      # '1981-02-28'
 
     if df_f == 'tas':
-        ds = pd.read_csv("E:/ice/climate/data/station_column_format/tmean_1951-2015.csv")
+        ds = pd.read_csv("C:/Users/ice/climate/data/station_column_format/tmean_1951-2015.csv")
         color_map = 'cool_warm'
     elif df_f == 'tasmin' :
-        ds = pd.read_csv("E:/ice/climate/data/station_column_format/tmin_1951-2016.csv")
+        ds = pd.read_csv("C:/Users/ice/climate/data/station_column_format/tmin_1951-2016.csv")
         color_map = 'cool_warm'
     elif df_f == 'tasmax' :
-        ds = pd.read_csv("E:/ice/climate/data/station_column_format/tmax_1951-2016.csv") 
+        ds = pd.read_csv("C:/Users/ice/climate/data/station_column_format/tmax_1951-2016.csv") 
         color_map = 'cool_warm'
     elif df_f == 'pr':
-        ds = pd.read_csv("E:/ice/climate/data/station_column_format/pr_1951-2018.csv")
+        ds = pd.read_csv("C:/Users/ice/climate/data/station_column_format/pr_1951-2018.csv")
         color_map = 'dry_wet'
 
         
-    df = pd.read_csv("E:/ice/climate/data/station_column_format/station_ThailandTMD.csv")
+    df = pd.read_csv("C:/Users/ice/climate/data/station_column_format/station_ThailandTMD.csv")
     df['Avg_val'] = "" 
     ds['date'] = pd.to_datetime(ds['date'] , format='%Y-%m-%d')
     col = ds.columns[3:-1]
@@ -110,7 +110,7 @@ def selectboxplot2():
     start_date = str(request.args.get("start_date"))
     end_date = str(request.args.get("end_date"))
     res = station.strip('][').split(',') 
-    dff = pd.read_csv(f'E:/ice/climate/data/{df}-{showtype}.csv')
+    dff = pd.read_csv(f'C:/Users/ice/climate/data/{df}-{showtype}.csv')
         
     # calculate value
     if showtype =='year':
@@ -129,9 +129,9 @@ def selectboxplot2():
 def anomalyplot():    
     dff = str(request.args.get("dff"))
     station = int(request.args.get("station"))
-    region = pd.read_csv('E:/ice/climate/data/station_Thailand_region.csv')
+    region = pd.read_csv('C:/Users/ice/climate/data/station_Thailand_region.csv')
     re = region.loc[region['id']==station]['region'].values
-    df = pd.read_csv(f'E:/ice/climate/data/{dff}_station_{re[0].lower()}_Thailand.csv')
+    df = pd.read_csv(f'C:/Users/ice/climate/data/{dff}_station_{re[0].lower()}_Thailand.csv')
 
     mask = (df['year'] >= 1961) & (df['year'] <= 1990)
     baseline = df.loc[mask]
@@ -153,8 +153,8 @@ def anomalyplot():
 def anamalymap():
     ncfile = str(request.args.get("ncfile"))
     filename = str(request.args.get("filename"))
-    readfile = pd.read_csv(f'C:/Users/ice/Documents/climate/manage_nc/{filename}_{ncfile}.csv')
-    df = pd.read_csv('E:/ice/climate/data/index_detail.csv')
+    readfile = pd.read_csv(f'C:/Users/ice/climate/manage_nc/{filename}_{ncfile}.csv')
+    df = pd.read_csv('C:/Users/ice/climate/data/index_detail.csv')
     query = df.loc[(df['dataset']==ncfile)&(df['index']==filename)]
     select = list(query[['long_name']].values[0])
     an = []
@@ -179,13 +179,17 @@ def anomaly_global_rcp():
     index = str(request.args.get("index"))
     type_ = str(request.args.get("type_"))
     rcp = str(request.args.get('rcp'))
-    readfile = pd.read_csv(f'E:/ice/climate/manage_nc/anomaly_indices_{type_}/{dataset}_{rcp}_{index}_anomaly.csv')
-    df = pd.read_csv('E:/ice/climate/data/detail_rcp.csv')
+    readfile = pd.read_csv(f'C:/Users/ice/climate/manage_nc/anomaly_indices_{type_}/{dataset}_{rcp}_{index}_anomaly.csv')
+    df = pd.read_csv('C:/Users/ice/climate/data/detail_rcp.csv')
     query = df.loc[(df['type_']==type_)&(df['index']==index)]
     select = list(query[['long_name']].values[0])
+    print("rcp name >>> ", select)
     an = []
     for i in readfile['value']:
-        an.append(float("%.2f"% i))
+        if str(i) == str('nan'):
+            an.append("-")
+        else :
+            an.append(float("%.2f"% i))
     y = []
     for i in readfile['year']:
         y.append(i)
@@ -196,6 +200,7 @@ def anomaly_global_rcp():
         unit = "mm"
     else:
         unit = "°C"
+    print("rcp ano >>> ",ano)
     return jsonify(ano,year,namefile,unit)
 
 # ----------------------- Anomaly select country ---------------------------------------
@@ -215,7 +220,7 @@ def country_anomaly():
     else:
         startyear = 1979 #int(request.args.get("startyear"))
         stopyear = 2014 #int(request.args.get("stopyear"))
-    df = pd.read_csv('E:/ice/climate/data/index_detail.csv')
+    df = pd.read_csv('C:/Users/ice/climate/data/index_detail.csv')
     
     query = df.loc[(df['dataset']==dataset)&(df['index']==index)]
     select = list(query[['long_name']].values[0])
@@ -248,7 +253,7 @@ def country_anomaly():
 #----------------------- MK TEST -------------------------------------------------------
 @app.route("/api/mkstation",methods=["GET"])
 def mkstation():
-    df = pd.read_csv("C:/Users/ice/Documents/climate/TMD_DATA/TMD_DATA/clean_data/tmean1951-2015.csv")
+    df = pd.read_csv("C:/Users/ice/climate/TMD_DATA/TMD_DATA/clean_data/tmean1951-2015.csv")
     group_year = df.groupby('year').mean()
     group_year = group_year.drop(columns=['day', 'month'])
     group_year = np.round(group_year, 2)
@@ -727,7 +732,7 @@ def country_avg_rcp():
 #----------------------- Get detials ----------------------------------
 @app.route("/api/dataset", methods=["GET"])
 def get_dataset():
-    ds = pd.read_csv("E:/ice/climate/data/dataset_name.csv")
+    ds = pd.read_csv("C:/Users/ice/climate/data/dataset_name.csv")
     res = []
     for i in range(len(ds['id'])):
         res.append({'id': ds['id'][i] , 'name': ds['name'][i] })
@@ -738,7 +743,7 @@ def get_dataset():
 def get_index():
     dataset = str(request.args.get("dataset"))
     print("dataset",dataset)
-    ds = pd.read_csv('E:/ice/climate/data/index_detail.csv')
+    ds = pd.read_csv('C:/Users/ice/climate/data/index_detail.csv')
     a = ds.loc[ds['dataset'] == dataset]
     select = a[['index', 'name']].to_json(orient='records',force_ascii=0)
     select = json.loads(select)
@@ -748,7 +753,7 @@ def get_index():
 def detail():
     dataset = str(request.args.get("dataset"))
     index = str(request.args.get("index"))
-    df = pd.read_csv('E:/ice/climate/data/index_detail.csv')
+    df = pd.read_csv('C:/Users/ice/climate/data/index_detail.csv')
     # query = df.loc[(df['dataset']==dataset)&(df['index']==index)]
     # select = query['year'][0] #.to_json(orient='records')
     # print("yearrr",select)
@@ -759,7 +764,7 @@ def detail():
 
 @app.route("/api/dataset_rcp", methods=["GET"])
 def get_dataset_rcp():
-    ds = pd.read_csv('E:/ice/climate/data/dataset_rcp.csv')
+    ds = pd.read_csv('C:/Users/ice/climate/data/dataset_rcp.csv')
     res = []
     for i in range(len(ds['id'])):
         res.append({'id': ds['id'][i], 'name': ds['name'][i]})
@@ -769,7 +774,7 @@ def get_dataset_rcp():
 def get_index_rcp():
     type_ = str(request.args.get("type_"))
     print("type",type_)
-    ds = pd.read_csv('E:/ice/climate/data/detail_rcp.csv')
+    ds = pd.read_csv('C:/Users/ice/climate/data/detail_rcp.csv')
     a = ds.loc[ds['type_'] == type_]
     select = a[['index', 'name']].to_json(orient='records',force_ascii=0)
     select = json.loads(select)
@@ -780,7 +785,7 @@ def detail_rcp():
     dataset = str(request.args.get("dataset"))
     index = str(request.args.get("index"))
     type_ = str(request.args.get('type_'))
-    df = pd.read_csv('E:/ice/climate/data/detail_rcp.csv')
+    df = pd.read_csv('C:/Users/ice/climate/data/detail_rcp.csv')
     query = df.loc[(df['type_'] == type_) & (df['index'] == index)]
     select = query[['long_name', 'description', 'unit', 'year',
                     'color_map']].to_json(orient='records')

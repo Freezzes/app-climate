@@ -1,7 +1,7 @@
 import 'ol/ol.css';
 import * as ol from 'openlayers';
 
-import * as d3 from 'C:/Users/ice/Documents/climate/data/d3/d3';;
+import * as d3 from 'C:/Users/ice/climate/data/d3/d3';
 import * as $ from 'jquery'
 import Polygon from 'ol/geom/Polygon';
 import { platformModifierKeyOnly } from 'ol/events/condition';

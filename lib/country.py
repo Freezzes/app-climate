@@ -6,7 +6,7 @@ from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 
 def _get_country_mask_arr(country, lats, lons):
-    with open('C:/Users/ice/Documents/app-climate/client/src/assets/map/geo-medium.json') as json_file:
+    with open('C:/Users/ice/app-climate/client/src/assets/map/geo-medium.json') as json_file:
         jsondata = json.load(json_file)
         for c in jsondata['features']:
             if c['properties']['name'] == country:
@@ -50,7 +50,7 @@ def _get_country_mask_arr(country, lats, lons):
 
 def _get_continent_mask_arr(continent, lats, lons):
     start = time.time()
-    with open('C:/Users/ice/Documents/app-climate/client/src/assets/map/geo-medium.json') as json_file:
+    with open('C:/Users/ice/app-climate/client/src/assets/map/geo-medium.json') as json_file:
         jsondata = json.load(json_file)
         country_json = []
         for c in jsondata['features']:
@@ -134,7 +134,7 @@ def mask_inside_country_npz(dataset,country, lats, lons, data):
     start = time.time()
     lats = np.array(lats)
     lons = np.array(lons)
-    path = f'E:/ice/mask_country/{dataset}_high.npz'
+    path = f'C:/Users/ice/mask_country/{dataset}_high.npz'
     file_mask =  np.load(path,allow_pickle=True)
     mask = file_mask['mask'].tolist()
     mask_arr = mask.get(country)
