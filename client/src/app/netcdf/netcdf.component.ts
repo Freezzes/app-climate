@@ -258,7 +258,39 @@ export class NetcdfComponent implements OnInit {
                   console.log("point", Data.dataPoints)
                   var sent = [Data.dataPoints, res[1], res[2], selectedCountry]
                   that.sharedData.sendGraphAvg(sent)
-                })              
+                })  
+                
+              that.tempService.anomalyCountry_rcp(data.input.dataset, data.input.index,  selectedCountry, data.input.rcp, data.input.type).subscribe(
+                (res:any) => {
+                  console.log("rcp country ano res >>> ",res)
+                  this.anomalydata = res[0].anomaly
+                  this.anomaly_year = res[1].year
+                  this.anomaly_name = res[2].name
+                  var unit = res[3]
+                  var Data = {
+                    dataPoints: []
+                  }
+                  for (var i = 0; i < this.anomalydata.length; i++) {
+                    if (this.anomalydata[i] > 0) {
+                      Data.dataPoints.push(
+                        { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'red' }
+                      )
+                    }
+                    else if (this.anomalydata[i] <= 0) {
+                      Data.dataPoints.push(
+                        { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'blue' }
+                      )
+                    }
+                    else if (String(this.anomalydata[i]) == String("-")) {
+                      this.Data.dataPoints.push(
+                        { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'blue' }
+                      )
+                    }
+                    var send = [Data.dataPoints, this.anomaly_name, unit,selectedCountry]
+  
+                    that.sharedData.sendAnomaly(send)
+                  }
+                })
             }
             else if (that.dataset_type == 'raw') {
               that.tempService.anomalyCountry(data.input.dataset, data.input.index, selectedCountry).subscribe(

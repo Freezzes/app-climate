@@ -183,7 +183,7 @@ def anomaly_global_rcp():
     df = pd.read_csv('C:/Users/ice/climate/data/detail_rcp.csv')
     query = df.loc[(df['type_']==type_)&(df['index']==index)]
     select = list(query[['long_name']].values[0])
-    print("rcp name >>> ", select)
+    
     an = []
     for i in readfile['value']:
         if str(i) == str('nan'):
@@ -200,7 +200,6 @@ def anomaly_global_rcp():
         unit = "mm"
     else:
         unit = "°C"
-    print("rcp ano >>> ",ano)
     return jsonify(ano,year,namefile,unit)
 
 # ----------------------- Anomaly select country ---------------------------------------
@@ -237,7 +236,6 @@ def country_anomaly():
     start_index = baseline_start - startyear
     end_index = baseline_end - startyear
     baseline_sum = np.mean(avg_year[start_index:end_index])
-    print(baseline_sum)
     anom = []
     for i in avg_year:
         anom.append(round((i-baseline_sum),2))
@@ -250,6 +248,61 @@ def country_anomaly():
     else:
         unit = "°C"
     return jsonify(ano, year, namefile, unit)
+
+#--------------------- anomaly country rcp ---------------------------------------------
+@app.route('/api/anomalycountry_rcp', methods=['GET'])
+def country_anomaly_rcp():
+    dataset = str(request.args.get("dataset"))
+    index = str(request.args.get("index"))
+    type_ = str(request.args.get("type_"))
+    rcp = str(request.args.get('rcp'))
+    startmonth = 1 
+    stopmonth = 12 
+    startyear = 1970
+    stopyear = 2099
+    country = request.headers.get("country")
+
+    df = pd.read_csv('C:/Users/ice/climate/data/detail_rcp.csv')
+    query = df.loc[(df['type_']==type_)&(df['index']==index)]
+    select = list(query[['long_name']].values[0])
+
+    f = read_folder_rcp(dataset, index, type_, rcp, startyear, stopyear, 'h')
+    if type_ == 'y':
+        data_date = select_data_fromdate_year(f)
+        print("shape",data_date[0][0])
+    elif type_ == 'm':
+        data_date = select_data_fromdate(f, startyear, stopyear, startmonth, stopmonth)
+    # data_date = select_data_fromdate(f, startyear, stopyear, startmonth, stopmonth)
+    data = mask_inside_country_npz(dataset+'_'+ rcp, country, data_date[1], data_date[2], data_date[0])
+
+    avg_year=[]
+    for i in data:
+        # a = np.round(np.nanmean(i.flatten()),4),4
+        avg_year.append(np.round(np.nanmean(i.flatten()),4))
+    baseline_start = 1981
+    baseline_end = 2011
+    start_index = baseline_start - startyear
+    end_index = baseline_end - startyear
+    baseline_sum = np.mean(avg_year[start_index:end_index])
+    print(baseline_sum)
+    anom = []
+    for i in avg_year:
+        if str(i) == str('nan'):
+            anom.append("-")
+        else :
+            anom.append(round((i-baseline_sum),2))
+        # anom.append(round((i-baseline_sum),2))
+
+    ano = {'anomaly':anom}
+    year = {'year':list(range(startyear,stopyear+1))}
+    namefile = {'name':select}
+    if index == 'pr':
+        unit = "mm"
+    else:
+        unit = "°C"
+    return jsonify(ano, year, namefile, unit)
+
+
 #----------------------- MK TEST -------------------------------------------------------
 @app.route("/api/mkstation",methods=["GET"])
 def mkstation():
@@ -682,7 +735,6 @@ def country_avg():
     data = mask_inside_country_npz(dataset,country,data_date[1],data_date[2],data_date[0])
     # data = mask_inside_country(country,data_date[1],data_date[2],data_date[0])
     # print("mask data",len(data),data[0].shape)
-    print("data avg", data_date) 
     avg_year=[]
     for i in data:
         avg_year.append(np.round(np.nanmean(i.flatten()),4))

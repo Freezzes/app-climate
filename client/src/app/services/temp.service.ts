@@ -248,6 +248,18 @@ export class TempService {
         return this.http.get('http://127.0.0.1:5500'+`/api/anomalycountry?dataset=${dataset}&index=${index}`,httpOptions)
     }
 
+    anomalyCountry_rcp(dataset:string,index:string,country:any,rcp:string,type_:string): Observable<any>{
+        console.log("country",country)
+        const httpOptions = {
+          headers: new HttpHeaders({
+            'country':  country,
+          })
+        };
+        console.log("country anomaly rcp",httpOptions)
+                                                     
+        return this.http.get('http://127.0.0.1:5500'+`/api/anomalycountry_rcp?dataset=${dataset}&index=${index}&type_=${type_}&rcp=${rcp}`,httpOptions)
+    }
+
     async getSelectCountry(dataset:string,index:string,startyear:string,stopyear:string,startmonth:string,stopmonth:string): Promise<Observable<any>>{
         return this.http.get('http://127.0.0.1:5500'+`/api/country_avg?dataset=${dataset}&index=${index}&startyear=${startyear}&stopyear=${stopyear}&startmonth=${startmonth}&stopmonth=${stopmonth}`)
     }
