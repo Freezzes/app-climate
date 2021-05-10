@@ -326,12 +326,36 @@
         </div>
 
         <!-- <div class="flex-column" style="margin-bottom: 5%; "> -->
-        <div *ngIf="select == 'station'">
+        <!-- <div *ngIf="select == 'station'">
             <app-map [file]="chooseindex.controls['file'].value" [startyear]="this.fromDate.year"
                 [stopyear]="this.toDate.year" [startmonth]="this.fromDate.month" [stopmonth]="this.toDate.month">
             </app-map>
-        </div>
+        </div> -->
+        <div style="display: flex;flex-direction: column;justify-content: center;">
+            <div style="flex-direction: row; display: flex; flex-wrap: wrap;justify-content: space-between;height: 800px;width: 1150px;" >
 
+                <div style="flex-direction: column; display: flex;width: 502px;height: 800px;" *ngIf="select == 'station'">
+                    <app-map    [file]="choosefile.controls['file'].value" 
+                                [start_date]="this.start_date"
+                                [stop_date]="this.stop_date">
+                    </app-map>
+                </div>
+                <div style="flex-direction: column; display: flex;width: 610px;height: 800px;"  *ngIf="select == 'station'">
+                    <app-boxplot    [file]="choosefile.controls['file'].value" 
+                                    [startyear]="this.fromDate.year"
+                                    [stopyear]="this.toDate.year"
+                                    [startmonth]="this.fromDate.month"
+                                    [stopmonth]="this.toDate.month"
+                                    [startday]="this.fromDate.day"
+                                    [stopday]="this.toDate.day">
+                    </app-boxplot>
+                </div>
+            </div>
+            <div *ngIf="select == 'station'" style="justify-content: center; width: 1155px;">
+                <app-missingvalue [file]="choosefile.controls['file'].value" >
+                </app-missingvalue>
+            </div>
+        </div>
         <router-outlet></router-outlet>
     </div>
 

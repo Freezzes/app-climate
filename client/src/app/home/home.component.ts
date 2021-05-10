@@ -339,7 +339,7 @@ export class HomeComponent implements OnInit {
           this.tempService.global_avg_rcp(dataset, index, startyear, startmonth, stopyear, stopmonth, rcp, types)
             .then(datas => datas.subscribe(res => {
               var data = Number(stopyear) - Number(startyear)
-              console.log("dddddd", data)
+              console.log("dddddd in", data)
               var start = Number(startyear)
               for (var i = 0; i <= data; i++) {
                 Data.dataPoints.push(
@@ -353,13 +353,45 @@ export class HomeComponent implements OnInit {
               this.inputservice.sendLowRes(sent)
 
             }))
+
+          this.tempService.getanomaly_global_rcp(dataset, index, types, rcp).then(datas =>
+            // datas.subscribe(res =>{
+              console.log("rcp in data home res >>> ",datas)
+            )
         })
       ))
 
+    await this.tempService.getanomaly_global_rcp(dataset, index, types, rcp).then(datas =>
+        datas.subscribe(res =>{
+          console.log("rcp home res >>> ",res)
+          this.anomalydata = res[0].anomaly
+          this.anomaly_year = res[1].year
+          this.anomaly_name = res[2].name
+          var unit = res[3]
+          this.Data = {
+            dataPoints: []
+          }
+          for (var i = 0; i < this.anomalydata.length; i++) {
+            if (this.anomalydata[i] > 0) {
+              this.Data.dataPoints.push(
+                { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'red' }
+              )
+            }
+            else if (this.anomalydata[i] < 0) {
+              this.Data.dataPoints.push(
+                { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'blue' }
+              )
+            }
+          }
+          this.anomaly = [this.Data.dataPoints, this.anomaly_name, unit, 'Global']
+          console.log("ano home :",this.anomaly)      
+
+          this.inputservice.sendAnomaly(this.anomaly)
+        }))
     await this.tempService.global_avg_rcp(dataset, index, startyear, startmonth, stopyear, stopmonth, rcp, types)
       .then(datas => datas.subscribe(res => {
         var data = Number(stopyear) - Number(startyear)
-        console.log("dddddd", data)
+        console.log("dddddd out", data)
         var start = Number(startyear)
         for (var i = 0; i <= data; i++) {
           Data.dataPoints.push(
@@ -377,8 +409,7 @@ export class HomeComponent implements OnInit {
     var Data = {
       dataPoints: []
     }
-
-  }
+}
 
   async get_raw_data() {
     this.plot_trend = false

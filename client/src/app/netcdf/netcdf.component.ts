@@ -258,7 +258,7 @@ export class NetcdfComponent implements OnInit {
                   console.log("point", Data.dataPoints)
                   var sent = [Data.dataPoints, res[1], res[2], selectedCountry]
                   that.sharedData.sendGraphAvg(sent)
-                })
+                })              
             }
             else if (that.dataset_type == 'raw') {
               that.tempService.getCountry(data.input.dataset, data.input.index, data.input.startyear, data.input.stopyear, data.input.startmonth, data.input.stopmonth, selectedCountry).subscribe(

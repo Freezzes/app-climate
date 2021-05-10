@@ -57,6 +57,12 @@ export class TempService {
         return response
     }
 
+    async getanomaly_global_rcp(dataset:string,index:string,type_:string,rcp:string){
+        const response = this.http.get('http://127.0.0.1:5500'+ 
+                            `/api/anomalyNC_rcp?dataset=${dataset}&index=${index}&type_=${type_}&rcp=${rcp}`)
+        return response
+    }
+
     getData(){
         return this.http.get('http://127.0.0.1:5500/api/missing')
     }

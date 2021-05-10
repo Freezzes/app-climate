@@ -171,6 +171,33 @@ def anamalymap():
     else:
         unit = "°C"
     return jsonify(ano,year,namefile,unit)
+
+#--------------------- anomaly rcp ------------------------------------------------------
+@app.route('/api/anomalyNC_rcp', methods=["GET"])
+def anomaly_global_rcp():
+    dataset = str(request.args.get("dataset"))
+    index = str(request.args.get("index"))
+    type_ = str(request.args.get("type_"))
+    rcp = str(request.args.get('rcp'))
+    readfile = pd.read_csv(f'E:/ice/climate/manage_nc/anomaly_indices_{type_}/{dataset}_{rcp}_{index}_anomaly.csv')
+    df = pd.read_csv('E:/ice/climate/data/detail_rcp.csv')
+    query = df.loc[(df['type_']==type_)&(df['index']==index)]
+    select = list(query[['long_name']].values[0])
+    an = []
+    for i in readfile['value']:
+        an.append(float("%.2f"% i))
+    y = []
+    for i in readfile['year']:
+        y.append(i)
+    ano = {'anomaly':an}
+    year = {'year':y}
+    namefile = {'name':select}
+    if index == 'pr':
+        unit = "mm"
+    else:
+        unit = "°C"
+    return jsonify(ano,year,namefile,unit)
+
 # ----------------------- Anomaly select country ---------------------------------------
 @app.route('/api/anomalycountry', methods=['GET'])
 def country_anomaly():
