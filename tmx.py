@@ -373,9 +373,10 @@ def map_range2():
 
 @app.route("/map_range1month", methods=["GET"])
 def map_range1month():
-
     dataset = str(request.args.get("dataset"))
     index = str(request.args.get("index"))
+    type_ = str(request.args.get("type_"))
+    rcp = str(request.args.get('rcp'))
     start = int(request.args.get("start"))
     stop = int(request.args.get("stop"))
     month = str(request.args.get("month")) # "[0,1,2,3]"
@@ -384,14 +385,42 @@ def map_range1month():
     selectmonth = []
     for i in res :
         selectmonth.append(int(i))
-    print("month>>>>>>>>>>>>>",selectmonth)
-    f = read_folder(dataset, index, start, stop)
-    V = []
-    for i in range(len(f)):
-        ds = np.load(f[i])
-        val = ds['value'][selectmonth]
-        val = np.mean(val, axis = 0)#.flatten()
-        V.append(val)
+
+    if rcp == 'None' and type_ == 'None':
+        f = read_folder(dataset, index, start, stop,'l')
+        # V = map_month(f)
+        V = []
+        for i in range(len(f)):
+            ds = np.load(f[i])
+            val = ds['value'][selectmonth]
+            val = np.mean(val, axis = 0)#.flatten()
+            V.append(val)
+            print("not select rcm")
+    else:
+        f = read_folder_rcp(dataset, index, type_,rcp,start, stop,'l')
+        print("FILE >>> ",f)
+        if type_ == 'y':
+            V = select_data_fromdate_year(f)
+            print("RCM value type year")
+        elif type_ == 'm':
+            V = []
+            for i in range(len(f)):
+                ds = np.load(f[i])
+                val = ds['value'][selectmonth]
+                val = np.mean(val, axis = 0)#.flatten()
+                V.append(val)
+                print("RCM value type month")
+
+    # res = np.nanmean(V[0][:], axis=0)  # .flatten()
+    # range1 = res.flatten()
+
+    # f = read_folder(dataset, index, start, stop)
+    # V = []
+    # for i in range(len(f)):
+    #     ds = np.load(f[i])
+    #     val = ds['value'][selectmonth]
+    #     val = np.mean(val, axis = 0)#.flatten()
+    #     V.append(val)
     res = np.nanmean(V[:], axis = 0)#.flatten()
     range1 = res.flatten()
     val1 = np.where(np.isnan(range1), None, range1)
@@ -412,39 +441,43 @@ def map_range1month():
 @app.route("/map_range2month", methods=["GET"])
 def map_range2month():
     dataset = str(request.args.get("dataset"))
+    type_ = str(request.args.get("type_"))
+    rcp = str(request.args.get('rcp'))
     index = str(request.args.get("index"))
     start = int(request.args.get("start"))
     stop = int(request.args.get("stop"))
     month = str(request.args.get("month")) # "[0,1,2,3]"
+    print("month",month)
     res = month.strip('][').split(',') 
     selectmonth = []
     for i in res :
         selectmonth.append(int(i))
 
-    print("month>>>>>>>>>>>>>",selectmonth)
-    f = read_folder(dataset, index, start, stop)
-    V = []
-    for i in range(len(f)):
-        ds = np.load(f[i])
-        val = ds['value'][selectmonth]
-        val = np.mean(val, axis = 0)#.flatten()
-        V.append(val)
-    res = np.nanmean(V[:], axis = 0)#.flatten()
+    if rcp == 'None' and type_ == 'None':
+        f = read_folder(dataset, index, start, stop,'l')
+        V = map_select_month(f,selectmonth)
+    else:
+        f = read_folder_rcp(dataset, index, type_,rcp,start, stop,'l')
+        if type_ == 'y':
+            V = select_data_fromdate_year(f)
+            print("rcp select year")
+        elif type_ == 'm':
+            V = map_select_month(f,selectmonth)
+            print("rcp select month month")
+   
+    res = np.nanmean(V[0][:], axis=0)  # .flatten()
     range1 = res.flatten()
     val1 = np.where(np.isnan(range1), None, range1)
 
-    Min , Max = np.float64(range_boxplot(range1))
+    Min, Max = np.float64(range_boxplot(range1))
+    lat = V[1]
+    lon = V[2]
+    x = np.repeat(lat, lon.shape[0])
+    y = np.tile(lon, lat.shape[0])
+    lat_step = lat[-1] - lat[-2]
+    lon_step = lon[-1] - lon[-2]
 
-    x = np.repeat(ds['lat'], ds['lon'].shape[0])
-    y = np.tile(ds['lon'], ds['lat'].shape[0])
-    lat_step = ds['lat'][-1] - ds['lat'][-2]
-    lon_step = ds['lon'][-1] - ds['lon'][-2] 
-    if index == 'pr':
-        color = 'dry_wet'
-    else:
-        color = 'cool_warm'
-
-    return jsonify(y.tolist(),x.tolist(),val1.tolist(),Min,Max,lon_step,lat_step,color)
+    return jsonify(y.tolist(), x.tolist(), val1.tolist(), Min, Max, lon_step, lat_step)
 
 # -----------------------------------------------per-----------------------------------------------
 

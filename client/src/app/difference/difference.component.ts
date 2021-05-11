@@ -48,6 +48,7 @@ export class DifferenceComponent implements OnInit {
   public monthselect = [];
 
   myForm:FormGroup;
+
   disabled = false;
   ShowFilter = false;
   limitSelection = false;
@@ -59,6 +60,8 @@ export class DifferenceComponent implements OnInit {
   Ranges2;
   Input;
   color_map;
+  types;
+  rcp;
   
 
   constructor(
@@ -102,6 +105,7 @@ getDataLayer(data, North, South, West, East, layername, name_legend, type, color
 
   async ngOnInit() {
 
+
     this.selectedItems = [];
     this.dropdownSettings = {
         singleSelection: false,
@@ -134,6 +138,14 @@ getDataLayer(data, North, South, West, East, layername, name_legend, type, color
         this.dataset = data[1]
         this.Range(start, stop)
         this.clear()
+        this.chooseyear1.patchValue({
+          fromyear1: null,
+          toyear1: null
+        })
+        this.chooseyear2.patchValue({
+          fromyear2: null,
+          toyear2: null
+        })
       }
     })
 
@@ -141,6 +153,14 @@ getDataLayer(data, North, South, West, East, layername, name_legend, type, color
     await this.sharedData.difservice.subscribe(data => {
       if (data) {
         console.log("input dif", data)
+        
+        
+        
+        if(data[0].types == 'y'){
+          console.log("type year",data[0].types)
+          this.disabled = true
+        }
+
         // this.dataset = data[0]
         // this.index = data[1]
       }
@@ -445,8 +465,10 @@ getDataLayer(data, North, South, West, East, layername, name_legend, type, color
     this.monthsel = this.monthselect //[0,1,2,3]
     this.start1 = this.chooseyear1.controls['fromyear1'].value
     this.stop1 = this.chooseyear1.controls['toyear1'].value
-    console.log("-----",this.index)
-    await this.tempService.map_range1month(this.dataset, this.index,this.start1,this.stop1,this.monthsel).then(data => data.subscribe(
+    this.Ranges = 'Year ' + this.start1 + '-' + this.stop1
+    console.log("map month dataset >>>",this.dataset)
+
+    await this.tempService.map_range1month(this.Input.dataset, this.Input.index, this.start1, this.stop1,this.monthsel,this.Input.rcp, this.Input.types).then(data => data.subscribe(
       (res => { 
         let resp = JSON.parse(res)
         console.log(">>>>>>>>>", resp)
@@ -466,19 +488,19 @@ getDataLayer(data, North, South, West, East, layername, name_legend, type, color
     this.monthsel = this.monthselect //[0,1,2,3]
     this.start2 = this.chooseyear2.controls['fromyear2'].value
     this.stop2 = this.chooseyear2.controls['toyear2'].value
+    this.Ranges2 = 'Year ' + this.start2 + '-' + this.stop2
 
-    await this.tempService.map_range2month(this.dataset, this.index, this.start2, this.stop2,this.monthsel).then(data => data.subscribe(
+    await this.tempService.map_range2month(this.Input.dataset, this.Input.index, this.start1, this.stop1,this.monthsel,this.Input.rcp, this.Input.types).then(data => data.subscribe(
       (res => {
         let resp = JSON.parse(res)
         console.log(">>>>>>>>>", resp[7])
         var value = resp[2]
         var geojson = MapLib.convert_to_geojson(value,resp[0], resp[1],)
         var merge = MapLib.merge_data_to_geojson(geojson, value, this.North, this.South, this.West, this.East,'value')
-        const datalayer2 = MapLib.genGridData(merge, this.min1, this.max1, resp[7], resp[5], resp[6], 'main', 'lowres_data','map2');
+        const datalayer2 = MapLib.genGridData(merge, this.min1, this.max1, this.color_map, this.unit, resp[5], resp[6], 'main', 'lowres_data', 'map2');
         MapLib.clearLayers(this.map2);
         this.map2.getLayers().insertAt(0, datalayer2);
         MapLib.select_country(this.map2)
-        MapLib.setzoom(this.map2)
 
       }
       )))

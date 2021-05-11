@@ -103,3 +103,14 @@ def map_month(f):
         V.append(val)
 
     return V,ds['lat'],ds['lon']
+
+def map_select_month(f,selectmonth):
+    print("month",len(f))
+    V = []
+    for i in range(len(f)):
+        ds = np.load(f[i])
+        val = ds['value'][selectmonth]
+        val = np.nanmean(val, axis=0)  # .flatten()
+        V.append(val)
+
+    return V,ds['lat'],ds['lon']

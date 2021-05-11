@@ -171,17 +171,15 @@ export class TempService {
             , { responseType: "text" });
     }
 
-    async map_range1month(dataset:string,index:string,start:string,stop:string,month:string):Promise<Observable<any>> {
+    async map_range1month(dataset:string,index:string,start:string,stop:string,month:string,rcp:string,type_:string):Promise<Observable<any>> {
         return this.http.get('http://127.0.0.1:5500' +
-        `/map_range1month?dataset=${dataset}&index=${index}&start=${start}&stop=${stop}&month=${month}`
+        `/map_range1month?dataset=${dataset}&index=${index}&start=${start}&stop=${stop}&month=${month}&rcp=${rcp}&type_=${type_}`
         ,{responseType:"text"});
     }
 
- 
-
-    async map_range2month(dataset:string,index:string,start:string,stop:string,month:string):Promise<Observable<any>> {
+    async map_range2month(dataset:string,index:string,start:string,stop:string,month:string,rcp:string,type_:string):Promise<Observable<any>> {
         return this.http.get('http://127.0.0.1:5500' +
-        `/map_range2month?dataset=${dataset}&index=${index}&start=${start}&stop=${stop}&month=${month}`
+        `/map_range2month?dataset=${dataset}&index=${index}&start=${start}&stop=${stop}&month=${month}&rcp=${rcp}&type_=${type_}`
         ,{responseType:"text"});
     }
 // -------------------------------dataset index detail --------------------------------------------
