@@ -58,7 +58,7 @@ export function missing_chart(percentplot){
          min: 0,
          max:100,
          minColor: '#0661CC',
-         maxColor: '#FFFFFF',
+         maxColor: '#E3F2FD',
          dataClasses: [{
             from: null,
             to: null,

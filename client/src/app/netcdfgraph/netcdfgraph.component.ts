@@ -75,10 +75,8 @@ export class NetcdfgraphComponent implements OnInit {
       }
     })
     let elapsed = new Date();
-    console.log("sent data time : ",start,">>",elapsed)
      this.sharedData.anomalyservice.subscribe(data => {
       if(data){
-        console.log("anomaly service",data)
         this.value = data[0]
         this.name = data[1]
         var unit = data[2]

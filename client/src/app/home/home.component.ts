@@ -322,41 +322,6 @@ export class HomeComponent implements OnInit {
       stopmonth = 1
     }
 
-    
-
-    await this.tempService.get_lowres_rcp(dataset, index, startyear, stopyear, startmonth, stopmonth, rcp, types)
-      .then(data => data.subscribe(
-        (res => {
-          // console.log("check dataaaaaa",res)
-          let resp = JSON.parse(res)
-          console.log("datarcp", resp)
-          var inputs = { 'dataset': dataset, 'index': index, 'startyear': startyear, 'stopyear': stopyear, 'startmonth': startmonth, 'stopmonth': stopmonth, 'plottrend': this.plot_trend, 'rcp': rcp, 'type': types }
-          var sent = { 'map': resp.low, 'input': inputs }
-          // this.inputservice.sendLowRes(sent)
-          this.inputservice.sendHiRes(resp.high)
-          // var sent = { 'map': resp.low, 'input': inputs }
-          // this.inputservice.sendLowRes(sent)
-          this.tempService.global_avg_rcp(dataset, index, startyear, startmonth, stopyear, stopmonth, rcp, types)
-            .then(datas => datas.subscribe(res => {
-              var data = Number(stopyear) - Number(startyear)
-              console.log("dddddd in", data)
-              var start = Number(startyear)
-              for (var i = 0; i <= data; i++) {
-                Data.dataPoints.push(
-                  { x: new Date(start, 0), y: res[0][i] },
-                )
-                start += 1
-              }
-              console.log("point", Data.dataPoints)
-              this.chart = [Data.dataPoints, res[1], res[2], 'Golbal']
-              var sent = { 'chart': this.chart, 'map': resp.low, 'input': inputs }
-              this.inputservice.sendLowRes(sent)
-
-            }))
-          
-        })
-      ))
-
     await this.tempService.getanomaly_global_rcp(dataset, index, types, rcp)
     .then(datas =>
         datas.subscribe(res =>{
@@ -388,8 +353,43 @@ export class HomeComponent implements OnInit {
           this.anomaly = [this.Data.dataPoints, this.anomaly_name, unit, 'Global']
           console.log("ano home :",this.anomaly)      
 
-          this.inputservice.sendAnomaly(this.anomaly)
+          // this.inputservice.sendAnomaly(this.anomaly)
         }))
+
+    await this.tempService.get_lowres_rcp(dataset, index, startyear, stopyear, startmonth, stopmonth, rcp, types)
+      .then(data => data.subscribe(
+        (res => {
+          // console.log("check dataaaaaa",res)
+          let resp = JSON.parse(res)
+          console.log("datarcp", resp)
+          var inputs = { 'dataset': dataset, 'index': index, 'startyear': startyear, 'stopyear': stopyear, 'startmonth': startmonth, 'stopmonth': stopmonth, 'plottrend': this.plot_trend, 'rcp': rcp, 'type': types }
+          var sent = { 'map': resp.low, 'input': inputs }
+          // this.inputservice.sendLowRes(sent)
+          this.inputservice.sendHiRes(resp.high)
+          // var sent = { 'map': resp.low, 'input': inputs }
+          // this.inputservice.sendLowRes(sent)
+          this.tempService.global_avg_rcp(dataset, index, startyear, startmonth, stopyear, stopmonth, rcp, types)
+            .then(datas => datas.subscribe(res => {
+              var data = Number(stopyear) - Number(startyear)
+              console.log("dddddd in", data)
+              var start = Number(startyear)
+              for (var i = 0; i <= data; i++) {
+                Data.dataPoints.push(
+                  { x: new Date(start, 0), y: res[0][i] },
+                )
+                start += 1
+              }
+              console.log("point", Data.dataPoints)
+              this.chart = [Data.dataPoints, res[1], res[2], 'Golbal']
+              var sent = { 'chart': this.chart, 'map': resp.low, 'input': inputs ,'anomaly':this.anomaly}
+              this.inputservice.sendLowRes(sent)
+
+            }))
+          
+        })
+      ))
+
+    
     // await this.tempService.global_avg_rcp(dataset, index, startyear, startmonth, stopyear, stopmonth, rcp, types)
     //   .then(datas => datas.subscribe(res => {
     //     var data = Number(stopyear) - Number(startyear)
