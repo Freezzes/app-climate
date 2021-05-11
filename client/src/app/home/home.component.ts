@@ -390,23 +390,23 @@ export class HomeComponent implements OnInit {
 
           this.inputservice.sendAnomaly(this.anomaly)
         }))
-    await this.tempService.global_avg_rcp(dataset, index, startyear, startmonth, stopyear, stopmonth, rcp, types)
-      .then(datas => datas.subscribe(res => {
-        var data = Number(stopyear) - Number(startyear)
-        console.log("dddddd out", data)
-        var start = Number(startyear)
-        for (var i = 0; i <= data; i++) {
-          Data.dataPoints.push(
-            { x: new Date(start, 0), y: res[0][i] },
-          )
-          start += 1
-        }
-        console.log("point", Data.dataPoints)
-        this.chart = [Data.dataPoints, res[1], res[2], 'Golbal']
-        // var sent = { 'chart': this.chart,'input': inputs }
-        this.inputservice.sendGraphAvg(this.chart)
+    // await this.tempService.global_avg_rcp(dataset, index, startyear, startmonth, stopyear, stopmonth, rcp, types)
+    //   .then(datas => datas.subscribe(res => {
+    //     var data = Number(stopyear) - Number(startyear)
+    //     console.log("dddddd out", data)
+    //     var start = Number(startyear)
+    //     for (var i = 0; i <= data; i++) {
+    //       Data.dataPoints.push(
+    //         { x: new Date(start, 0), y: res[0][i] },
+    //       )
+    //       start += 1
+    //     }
+    //     console.log("point", Data.dataPoints)
+    //     this.chart = [Data.dataPoints, res[1], res[2], 'Golbal']
+    //     // var sent = { 'chart': this.chart,'input': inputs }
+    //     this.inputservice.sendGraphAvg(this.chart)
 
-      }))
+    //   }))
 
     var Data = {
       dataPoints: []
@@ -479,7 +479,7 @@ export class HomeComponent implements OnInit {
           this.anomaly = [this.Data.dataPoints, this.anomaly_name, unit, 'Global']
           // console.log("ano home :",send)      
 
-          this.inputservice.sendAnomaly(this.anomaly)
+          // this.inputservice.sendAnomaly(this.anomaly)
         }))
 
     await this.tempService.get_Avgcsv(this.dataset, index, startyear, stopyear, startmonth, stopmonth)
@@ -544,24 +544,24 @@ export class HomeComponent implements OnInit {
     //     })
     //   ))
 
-  await this.tempService.global_avg(this.dataset, index, startyear, startmonth, stopyear, stopmonth)
-    .then(data => data.subscribe(res => {
-      var Data = {
-        dataPoints: []
-      }
-      var data = Number(stopyear) - Number(startyear)
-      var start = Number(startyear)
-      for (var i = 0; i <= data; i++) {
-        Data.dataPoints.push(
-          { x: new Date(start, 0), y: res[0][i] },
-        )
-        start += 1
-      }
-      console.log("point", Data.dataPoints)
-      this.chart = [Data.dataPoints, res[1], res[2], 'Global']
-      // var sent = { 'chart': this.chart, 'map': resp, 'input': inputs, 'anomaly': this.anomaly }
-      this.inputservice.sendGraphAvg(this.chart)
-    }))
+  // await this.tempService.global_avg(this.dataset, index, startyear, startmonth, stopyear, stopmonth)
+  //   .then(data => data.subscribe(res => {
+  //     var Data = {
+  //       dataPoints: []
+  //     }
+  //     var data = Number(stopyear) - Number(startyear)
+  //     var start = Number(startyear)
+  //     for (var i = 0; i <= data; i++) {
+  //       Data.dataPoints.push(
+  //         { x: new Date(start, 0), y: res[0][i] },
+  //       )
+  //       start += 1
+  //     }
+  //     console.log("point", Data.dataPoints)
+  //     this.chart = [Data.dataPoints, res[1], res[2], 'Global']
+  //     // var sent = { 'chart': this.chart, 'map': resp, 'input': inputs, 'anomaly': this.anomaly }
+  //     this.inputservice.sendGraphAvg(this.chart)
+  //   }))
   }
 
   async station_thai() {

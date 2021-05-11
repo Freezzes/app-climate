@@ -90,7 +90,7 @@ export class NetcdfComponent implements OnInit {
   plot_trend;
 
 
-  getDataLayer(data, North, South, West, East, layername, color, unit) {
+  getDataLayer(data, North, South, West, East, layername, color, unit,long_name) {
     console.log("GetDataLayer")
     var lon = data[0]
     var lat = data[1]
@@ -101,10 +101,11 @@ export class NetcdfComponent implements OnInit {
     var max_ = data[4]
     var color = color
     var unit = unit
+    var long_name = long_name
     var geojson = MapLib.convert_to_geojson(value, lon, lat)
     var merge = MapLib.merge_data_to_geojson(geojson, value, North, South, West, East, 'value')
     var layer = MapLib.genGridData(
-      merge, min_, max_, color, unit, lon_step, lat_step, 'main', layername, 'main'
+      merge, min_, max_, color, unit, lon_step, lat_step, 'main', layername, 'main',long_name
     );
     return layer
   }
@@ -148,17 +149,17 @@ export class NetcdfComponent implements OnInit {
       this.dataset_type = data[4]
     })
 
-    await this.sharedData.Detailservice.subscribe(data => {
-      if (data) {
-        console.log("input Detail", data)
-        this.unit = data[0].unit
-        this.difinition = data[0].description
-        this.long_name = data[0].long_name
-        this.year = data[0].year
-        this.dataset_name = data[1]
-      }
+    // await this.sharedData.Detailservice.subscribe(data => {
+    //   if (data) {
+    //     console.log("input Detail", data)
+    //     this.unit = data[0].unit
+    //     this.difinition = data[0].description
+    //     this.long_name = data[0].long_name
+    //     this.year = data[0].year
+    //     // this.dataset_name = data[1]
+    //   }
 
-    })
+    // })
 
     // this.plot(this.data,this.index)
     // this.plot_ser()
@@ -171,17 +172,17 @@ export class NetcdfComponent implements OnInit {
     await this.sharedData.Detailservice.subscribe(data => {
       this.details = data
       // this.color_map = data.color_map
-      console.log("input Detail", data[0])
+      console.log("input Detail", data)
       if (data) {
         // console.log("input Detail",data)
         this.unit = data[0].unit
         this.difinition = data[0].description
         this.long_name = data[0].long_name
         this.year = data[0].year
-        this.dataset_name = data[0].dataset
+        this.dataset_name = data[1]
         this.color_map = data[0].color_map
-        this.index = data[2].index
-        console.log("difinition", this.difinition)
+        this.index = data[2]
+        console.log("dataset", this.dataset_name)
       }
     })
     console.log("444444444444444444444444444444444", this.dataset_type)
@@ -209,14 +210,14 @@ export class NetcdfComponent implements OnInit {
 
         console.log("ICEEEEEEEEEEEE", data)
         // this.data_low = data
-        this.lowres_layer = this.getDataLayer(data.map, this.North, this.South, this.West, this.East, 'lowres_data', this.color_map, this.unit)
+        this.lowres_layer = this.getDataLayer(data.map, this.North, this.South, this.West, this.East, 'lowres_data', this.color_map, this.unit,this.long_name)
         MapLib.clearLayers(this.map);
         console.log("lowlayer", this.lowres_layer)
         this.map.getLayers().insertAt(0, this.lowres_layer);
         this.sharedData.hiresservice.subscribe(data => {
           if (data) {
             console.log("hires", data)
-            this.hires_layer = this.getDataLayer(data, this.North, this.South, this.West, this.East, 'hires_data', this.color_map, this.unit)
+            this.hires_layer = this.getDataLayer(data, this.North, this.South, this.West, this.East, 'hires_data', this.color_map, this.unit,this.long_name)
             console.log("h_mpi", this.hires_layer)
             this.map.getLayers().insertAt(0, this.hires_layer);
             MapLib.setResolution(this.map)
@@ -224,7 +225,10 @@ export class NetcdfComponent implements OnInit {
         })
         // console.log("layer mappppp",this.map.getLayers())
         // MapLib.setzoom_center(this.map,this.North, this.South, this.West, this.East)
-        // this.sharedData.sendGraphAvg(data.chart)
+        console.log("chartt",data.chart);
+        console.log("ano",data.anomaly)
+        this.sharedData.sendGraphAvg(data.chart)
+        this.sharedData.sendAnomaly(data.anomaly)
 
         // Get selected country data chart
         if (this.select !== null) {
@@ -238,6 +242,7 @@ export class NetcdfComponent implements OnInit {
             this.noselect = 'no select'
             console.log("NO SELECT")
             that.sharedData.sendGraphAvg(data.chart)
+            that.sharedData.sendAnomaly(data.anomaly)
           }
           else if (e.selected.length == 1) {
             this.noselect = 'select'

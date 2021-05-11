@@ -71,7 +71,7 @@ export class NetcdfgraphComponent implements OnInit {
     this.sharedData.graphAvgservice.subscribe(data => {
       if (data) {
         console.log("graph", data)
-        this.plotMean(data[0], data[1], data[2],this.long_name,data[3])
+        this.plotMean(data[0], data[1], this.unit,this.long_name,data[3])
       }
     })
     let elapsed = new Date();
@@ -84,7 +84,7 @@ export class NetcdfgraphComponent implements OnInit {
         var unit = data[2]
         var country = data[3]
         console.log("countryyy",data[3])
-        this.plot_anomaly(this.value,this.name,unit,country)
+        this.plot_anomaly(this.value,this.name,this.unit,country)
       }
     })
   }
