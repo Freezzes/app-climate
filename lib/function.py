@@ -85,6 +85,14 @@ def select_data_fromdate_year(f):
         V.append(val)
     return V,ds['lat'],ds['lon']
 
+def select_data_fromdate_year_formk(f):
+    V = []
+    for i in range(len(f)):
+        ds = np.load(f[i])
+        val = ds['value'][:]
+        V.append(val.flatten())
+    return V,ds['lat'],ds['lon']
+
 def map_month(f):
     print("month",len(f))
     V = []

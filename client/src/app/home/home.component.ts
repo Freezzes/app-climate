@@ -357,7 +357,8 @@ export class HomeComponent implements OnInit {
         })
       ))
 
-    await this.tempService.getanomaly_global_rcp(dataset, index, types, rcp).then(datas =>
+    await this.tempService.getanomaly_global_rcp(dataset, index, types, rcp)
+    .then(datas =>
         datas.subscribe(res =>{
           console.log("rcp await home res >>> ",res)
           this.anomalydata = res[0].anomaly
@@ -410,6 +411,17 @@ export class HomeComponent implements OnInit {
     var Data = {
       dataPoints: []
     }
+
+    await this.tempService.get_rcptrend(dataset, index, types, rcp, startyear, stopyear, startmonth, stopmonth)
+    .then(data => data.subscribe(
+      res => {
+        console.log("trend rcp result finish")
+        
+        let resp = JSON.parse(res)
+        console.log("sent trend rcp",resp)
+        this.inputservice.sendtrend(resp)
+      }
+    ))
 }
 
   async get_raw_data() {

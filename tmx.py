@@ -302,20 +302,6 @@ def country_anomaly_rcp():
         unit = "°C"
     return jsonify(ano, year, namefile, unit)
 
-
-#----------------------- MK TEST -------------------------------------------------------
-@app.route("/api/mkstation",methods=["GET"])
-def mkstation():
-    df = pd.read_csv("C:/Users/ice/climate/TMD_DATA/TMD_DATA/clean_data/tmean1951-2015.csv")
-    group_year = df.groupby('year').mean()
-    group_year = group_year.drop(columns=['day', 'month'])
-    group_year = np.round(group_year, 2)
-    data = group_year['300201']
-    res = mk.original_test(data)
-    trend_line = np.arange(len(data)) * res.slope + res.intercept
-    return trend_line
-
-
 # ----------------------------------map different-----------------------------------------
 @app.route("/map_range1", methods=["GET"])
 def map_range1():
@@ -608,6 +594,103 @@ def selectNCtrend():
     stopmonth = int(request.args.get("stopmonth"))
     a = get_Avgmaptrend(ncfile, df_f, startyear, stopyear, startmonth, stopmonth)
     return jsonify(a)
+
+#------------------------ rcp trend ---------------------------------
+def get_rcpmaptrend_year(dataset, index, type_, rcp, startyear, stopyear):
+    f = read_folder_rcp(dataset, index, type_, rcp, startyear, stopyear, 'h')
+    V = []
+    for i in range(len(f)):
+        ds = np.load(f[i])
+        val = ds['value'][:]
+        V.append(val.flatten())
+    ("len V >>> ",len(V))
+    ("len V0 >>> ",len(V[0]))
+    trend = []
+    for j in range(len(V[0])):
+        lis = []
+        for i in range(len(V)):
+            if str(V[i][j]) == str(np.nan):
+                V[i][j] = 1E20
+            lis.append(V[i][j])
+        res = mk.original_test(lis,0.05)
+        if res[0] == 'increasing':
+            trend.append(1)
+        elif res[0] == 'no trend':
+            trend.append(0)
+        else :
+            trend.append(-1)
+    x = np.repeat(ds['lat'], ds['lon'].shape[0])
+    y = np.tile(ds['lon'], ds['lat'].shape[0])
+    lat_step = ds['lat'][-1] - ds['lat'][-2]
+    lon_step = ds['lon'][-1] - ds['lon'][-2]
+
+    if index == 'pr':
+        color = 'dry_wet'
+    else:
+        color = 'cool_warm'
+
+    return y.tolist(),x.tolist(),trend,-1,1,lon_step,lat_step,color
+
+def get_rcpmaptrend_month(dataset, index, type_, rcp, startyear, stopyear, startmonth, stopmonth):
+    
+    f = read_folder_rcp(dataset, index, type_, rcp, startyear, stopyear, 'h')
+    V = []
+    for i in range(len(f)):
+        ds = np.load(f[i])
+        if f[i][:-4].split("-")[1] == str(startyear): #เช็คชื่อไฟล์ว่าปีตรงกับพี่เริ่ม 
+            val = ds['value'][startmonth-1:12] #เอาค่าตั้งแต่ startmonth ถึง เดือน12
+            val = np.mean(val, axis = 0) #เฉลี่ยทั้งหมด shape (lat,lon)
+        elif f[i][:-4].split("-")[1] == str(stopyear):
+            val = ds['value'][:stopmonth]
+            val = np.mean(val, axis = 0)
+        else:
+            val = ds['value'][0:12]
+            val = np.mean(val, axis = 0)#.flatten()
+        V.append(val.flatten())
+
+    trend = []
+    for j in range(len(V[0])):
+        lis = []
+        for i in range(len(V)):
+            if str(V[i][j]) == str(np.nan):
+                V[i][j] = 1E20
+            lis.append(V[i][j])
+        res = mk.original_test(lis,0.05)
+        if res[0] == 'increasing':
+            trend.append(1)
+        elif res[0] == 'no trend':
+            trend.append(0)
+        else :
+            trend.append(-1)
+    x = np.repeat(ds['lat'], ds['lon'].shape[0])
+    y = np.tile(ds['lon'], ds['lat'].shape[0])
+    lat_step = ds['lat'][-1] - ds['lat'][-2]
+    lon_step = ds['lon'][-1] - ds['lon'][-2]
+
+    if index == 'pr':
+        color = 'dry_wet'
+    else:
+        color = 'cool_warm'
+
+    return y.tolist(),x.tolist(),trend,-1,1,lon_step,lat_step,color
+
+@app.route('/rcp_avgtrend', methods=['GET'])
+def selectrcp_trend():
+    ncfile = str(request.args.get("ncfile"))
+    index = str(request.args.get("index"))
+    type_ = str(request.args.get("type_"))
+    rcp = str(request.args.get("rcp"))
+    startyear = int(request.args.get("startyear"))
+    stopyear = int(request.args.get("stopyear"))
+    startmonth = int(request.args.get("startmonth"))
+    stopmonth = int(request.args.get("stopmonth"))
+    if type_ == 'y':
+        a = get_rcpmaptrend_year(ncfile, index, type_, rcp, startyear, stopyear)    
+    else :
+        a = get_rcpmaptrend_month(ncfile, index, type_, rcp, startyear, stopyear, startmonth, stopmonth)
+    return jsonify(a)
+
+
 
 #----------------------------map-------------------------------------
 @app.route('/nc_avg', methods=['GET'])
