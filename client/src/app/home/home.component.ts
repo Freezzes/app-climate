@@ -150,8 +150,22 @@ export class HomeComponent implements OnInit {
   async onChangeDataset(newValue) {
     this.dataset = newValue
     this.chooseindex.patchValue({
-      file: null
+      file:null,
+      index:null,
+      indices: null
     })
+    // this.choosedataset.patchValue({
+    //   raw: null,
+    //   rcp: null
+    // });
+  
+    this.chooseRCM.patchValue({
+      rcp:null
+    });
+  
+    this.choose_m_y.patchValue({
+      m_y: null
+    });
 
     if (newValue != 'tmd'){
       (document.getElementById("station") as any).disabled = true;
@@ -167,6 +181,17 @@ export class HomeComponent implements OnInit {
         this.stop_date = {year: Number(year[1]), month: 11, day: 1}
         var detail = [res, this.dataset,this.index]
         this.inputservice.sendDetail(detail)
+      }
+    ))
+
+    await this.tempService.detail_rcp(this.dataset, newValue, this.choose_m_y.controls['m_y'].value).then(data => data.subscribe(
+      res => {
+        console.log("detail", res)
+        var year = String(res.year).split("-")
+        this.start_date = { year: Number(year[0]), month: 1, day: 1 }
+        this.stop_date = { year: Number(year[1]), month: 11, day: 1 }
+        var sent = [res, this.dataset, this.index]
+        this.inputservice.sendDetail(sent)
       }
     ))
     
@@ -316,6 +341,9 @@ export class HomeComponent implements OnInit {
     console.log("dataset",dataset)
     var stopmonth = this.selectrange.controls['stopmonth'].value
     var region = [90, -90, -180, 180, 'rcp']
+    var inputs = { 'dataset': dataset, 'index': index, 'startyear': startyear, 'stopyear': stopyear, 'startmonth': startmonth, 'stopmonth': stopmonth, 'plottrend': this.plot_trend, 'rcp': rcp, 'type': types }
+    await this.inputservice.sendInput(inputs)
+
     await this.inputservice.sendRegion(region)
     if (startmonth == null || stopmonth == null) {
       startmonth = 1

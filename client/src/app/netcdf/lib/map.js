@@ -1,7 +1,7 @@
 import 'ol/ol.css';
 import * as ol from 'openlayers';
 
-import * as d3 from 'C:/Users/ice/climate/data/d3/d3';
+import * as d3 from '../../../assets/d3/d3';
 import * as $ from 'jquery'
 import Polygon from 'ol/geom/Polygon';
 import { platformModifierKeyOnly } from 'ol/events/condition';
@@ -166,7 +166,7 @@ export function select_country(targetMap, mode) {
           // valueArr.push(obj.value)
         }
       }
-      console.log(valueArr)
+      console.log("value country",valueArr)
       var min = Math.round(Math.min.apply(null, valueArr) * 100) / 100;
       var max = Math.round(Math.max.apply(null, valueArr) * 100) / 100;
       var avg = Math.round(valueArr.reduce((a, b) => a + b, 0) / valueArr.length * 100) / 100
@@ -176,6 +176,14 @@ export function select_country(targetMap, mode) {
       $("#selectedCountryMax").text(max);
       $("#selectedCountryAvg").text(avg);
       $("#selectedCountrySum").text(sum);
+    }
+    else if  (e.selected.length == 0) {
+      $("#selectedCountryName").text('');
+      $("#selectedCountryValue").text('');
+      $("#selectedCountryMin").text('');
+      $("#selectedCountryMax").text('');
+      $("#selectedCountryAvg").text('');
+      $("#selectedCountrySum").text('');
     }
   })
 
@@ -260,8 +268,6 @@ export function genGridData(geojson, min, max, color_map,unit, lon_step, lat_ste
       colorScale = d3.scaleQuantile([min, 0, max], colors)
     }
   } 
-  // tickformat = ".2f"
-  // if(name == 'map1' || name == 'map2'){ tickformat = ".0f"}
 
   var title = long_name
   legend({
@@ -279,7 +285,6 @@ export function genGridData(geojson, min, max, color_map,unit, lon_step, lat_ste
       pop = parseInt(feature.getProperties().value),
       rgb = d3.rgb(colorScale(pop));
 
-    // console.log(x,y)
     if (isNaN(pop)) { return }
     return [
       new ol.style.Style({
@@ -308,7 +313,6 @@ export function genGridData(geojson, min, max, color_map,unit, lon_step, lat_ste
     source: grid,
     style: gridStyle
   });
-  // map.addLayer(gridLayer);
 
   return gridLayer
 }
@@ -447,10 +451,6 @@ function createLegend(colorScale, min, max, color, type,name) {
       .attr('height', 16)
       .attr("x", function (d) { return x(d[0]); })
       .attr('width', function (d) { return x(d[1]) - x(d[0]) })
-      // .attr('width',function(d) { 
-      //   if (d[0] == x.domain()[0] && d[1] == x.domain()[1]) return 0
-      //   else return x(d[1]) - x(d[0])
-      // })
 
       .style('fill', function (d) { return colorScale(d[0]); });
     svg.selectAll("g").remove(); // remove all tick bar
@@ -484,10 +484,6 @@ function createLegend(colorScale, min, max, color, type,name) {
       .attr('height', 16)
       .attr("x", function (d) { return x(d[0]); })
       .attr('width', function (d) { return x(d[1]) - x(d[0]) })
-      // .attr('width',function(d) { 
-      //   if (d[0] == x.domain()[0] && d[1] == x.domain()[1]) return 0
-      //   else return x(d[1]) - x(d[0])
-      // })
 
       .style('fill', function (d) { return colorScale(d[0]); });
     svg.selectAll("g").remove(); // remove all tick bar
@@ -549,10 +545,7 @@ export function merge_datatrend_to_geojson(geojsondata, data, North, South, West
 
   var temp = data
   var trend = "";
-  // var grids = geojsondata
-  // console.log("temp",temp)
   for (let i = 0; i < geojsondata.features.length; i++) {
-    // grids["features"][i]["properties"] = {"value": temp[i]}
     if (geojsondata['features'][i]['geometry']['coordinates'][0] >= West &&
       geojsondata['features'][i]['geometry']['coordinates'][0] <= East &&
       geojsondata['features'][i]['geometry']['coordinates'][1] >= South &&
@@ -612,9 +605,6 @@ export function merge_data_to_geojson(geojsondata, data, North, South, West, Eas
 }
 
 export function setzoom(map) {
-  // console.log(map.getLayers())
-  // console.log(map.getView())
-  // console.log("-----",West,East,North,South)
   map.getLayers().forEach(function (layer) {
     if (layer.get('name') == 'lowres_data') {
       console.log("<<<<<<<Low>>>>>>>>>>")
@@ -622,10 +612,6 @@ export function setzoom(map) {
       layer.set('zoom', 0.001)
       layer.set('maxZoom', 4)
       map.getView().setZoom(1);
-      // layer.set('extent', [Number(West),Number(North),Number(East),Number(South)])
-      // map.getView().setCenter([((Number(West) + Number(East))/2),((Number(North)+Number(South))/2)])
-      // layer.set('extent', [West,North,East,South])
-      // layer.set('center', [((Number(West) + Number(East))/2),((Number(North)+Number(South))/2)])
     }
 
   });
@@ -634,15 +620,12 @@ export function setzoom(map) {
 export function clearLayers(map) {
   var layersToRemove = [];
   map.getLayers().forEach(function (layer) {
-    console.log("layerrrr", layer.get('name'))
     if (layer.get('name') == 'lowres_data' || layer.get('name') == 'hires_data' || layer.get('name') == 'trend') {
       layersToRemove.push(layer);
-      console.log("layer :", layersToRemove)
     }
   });
 
   for (var i = 0; i < layersToRemove.length; i++) {
-    console.log(">>>>>> Clear <<<<<<<")
     map.removeLayer(layersToRemove[i]);
   }
 }

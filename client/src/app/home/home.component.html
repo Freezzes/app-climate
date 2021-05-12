@@ -194,7 +194,7 @@
                                         <label
                                             style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-seri; ">Datatset
                                             :</label>
-                                        <select formControlName="rcp" class="form-control form-control-sm">
+                                        <select formControlName="rcp" class="form-control form-control-sm"   (change)="onChangeDataset($event.target.value)">
                                             <option [ngValue]="null" disabled>None</option>
                                             <option *ngFor="let f of dataset_name_rcp" [value]="f.id">{{f.name}}
                                             </option>
@@ -279,18 +279,6 @@
                                         </div>
                                     </form>
                                 </div>
-
-                                <!-- <select [(ngModel)]="selectedStartMonth">
-                          <option *ngFor="let m of selectedIndex.month; let i = index" [value]=i>{{m}}</option>
-                      </select>
-                      <p>to: </p>
-                      <select [(ngModel)]="selectedStopYear">
-                              <option *ngFor="let i of selectedDataset.year;" [value]=i>{{i}}</option>
-                      </select>
-          
-                      <select [(ngModel)]="selectedStopMonth">
-                          <option *ngFor="let m of selectedIndex.month; let i = index" [value]=i>{{m}}</option>
-                      </select> -->
                                 <br>
                                 <div style="margin-left: 14%;" role="group" aria-label="Basic example">
                                     <button type="button" class="buttongrid" (click)="get_indicesData();"
@@ -325,12 +313,6 @@
             </div>
         </div>
 
-        <!-- <div class="flex-column" style="margin-bottom: 5%; "> -->
-        <!-- <div *ngIf="select == 'station'">
-            <app-map [file]="chooseindex.controls['file'].value" [startyear]="this.fromDate.year"
-                [stopyear]="this.toDate.year" [startmonth]="this.fromDate.month" [stopmonth]="this.toDate.month">
-            </app-map>
-        </div> -->
         <div style="display: flex;flex-direction: column;justify-content: center;">
             <div style="flex-direction: row; display: flex; flex-wrap: wrap;justify-content: space-between;height: 800px;width: 1150px;" >
 

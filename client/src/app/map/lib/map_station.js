@@ -1,6 +1,6 @@
 import 'ol/ol.css';
 import * as ol from 'openlayers';
-import * as d3 from 'C:/Users/ice/climate/data/d3/d3';;
+import * as d3 from '../../../assets/d3/d3';
 import { Router, ActivatedRoute } from '@angular/router';
 import Overlay from 'ol/Overlay';
 import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';

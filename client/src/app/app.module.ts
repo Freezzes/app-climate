@@ -7,11 +7,8 @@ import { HttpClientModule } from '@angular/common/http'
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-import { GraphComponent } from './graph/graph.component';
 import { MapComponent } from './map/map.component';
-import { SelectplotComponent } from './components/selectplot.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { TestfunctionComponent } from './testfunction/testfunction.component';
 import { NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { MissingvalueComponent } from './missingvalue/missingvalue.component';
 import * as PlotlyJS from 'plotly.js/dist/plotly.js';
@@ -27,7 +24,6 @@ import { HomeComponent } from './home/home.component';
 import { NetcdfgraphComponent } from './netcdfgraph/netcdfgraph.component';
 import { DifferenceComponent } from './difference/difference.component';
 import { NgxSpinnerModule } from "ngx-spinner";
-import { AlertComponent } from './alert/alert.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 PlotlyModule.plotlyjs = PlotlyJS;
@@ -36,16 +32,12 @@ PlotlyModule.plotlyjs = PlotlyJS;
   declarations: [
     AppComponent,
     MapComponent,
-    GraphComponent,
-    SelectplotComponent,
-    TestfunctionComponent,
     MissingvalueComponent,
     BoxplotComponent,
     NetcdfComponent,
     HomeComponent,
     NetcdfgraphComponent,
     DifferenceComponent,
-    AlertComponent
   ],
   imports: [
     BrowserModule,

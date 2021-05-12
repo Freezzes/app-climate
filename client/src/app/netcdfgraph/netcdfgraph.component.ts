@@ -1,8 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
-import * as Highcharts from 'highcharts';
 import { TempService } from '../services/temp.service';
 import * as MapLib2 from '../map/lib/map_station';
-import * as CanvasJS from 'C:/Users/ice/Downloads/cli/canvasjs-3.0.5/canvasjs.min';
+import * as CanvasJS from '../../assets/canvasjs-3.0.5/canvasjs.min';
 import { ClassGetter } from '@angular/compiler/src/output/output_ast';
 import { map } from 'rxjs/operators';
 import { Chart } from 'chart.js';
@@ -74,7 +73,6 @@ export class NetcdfgraphComponent implements OnInit {
         this.plotMean(data[0], data[1], this.unit,this.long_name,data[3])
       }
     })
-    let elapsed = new Date();
      this.sharedData.anomalyservice.subscribe(data => {
       if(data){
         this.value = data[0]
@@ -101,8 +99,6 @@ export class NetcdfgraphComponent implements OnInit {
       axisX:{
         title : 'Year',
         fontSize: 12,
-        // labelAngle: -90,
-        // interval: 1
       },
       axisX2:{
         gridColor: "rgba(1,77,101,.1)",
@@ -114,9 +110,7 @@ export class NetcdfgraphComponent implements OnInit {
        },
       data: [{
         yValueFormatString: "#.# " + unit,
-        // showInLegend: true,
         type: "column",
-        // name: "companies",
         dataPoints: value
       }]
     });
@@ -133,7 +127,6 @@ export class NetcdfgraphComponent implements OnInit {
       },
       axisY: {
         title: name,
-        // valueFormatString: "#,,.",
         suffix: unit,
         fontSize: 12,
         stripLines: [{
@@ -144,7 +137,6 @@ export class NetcdfgraphComponent implements OnInit {
       data: [{
         yValueFormatString: "#.### " + unit,
         xValueFormatString: "YYYY",
-        // showInLegend: true,
         type: "line",
         dataPoints: Data
       }]

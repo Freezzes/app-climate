@@ -8,6 +8,9 @@
   width: 40vw;
   height: 50vh;
 }
+.card-header{
+  background-color: #d5e4f3;
+}
 .h1{
   color: #0a61a3;
   text-align: center;

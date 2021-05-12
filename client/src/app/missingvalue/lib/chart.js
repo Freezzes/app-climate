@@ -48,12 +48,6 @@ export function missing_chart(percentplot){
                text: 'Year'
             }
          },   
-      //    colorAxis : {
-      //      min: 0,
-      //      max:100,
-      //      minColor: '#0661CC',
-      //      maxColor: '#FFFFFF',
-      //   },
       colorAxis: {
          min: 0,
          max:100,
@@ -84,7 +78,6 @@ export function missing_chart(percentplot){
                      fontSize:'20px'
                   }
             },
-            // backgroundColor: '#FCFFC5',
             padding: 15,
             borderColor: '#0661CC',
             borderRadius: 5,

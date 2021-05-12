@@ -9,7 +9,6 @@ import HighchartsMore from 'highcharts/highcharts-more';
 import { FormControl, FormGroup, Validators, FormBuilder} from '@angular/forms';
 import {Config, Data, Layout} from 'plotly.js';
 import { Chart,ChartData } from 'chart.js';
-import * as CanvasJS from 'C:/Users/ice/Downloads//cli/canvasjs-3.0.5/canvasjs.min';
 import Plotly from 'plotly.js-dist'
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import * as MapLib2 from '../map/lib/map_station';

@@ -31,3 +31,7 @@
     color: #0a61a3;
     font-family:'Open Sans', sans-serif;
   }
+
+  .card-header{
+    background-color: #d5e4f3;
+  }

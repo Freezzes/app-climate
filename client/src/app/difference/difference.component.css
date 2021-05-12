@@ -4,7 +4,9 @@
     padding-right: 50px;
     display: inline-block;
   }
-
+  .card-header{
+    background-color: #d5e4f3;
+  }
   .back{
     background-color: #a4e5ff;
     /* background-size: 10cm; */

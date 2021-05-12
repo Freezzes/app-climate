@@ -1,11 +1,8 @@
 import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
 import { TempService } from '../services/temp.service';
 import { HttpClient, HttpClientModule } from '@angular/common/http'
-import * as L from 'leaflet';
-import { latLng, MapOptions, tileLayer, Marker, icon } from 'leaflet';
 import 'ol/ol.css';
 import * as MapLib from './lib/map_station.js';
-// import * as MapLib2 from './lib/map_station.js';
 import { Circle, Fill, Style } from 'ol/style';
 import { Feature, Map, Overlay, View } from 'ol/index';
 import { OSM, Vector as VectorSource } from 'ol/source';

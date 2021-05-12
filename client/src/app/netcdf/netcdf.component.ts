@@ -208,8 +208,6 @@ export class NetcdfComponent implements OnInit {
     await this.sharedData.lowresservice.subscribe(data => {
       if (data) {
 
-        console.log("ICEEEEEEEEEEEE", data)
-        // this.data_low = data
         this.lowres_layer = this.getDataLayer(data.map, this.North, this.South, this.West, this.East, 'lowres_data', this.color_map, this.unit,this.long_name)
         MapLib.clearLayers(this.map);
         console.log("lowlayer", this.lowres_layer)
