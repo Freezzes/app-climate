@@ -59,6 +59,7 @@ export class HomeComponent implements OnInit {
   selectGrid;
   chart;
   indexrcp_name;
+  dataset_rgm;
 
   public anomaly_year
   public anomaly_name
@@ -76,6 +77,10 @@ export class HomeComponent implements OnInit {
 
   public missdata = []
   public percentplot = []
+
+  currentOrientation = 'vertical'; //sidebar
+  selectDataTab;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -147,25 +152,32 @@ export class HomeComponent implements OnInit {
       (document.getElementById("semonth1") as any).disabled = true;
     }
   }
+
+  async onchangedataset_rcp(newvalue){
+    this.dataset_rgm= newvalue
+    this.choosedataset.patchValue({
+      raw:null
+    })
+    this.chooseindex.patchValue({
+      index: null
+    })
+  }
   async onChangeDataset(newValue) {
     this.dataset = newValue
+    
+    this.choosedataset.patchValue({
+      rcp:null
+    })
     this.chooseindex.patchValue({
-      file:null,
-      index:null,
+      index: null,
       indices: null
     })
-    // this.choosedataset.patchValue({
-    //   raw: null,
-    //   rcp: null
-    // });
-  
     this.chooseRCM.patchValue({
-      rcp:null
-    });
-  
+      rcp: null
+    })
     this.choose_m_y.patchValue({
       m_y: null
-    });
+    })
 
     if (newValue != 'tmd'){
       (document.getElementById("station") as any).disabled = true;
@@ -173,27 +185,27 @@ export class HomeComponent implements OnInit {
     else{
       (document.getElementById("station") as any).disabled = false;
     }
-    await this.tempService.detail(this.dataset, this.index).then(data => data.subscribe(
-      res => {
-        console.log("qqqqq",res.year)
-        var year = String(res.year).split("-")
-        this.start_date = {year: Number(year[0]), month: 1, day: 1}
-        this.stop_date = {year: Number(year[1]), month: 11, day: 1}
-        var detail = [res, this.dataset,this.index]
-        this.inputservice.sendDetail(detail)
-      }
-    ))
+    // await this.tempService.detail(this.dataset, this.index).then(data => data.subscribe(
+    //   res => {
+    //     console.log("qqqqq",res.year)
+    //     var year = String(res.year).split("-")
+    //     this.start_date = {year: Number(year[0]), month: 1, day: 1}
+    //     this.stop_date = {year: Number(year[1]), month: 11, day: 1}
+    //     var detail = [res, this.dataset,this.index]
+    //     this.inputservice.sendDetail(detail)
+    //   }
+    // ))
 
-    await this.tempService.detail_rcp(this.dataset, newValue, this.choose_m_y.controls['m_y'].value).then(data => data.subscribe(
-      res => {
-        console.log("detail", res)
-        var year = String(res.year).split("-")
-        this.start_date = { year: Number(year[0]), month: 1, day: 1 }
-        this.stop_date = { year: Number(year[1]), month: 11, day: 1 }
-        var sent = [res, this.dataset, this.index]
-        this.inputservice.sendDetail(sent)
-      }
-    ))
+    // await this.tempService.detail_rcp(this.dataset, newValue, this.choose_m_y.controls['m_y'].value).then(data => data.subscribe(
+    //   res => {
+    //     console.log("detail", res)
+    //     var year = String(res.year).split("-")
+    //     this.start_date = { year: Number(year[0]), month: 1, day: 1 }
+    //     this.stop_date = { year: Number(year[1]), month: 11, day: 1 }
+    //     var sent = [res, this.dataset, this.index]
+    //     this.inputservice.sendDetail(sent)
+    //   }
+    // ))
     
     this.tempService.get_index(this.dataset).then(data => data.subscribe(
       res => {
@@ -206,9 +218,10 @@ export class HomeComponent implements OnInit {
   async onChangeIndex(newvalue){
     console.log("index",this.dataset)
     this.index = newvalue
+    if (this.index == 'tas' || this.index == 'tasmin' || this.index == 'tasmax' || this.index == 'pr') {
     await this.tempService.detail(this.dataset, this.index).then(data => data.subscribe(
       res => {
-        console.log("qqqqq",res.year)
+        // console.log("qqqqq",res.year)
         var year = String(res.year).split("-")
         this.start_date = {year: Number(year[0]), month: 1, day: 1}
         this.stop_date = {year: Number(year[1]), month: 11, day: 1}
@@ -216,7 +229,11 @@ export class HomeComponent implements OnInit {
         this.inputservice.sendDetail(detail)
       }
     ))
-
+    var sent = [{ 'dataset': this.dataset, 'index': this.index, 'rcp': 'None', 'types': 'None', 'clear': 'clear' }]
+    // var sent = [dataset, index, clear]
+    this.inputservice.senddif(sent)
+    }
+    else{
     await this.tempService.detail_rcp(this.dataset, newvalue, this.choose_m_y.controls['m_y'].value).then(data => data.subscribe(
       res => {
         console.log("detail", res)
@@ -227,6 +244,10 @@ export class HomeComponent implements OnInit {
         this.inputservice.sendDetail(sent)
       }
     ))
+    var sent_rcp = [{ 'dataset': this.dataset_rgm, 'index': this.index, 'rcp': this.chooseRCM.controls['rcp'].value, 'types': this.choose_m_y.controls['m_y'].value, 'clear': 'clear' }]
+    // var sent = [dataset, index, clear]
+    this.inputservice.senddif(sent_rcp)
+    }
   }
 
 

@@ -220,7 +220,7 @@ getDataLayer(data, North, South, West, East, layername, name_legend, type, color
         const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data', 'map1', 'main', this.color_map, this.unit,this.long_name)
         MapLib.clearLayers(this.map1);
         this.map1.getLayers().insertAt(0, data_dif);
-        MapLib.select_country(this.map1)
+        // MapLib.select_country(this.map1)
       })
     ))
   }
@@ -239,7 +239,7 @@ getDataLayer(data, North, South, West, East, layername, name_legend, type, color
         const datalayer2 = MapLib.genGridData(merge, this.min1, this.max1, this.color_map, this.unit, resp[5], resp[6], 'main', 'lowres_data', 'map2',this.long_name);
         MapLib.clearLayers(this.map2);
         this.map2.getLayers().insertAt(0, datalayer2);
-        MapLib.select_country(this.map2)
+        // MapLib.select_country(this.map2)
       })
     ))
   }
@@ -256,7 +256,7 @@ getDataLayer(data, North, South, West, East, layername, name_legend, type, color
         const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data', 'mapdif', 'per', this.color_map, this.unit,this.long_name)
         MapLib.clearLayers(this.map);
         this.map.getLayers().insertAt(0, data_dif);
-        MapLib.select_country(this.map)
+        // MapLib.select_country(this.map)
       })
     ))
   }
@@ -271,16 +271,16 @@ getDataLayer(data, North, South, West, East, layername, name_legend, type, color
     await this.tempService.raw_dif(this.Input.dataset, this.Input.index, this.start1, this.stop1, this.start2, this.stop2, this.Input.rcp, this.Input.types).then(data => data.subscribe(
       (res => {
         let resp = JSON.parse(res)
-        console.log(">>>>>>>>>", resp)
+        // console.log(">>>>>>>>>", resp)
         // const geojson = MapLib.merge_data_to_geojson(resp[0],resp[1], val, this.North, this.South, this.West, this.East,'value');
         // console.log("geojson",geojson)
         // var datalayer = MapLib.genGridData(geojson, resp[3], resp[4], resp[7], resp[5], resp[6],'main','lowres_data');
         const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data', 'mapdif', 'main', this.color_map, this.unit,this.long_name)
         MapLib.clearLayers(this.map);
         this.map.getLayers().insertAt(0, data_dif);
-        MapLib.select_country(this.map)
-        console.log("finish")
-        console.timeEnd()
+        // MapLib.select_country(this.map)
+        // console.log("finish")
+        // console.timeEnd()
 
       })
     ))

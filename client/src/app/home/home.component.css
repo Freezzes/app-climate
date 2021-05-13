@@ -12,6 +12,35 @@
   /* padding-left: 10px; */
   padding-bottom: 20px;
 }
+
+.header{
+  background-color: #d5e4f3;
+  height: 120px;
+}
+
+.line{
+  background-color: #0a61a3;
+  height: 1px;
+  width: 250px;
+  
+}
+.block-3 {
+	width: 150px;
+	height: 100px;
+  margin-left: 20px;
+	/* margin: 20px; */
+	/* background: #F4E85C; */
+  float: left;
+}
+.block-4 {
+	width: 80px;
+	/* height: 120px; */
+	/* margin: 20px; */
+	/* background: #404040; */
+  float: right;
+}
+
+
 /* ------------------ */
 
 .wrapper {
@@ -21,17 +50,32 @@
   background-color:rgb(255, 255, 255);
 }
 
+.scroll-x{
+  background-color: #e8f4ff;
+  float: left;
+}
+
+::ng-deep .nav-pills a.nav-link.active,
+::ng-deep .nav-pills .show > a.nav-link {
+  background-color: #d5e4f3;
+  padding: 10px;
+  font-size: 1.1em;
+  display: block;
+  color: midnightblue;
+  text-align: left;
+}
+
 #sidebar.active {
   min-width: 90px;
   max-width: 90px;
-  text-align: center;
+  /* text-align: center; */
 }
 
 #sidebar {
   min-width: 250px;
   max-width: 250px;
   min-height: 100vh;
-  text-align: center;
+  /* text-align: center; */
 }
 
 a[data-toggle="collapse"] {
@@ -90,6 +134,7 @@ a, a:hover, a:focus {
   margin-top: 0.5cm;
   /* float: left; */
   background: #e8f4ff;
+  margin-left: 20px;
   /* text-align: center; */
   /* padding: 20px; */
   /* background: #6d7fcc; */
@@ -123,7 +168,7 @@ a, a:hover, a:focus {
 }
 ul ul a {
     font-size: 0.9em !important;
-    padding-left: 30px !important;
+    /* padding-left: 30px !important; */
     background: #e8f4ff;
 }
 

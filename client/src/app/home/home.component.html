@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
         integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
         crossorigin="anonymous"></script>
@@ -14,10 +14,10 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
         crossorigin="anonymous"></script>
-   
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"
         integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
- 
+
     <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js"
         integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ"
         crossorigin="anonymous"></script>
@@ -39,262 +39,526 @@
     <div class="wrapper">
         <nav id="sidebar">
             <ul class="list-unstyled components">
-                <li>
-                    <div>
-                        <!-- <div class="leftworld"> -->
-                        <a
-                            style="font-size: 23px;font-family: 'Open Sans', sans-serif;color: #0a61a3;font-weight: 600;  font-variant-position: left;">
-                            Climate <br> Visualization
-                        </a>
-                        <!-- </div> -->
-                        <!-- <div class="rightworld"
-                    style="font-size: 20px;font-family: 'Open Sans', sans-serif;color: #0a61a3;font-weight: 600;">
-                    <i class="fas fa-globe-americas fa-3x"></i>
-                  </div> -->
+                <div class="header">
+                    <div class="block-3"
+                        style="margin-top: 23px; font-size: 23px;font-family: 'Open Sans', sans-serif;color: #0a61a3;font-weight: 600;  font-variant-position: left;">
+                        Climate <br> Visualization
                     </div>
-                </li>
-                <li>
-                    <a data-toggle="collapse" data-parent="#accordion" aria-expanded="false" role="button"
-                        class="dropdown-toggle">
-                        <i class="fas fa-globe-americas"></i>
-                        Reanalysis Data
-                    </a>
-                    <ul class="collapse list-unstyled" id='rcp'>
-                        <li>
-                            <a>
-                                <div>
-                                    <form [formGroup]="choosedataset">
-                                        <label
-                                            style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-seri; ">Datatset
-                                            :</label>
-                                        <select formControlName="raw" class="form-control form-control-sm"
-                                            (change)="onChangeDataset($event.target.value)">
-                                            <option [ngValue]="null" disabled>None</option>
-                                            <option *ngFor="let f of dataset_name" [value]="f.id">{{f.name}}</option>
-                                        </select>
-                                    </form>
-                                </div>
-                                <div>
-                                    <form [formGroup]="chooseindex">
-                                        <label
-                                            style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">Indices
-                                            :</label>
-                                        <select formControlName="index" class="form-control form-control-sm"
-                                            (change)="onChangeIndex($event.target.value)">
-                                            <option [ngValue]="null" disabled>None</option>
-                                            <option *ngFor="let f of index_name" [value]="f.index">{{f.name}}</option>
-                                        </select>
-                                    </form>
-                                </div>
-                                <div class="form-group hidden">
-                                    <div class="input-group">
-                                        <input name="datepicker" id="datepicker" class="form-control1 " ngbDatepicker
-                                            #datepicker="ngbDatepicker" [autoClose]="'outside'"
-                                            (dateSelect)="onDateSelection($event)" [displayMonths]="2" [dayTemplate]="t"
-                                            outsideDays="hidden" [minDate]="start_date" [maxDate]="stop_date">
-                                        <ng-template #t let-date let-focused="focused">
-                                            <span class="custom-day" [class.focused]="focused"
-                                                [class.range]="isRange(date)"
-                                                [class.faded]="isHovered(date) || isInside(date)"
-                                                (mouseenter)="hoveredDate = date" (mouseleave)="hoveredDate = null">
-                                                {{ date.day }}
-                                            </span>
-                                        </ng-template>
-                                    </div>
-                                </div>
-                                <label
-                                    style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">From
-                                    :
-                                </label>
-                                <div class="input-group" style="width: 90%;">
-                                    <input #dpFromDate class="form-control form-control-sm" placeholder="yyyy-mm-dd"
-                                        name="dpFromDate" [value]="formatter.format(fromDate)"
-                                        (input)="fromDate = validateInput(fromDate, dpFromDate.value)">
-                                    <div class="input-group-append">
-                                        <button class="btn btn-outline-secondary calendar  btn-sm"
-                                            (click)="datepicker.toggle(); " type="button"
-                                            style="background-color: rgb(255, 255, 255);"><i class="far fa-calendar-alt"
-                                                style="size: 2px;"></i></button>
-                                    </div>
-                                </div>
-                                <label
-                                    style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">to
-                                    :</label>
-                                <div class="input-group" style="width: 90%;">
-                                    <input #dpToDate class="form-control form-control-sm" placeholder="yyyy-mm-dd"
-                                        name="dpToDate" [value]="formatter.format(toDate)"
-                                        (input)="toDate = validateInput(toDate, dpToDate.value)">
-                                    <div class="input-group-append">
-                                        <button class="btn btn-outline-secondary calendar  btn-sm"
-                                            (click)="datepicker.toggle()" type="button"
-                                            style="background-color: rgb(255, 255, 255);"><i
-                                                class="far fa-calendar-alt"></i></button>
-                                    </div>
-                                </div>
-                                <label
-                                    style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">Select
-                                    Region :</label>
-                                <div class="input-group input-group-sm mb-3" style="margin-left: 29%; max-width:32%; ">
-                                    <div class="input-group-prepend ">
-                                        <span class="input-group-text" id="basic-addon1">N</span>
-                                    </div>
-                                    <input type="text" class="form-control form-control-sm" placeholder="90"
-                                        style="font-size: 13px;" [formControl]="North">
-                                </div>
-                                <form class="form-inline">
-                                    <div class="input-group input-group-sm mb-3" style="width: 32%;">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text" id="basic-addon1">W</span>
-                                        </div>
-                                        <input type="text" class="form-control form-control-sm" placeholder="-180"
-                                            style="font-size: 13px;" [formControl]="West">
-                                    </div>
-                                    <span class="input-group input-group-sm mb-3" style="margin-left: 10%;"><i
-                                            class="fas fa-compass"></i></span>
-                                    <div class="input-group input-group-sm mb-3" style="margin-left: 9%; width: 32%;">
-                                        <div class="input-group-prepend ">
-                                            <span class="input-group-text" id="basic-addon1">E</span>
-                                        </div>
-                                        <input type="text" class="form-control form-control-sm" placeholder="180"
-                                            style="font-size: 13px;" [formControl]="East">
-                                    </div>
-                                </form>
-                                <div class="input-group input-group-sm mb-3" style="margin-left: 29%; max-width:32%; ">
-                                    <div class="input-group-prepend ">
-                                        <span class="input-group-text" id="basic-addon1">S</span>
-                                    </div>
-                                    <input type="text" class="form-control form-control-sm" placeholder="-90"
-                                        style="font-size: 13px;" [formControl]="South">
-                                </div>
-                                <div role="group" aria-label="Basic example">
-                                    <button type="button" class="buttongrid" (click)="get_raw_data();"
-                                        [disabled]="choosedataset.controls['raw'].value === 'tmd'"><i
-                                            class="fas fa-map-marked-alt"></i><br>Grid</button>
-                                    <button type="button" class="buttongrid" (click)="get_difference()"
-                                        [disabled]="choosedataset.controls['raw'].value === 'tmd'"><i
-                                            class="fas fa-layer-group"></i><br>Different</button>
-                                    <button type="button" class="buttongrid" id="station" (click)="station_thai()"
-                                        (change)="onChangeDataset($event.target.value)"><i
-                                            class="fas fa-map-marker-alt"></i><br>Station</button>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li>
-                    <a data-toggle="collapse" data-parent="#accordion" aria-expanded="false" class="dropdown-toggle">
-                        <i class="fas fa-map-marked-alt"></i>
-                        RCM
-                    </a>
-                    <ul class="collapse list-unstyled" id='rcm'>
-                        <li>
-                            <a>
-                                <div>
-                                    <form [formGroup]="choosedataset">
-                                        <label
-                                            style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-seri; ">Datatset
-                                            :</label>
-                                        <select formControlName="rcp" class="form-control form-control-sm"   (change)="onChangeDataset($event.target.value)">
-                                            <option [ngValue]="null" disabled>None</option>
-                                            <option *ngFor="let f of dataset_name_rcp" [value]="f.id">{{f.name}}
-                                            </option>
-                                        </select>
-                                    </form>
-                                </div>
-                                <div>
-                                    <form [formGroup]="chooseRCM">
-                                        <label
-                                            style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-seri;">Scenario
-                                            :</label>
-                                        <select formControlName="rcp" class="form-control form-control-sm">
-                                            <option [ngValue]="null" disabled>None</option>
-                                            <option *ngFor="let f of RCP" [value]="f.id">{{f.name}}</option>
-                                        </select>
-                                    </form>
-                                </div>
-                                <div>
-                                    <form [formGroup]="choose_m_y">
-                                        <label
-                                            style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">Month/Year
-                                            :</label>
-                                        <select formControlName="m_y" class="form-control form-control-sm"
-                                            (change)="onChangetype($event.target.value)">
-                                            <option [ngValue]="null" disabled>None</option>
-                                            <option *ngFor="let f of M_Y" [value]="f.id">{{f.name}}</option>
-                                        </select>
-                                    </form>
-                                </div>
-                                <div>
-                                    <form [formGroup]="chooseindex">
-                                        <label
-                                            style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">Indices
-                                            :</label>
-                                        <select formControlName="indices" class="form-control form-control-sm"
-                                            (change)="onChangeIndex($event.target.value)">
-                                            <option [ngValue]="null" disabled>None</option>
-                                            <option *ngFor="let f of indexrcp_name" [value]="f.index">{{f.name}}
-                                            </option>
-                                        </select>
-                                    </form>
-                                </div>
-                                <div>
-                                    <form [formGroup]='selectrange'>
-                                        <label
-                                            style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">From:
-                                        </label>
-                                        <div class="form-row" style="margin-left: 1px;">
-                                            <select formControlName="startmonth" class="form-control form-control-sm"
-                                                id='semonth' style="width: 43%;">
-                                                <option [ngValue]="null" disabled>Month</option>
-                                                <option *ngFor="let m of month; let i = index" [value]="i">{{m}}
-                                                </option>
-                                            </select>
+                    <div class="block-4" style="margin-top: 25px; color: #0a61a3;">
+                        <i class="fas fa-globe-americas fa-4x"></i>
+                    </div>
+                </div>
 
-                                            <select formControlName="startyear" class="form-control form-control-sm"
-                                                style="width: 43%;">
-                                                <option [ngValue]="null" disabled>Year</option>
-                                                <option *ngFor='let i of counter(1970,2100) ;' [value]=i>{{i}}</option>
-                                            </select>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div>
-                                    <form [formGroup]='selectrange'>
-                                        <label
-                                            style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">To:
-                                        </label>
-                                        <div class="form-row" style="margin-left: 1px;">
-                                            <select formControlName="stopmonth" class="form-control form-control-sm"
-                                                id='semonth1' style="width: 43%;">
-                                                <option [ngValue]="null" disabled>Month</option>
-                                                <option *ngFor="let m of month; let i = index" [value]="i">{{m}}
-                                                </option>
-                                            </select>
+                <div class="line"></div>
 
-                                            <select formControlName="stopyear" class="form-control form-control-sm"
-                                                style="width: 43%;">
-                                                <option [ngValue]="null" disabled>Year</option>
-                                                <option *ngFor='let i of counter(1970,2100) ;' [value]=i>{{i}}</option>
-                                            </select>
+                <div style="margin: 10px 0 10px 0; width: 250px;" class="scroll-x">
+                    <ngb-tabset #tabset="ngbTabset" [orientation]="currentOrientation" type="pills">
+                        <ngb-tab id="one">
+                            <ng-template ngbTabTitle>
+                                <li (click)="selectDataTab=1;"> <i class="fas fa-globe-americas fa-1x"
+                                        style="margin-left: 3px;"></i> Reanalysis Data &nbsp; &nbsp; &nbsp; &nbsp;
+                                    &nbsp; <i class="fas fa-angle-down fa-1x"></i></li>
+                            </ng-template>
+                            <ng-template ngbTabContent *ngIf="selectDataTab==1">
+                                <li style="margin-left: 20px;">
+                                    <a>
+                                        <div>
+                                            <form [formGroup]="choosedataset">
+                                                <label
+                                                    style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-seri; text-align: left; ">Datatset
+                                                    :</label>
+                                                <select formControlName="raw" class="form-control form-control-sm"
+                                                    (change)="onChangeDataset($event.target.value)">
+                                                    <option [ngValue]="null" disabled>None</option>
+                                                    <option *ngFor="let f of dataset_name" [value]="f.id">{{f.name}}
+                                                    </option>
+                                                </select>
+                                            </form>
                                         </div>
-                                    </form>
-                                </div>
-                                <br>
-                                <div style="margin-left: 14%;" role="group" aria-label="Basic example">
-                                    <button type="button" class="buttongrid" (click)="get_indicesData();"
-                                        [disabled]="choosedataset.controls['raw'].value === 'tmd'"><i
-                                            class="fas fa-map-marked-alt"></i><br>Grid</button>
-                                    <button type="button" class="buttongrid" (click)="getrcp_difference()"
-                                        [disabled]="choosedataset.controls['raw'].value === 'tmd'"><i
-                                            class="fas fa-layer-group"></i><br>Different</button>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+                                        <div>
+                                            <form [formGroup]="chooseindex">
+                                                <label
+                                                    style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">Indices
+                                                    :</label>
+                                                <select formControlName="index" class="form-control form-control-sm"
+                                                    (change)="onChangeIndex($event.target.value)">
+                                                    <option [ngValue]="null" disabled>None</option>
+                                                    <option *ngFor="let f of index_name" [value]="f.index">{{f.name}}
+                                                    </option>
+                                                </select>
+                                            </form>
+                                        </div>
+                                        <div class="form-group hidden">
+                                            <div class="input-group">
+                                                <input name="datepicker" id="datepicker" class="form-control1 "
+                                                    ngbDatepicker #datepicker="ngbDatepicker" [autoClose]="'outside'"
+                                                    (dateSelect)="onDateSelection($event)" [displayMonths]="2"
+                                                    [dayTemplate]="t" outsideDays="hidden" [minDate]="start_date"
+                                                    [maxDate]="stop_date">
+                                                <ng-template #t let-date let-focused="focused">
+                                                    <span class="custom-day" [class.focused]="focused"
+                                                        [class.range]="isRange(date)"
+                                                        [class.faded]="isHovered(date) || isInside(date)"
+                                                        (mouseenter)="hoveredDate = date"
+                                                        (mouseleave)="hoveredDate = null">
+                                                        {{ date.day }}
+                                                    </span>
+                                                </ng-template>
+                                            </div>
+                                        </div>
+                                        <label
+                                            style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">From
+                                            :
+                                        </label>
+                                        <div class="input-group" style="width: 90%;">
+                                            <input #dpFromDate class="form-control form-control-sm"
+                                                placeholder="yyyy-mm-dd" name="dpFromDate"
+                                                [value]="formatter.format(fromDate)"
+                                                (input)="fromDate = validateInput(fromDate, dpFromDate.value)">
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary calendar  btn-sm"
+                                                    (click)="datepicker.toggle(); " type="button"
+                                                    style="background-color: rgb(255, 255, 255);"><i
+                                                        class="far fa-calendar-alt" style="size: 2px;"></i></button>
+                                            </div>
+                                        </div>
+                                        <label
+                                            style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">to
+                                            :</label>
+                                        <div class="input-group" style="width: 90%;">
+                                            <input #dpToDate class="form-control form-control-sm"
+                                                placeholder="yyyy-mm-dd" name="dpToDate"
+                                                [value]="formatter.format(toDate)"
+                                                (input)="toDate = validateInput(toDate, dpToDate.value)">
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary calendar  btn-sm"
+                                                    (click)="datepicker.toggle()" type="button"
+                                                    style="background-color: rgb(255, 255, 255);"><i
+                                                        class="far fa-calendar-alt"></i></button>
+                                            </div>
+                                        </div>
+                                        <label
+                                            style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">Select
+                                            Region :</label>
+                                        <div class="input-group input-group-sm mb-3"
+                                            style="margin-left: 29%; max-width:32%; ">
+                                            <div class="input-group-prepend ">
+                                                <span class="input-group-text" id="basic-addon1">N</span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm" placeholder="90"
+                                                style="font-size: 13px;" [formControl]="North">
+                                        </div>
+                                        <form class="form-inline">
+                                            <div class="input-group input-group-sm mb-3" style="width: 32%;">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text" id="basic-addon1">W</span>
+                                                </div>
+                                                <input type="text" class="form-control form-control-sm"
+                                                    placeholder="-180" style="font-size: 13px;" [formControl]="West">
+                                            </div>
+                                            <span class="input-group input-group-sm mb-3" style="margin-left: 10%;"><i
+                                                    class="fas fa-compass"></i></span>
+                                            <div class="input-group input-group-sm mb-3"
+                                                style="margin-left: 9%; width: 32%;">
+                                                <div class="input-group-prepend ">
+                                                    <span class="input-group-text" id="basic-addon1">E</span>
+                                                </div>
+                                                <input type="text" class="form-control form-control-sm"
+                                                    placeholder="180" style="font-size: 13px;" [formControl]="East">
+                                            </div>
+                                        </form>
+                                        <div class="input-group input-group-sm mb-3"
+                                            style="margin-left: 29%; max-width:32%; ">
+                                            <div class="input-group-prepend ">
+                                                <span class="input-group-text" id="basic-addon1">S</span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm" placeholder="-90"
+                                                style="font-size: 13px;" [formControl]="South">
+                                        </div>
+                                        <div role="group" aria-label="Basic example">
+                                            <button type="button" class="buttongrid" (click)="get_raw_data();"
+                                                [disabled]="choosedataset.controls['raw'].value === 'tmd'"><i
+                                                    class="fas fa-map-marked-alt"></i><br>Grid</button>
+                                            <button type="button" class="buttongrid" (click)="get_difference()"
+                                                [disabled]="choosedataset.controls['raw'].value === 'tmd'"><i
+                                                    class="fas fa-layer-group"></i><br>Different</button>
+                                            <button type="button" class="buttongrid" id="station"
+                                                (click)="station_thai()"
+                                                (change)="onChangeDataset($event.target.value)"><i
+                                                    class="fas fa-map-marker-alt"></i><br>Station</button>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ng-template>
+                        </ngb-tab>
+                    </ngb-tabset>
+                    <ngb-tabset #tabset="ngbTabset" [orientation]="currentOrientation" type="pills">
+                        <ngb-tab id="two">
+                            <ng-template ngbTabTitle>
+                                <li (click)="selectDataTab=2;"><i class="fas fa-map-marked-alt"></i>
+                                    RCM &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                                    &nbsp; &nbsp; <i class="fas fa-angle-down fa-1x"></i></li>
+                            </ng-template>
+                            <ng-template ngbTabContent *ngIf="selectDataTab=='2'">
+                                <li style="margin-left: 20px;">
+                                    <a>
+                                        <div>
+                                            <form [formGroup]="choosedataset">
+                                                <label
+                                                    style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-seri; ">Datatset
+                                                    :</label>
+                                                <select formControlName="rcp" class="form-control form-control-sm"
+                                                    (change)="onchangedataset_rcp($event.target.value)">
+                                                    <option [ngValue]="null" disabled>None</option>
+                                                    <option *ngFor="let f of dataset_name_rcp" [value]="f.id">{{f.name}}
+                                                    </option>
+                                                </select>
+                                            </form>
+                                        </div>
+                                        <div>
+                                            <form [formGroup]="chooseRCM">
+                                                <label
+                                                    style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-seri;">Scenario
+                                                    :</label>
+                                                <select formControlName="rcp" class="form-control form-control-sm">
+                                                    <option [ngValue]="null" disabled>None</option>
+                                                    <option *ngFor="let f of RCP" [value]="f.id">{{f.name}}</option>
+                                                </select>
+                                            </form>
+                                        </div>
+                                        <div>
+                                            <form [formGroup]="choose_m_y">
+                                                <label
+                                                    style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">Month/Year
+                                                    :</label>
+                                                <select formControlName="m_y" class="form-control form-control-sm"
+                                                    (change)="onChangetype($event.target.value)">
+                                                    <option [ngValue]="null" disabled>None</option>
+                                                    <option *ngFor="let f of M_Y" [value]="f.id">{{f.name}}</option>
+                                                </select>
+                                            </form>
+                                        </div>
+                                        <div>
+                                            <form [formGroup]="chooseindex">
+                                                <label
+                                                    style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">Indices
+                                                    :</label>
+                                                <select formControlName="indices" class="form-control form-control-sm"
+                                                    (change)="onChangeIndex($event.target.value)">
+                                                    <option [ngValue]="null" disabled>None</option>
+                                                    <option *ngFor="let f of indexrcp_name" [value]="f.index">{{f.name}}
+                                                    </option>
+                                                </select>
+                                            </form>
+                                        </div>
+                                        <div>
+                                            <form [formGroup]='selectrange'>
+                                                <label
+                                                    style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">From:
+                                                </label>
+                                                <div class="form-row" style="margin-left: 1px;">
+                                                    <select formControlName="startmonth"
+                                                        class="form-control form-control-sm" id='semonth'
+                                                        style="width: 43%;">
+                                                        <option [ngValue]="null" disabled>Month</option>
+                                                        <option *ngFor="let m of month; let i = index" [value]="i">{{m}}
+                                                        </option>
+                                                    </select>
+
+                                                    <select formControlName="startyear"
+                                                        class="form-control form-control-sm" style="width: 43%;">
+                                                        <option [ngValue]="null" disabled>Year</option>
+                                                        <option *ngFor='let i of counter(1970,2100) ;' [value]=i>{{i}}
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div>
+                                            <form [formGroup]='selectrange'>
+                                                <label
+                                                    style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">To:
+                                                </label>
+                                                <div class="form-row" style="margin-left: 1px;">
+                                                    <select formControlName="stopmonth"
+                                                        class="form-control form-control-sm" id='semonth1'
+                                                        style="width: 43%;">
+                                                        <option [ngValue]="null" disabled>Month</option>
+                                                        <option *ngFor="let m of month; let i = index" [value]="i">{{m}}
+                                                        </option>
+                                                    </select>
+
+                                                    <select formControlName="stopyear"
+                                                        class="form-control form-control-sm" style="width: 43%;">
+                                                        <option [ngValue]="null" disabled>Year</option>
+                                                        <option *ngFor='let i of counter(1970,2100) ;' [value]=i>{{i}}
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        <br>
+                                        <div style="margin-left: 14%;" role="group" aria-label="Basic example">
+                                            <button type="button" class="buttongrid" (click)="get_indicesData();"
+                                                [disabled]="choosedataset.controls['raw'].value === 'tmd'"><i
+                                                    class="fas fa-map-marked-alt"></i><br>Grid</button>
+                                            <button type="button" class="buttongrid" (click)="getrcp_difference()"
+                                                [disabled]="choosedataset.controls['raw'].value === 'tmd'"><i
+                                                    class="fas fa-layer-group"></i><br>Different</button>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ng-template>
+                        </ngb-tab>
+                    </ngb-tabset>
+                </div>
             </ul>
         </nav>
 
+
+
+            <!-- <li>
+                <a data-toggle="collapse" data-parent="#accordion" aria-expanded="false" role="button"
+                    class="dropdown-toggle">
+                    <i class="fas fa-globe-americas"></i>
+                    Reanalysis Data
+                </a>
+                <ul class="collapse list-unstyled" id='rcp'>
+                    <li>
+                        <a>
+                            <div>
+                                <form [formGroup]="choosedataset">
+                                    <label
+                                        style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-seri; ">Datatset
+                                        :</label>
+                                    <select formControlName="raw" class="form-control form-control-sm"
+                                        (change)="onChangeDataset($event.target.value)">
+                                        <option [ngValue]="null" disabled>None</option>
+                                        <option *ngFor="let f of dataset_name" [value]="f.id">{{f.name}}</option>
+                                    </select>
+                                </form>
+                            </div>
+                            <div>
+                                <form [formGroup]="chooseindex">
+                                    <label
+                                        style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">Indices
+                                        :</label>
+                                    <select formControlName="index" class="form-control form-control-sm"
+                                        (change)="onChangeIndex($event.target.value)">
+                                        <option [ngValue]="null" disabled>None</option>
+                                        <option *ngFor="let f of index_name" [value]="f.index">{{f.name}}</option>
+                                    </select>
+                                </form>
+                            </div>
+                            <div class="form-group hidden">
+                                <div class="input-group">
+                                    <input name="datepicker" id="datepicker" class="form-control1 " ngbDatepicker
+                                        #datepicker="ngbDatepicker" [autoClose]="'outside'"
+                                        (dateSelect)="onDateSelection($event)" [displayMonths]="2" [dayTemplate]="t"
+                                        outsideDays="hidden" [minDate]="start_date" [maxDate]="stop_date">
+                                    <ng-template #t let-date let-focused="focused">
+                                        <span class="custom-day" [class.focused]="focused" [class.range]="isRange(date)"
+                                            [class.faded]="isHovered(date) || isInside(date)"
+                                            (mouseenter)="hoveredDate = date" (mouseleave)="hoveredDate = null">
+                                            {{ date.day }}
+                                        </span>
+                                    </ng-template>
+                                </div>
+                            </div>
+                            <label
+                                style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">From
+                                :
+                            </label>
+                            <div class="input-group" style="width: 90%;">
+                                <input #dpFromDate class="form-control form-control-sm" placeholder="yyyy-mm-dd"
+                                    name="dpFromDate" [value]="formatter.format(fromDate)"
+                                    (input)="fromDate = validateInput(fromDate, dpFromDate.value)">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary calendar  btn-sm"
+                                        (click)="datepicker.toggle(); " type="button"
+                                        style="background-color: rgb(255, 255, 255);"><i class="far fa-calendar-alt"
+                                            style="size: 2px;"></i></button>
+                                </div>
+                            </div>
+                            <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">to
+                                :</label>
+                            <div class="input-group" style="width: 90%;">
+                                <input #dpToDate class="form-control form-control-sm" placeholder="yyyy-mm-dd"
+                                    name="dpToDate" [value]="formatter.format(toDate)"
+                                    (input)="toDate = validateInput(toDate, dpToDate.value)">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary calendar  btn-sm"
+                                        (click)="datepicker.toggle()" type="button"
+                                        style="background-color: rgb(255, 255, 255);"><i
+                                            class="far fa-calendar-alt"></i></button>
+                                </div>
+                            </div>
+                            <label
+                                style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">Select
+                                Region :</label>
+                            <div class="input-group input-group-sm mb-3" style="margin-left: 29%; max-width:32%; ">
+                                <div class="input-group-prepend ">
+                                    <span class="input-group-text" id="basic-addon1">N</span>
+                                </div>
+                                <input type="text" class="form-control form-control-sm" placeholder="90"
+                                    style="font-size: 13px;" [formControl]="North">
+                            </div>
+                            <form class="form-inline">
+                                <div class="input-group input-group-sm mb-3" style="width: 32%;">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">W</span>
+                                    </div>
+                                    <input type="text" class="form-control form-control-sm" placeholder="-180"
+                                        style="font-size: 13px;" [formControl]="West">
+                                </div>
+                                <span class="input-group input-group-sm mb-3" style="margin-left: 10%;"><i
+                                        class="fas fa-compass"></i></span>
+                                <div class="input-group input-group-sm mb-3" style="margin-left: 9%; width: 32%;">
+                                    <div class="input-group-prepend ">
+                                        <span class="input-group-text" id="basic-addon1">E</span>
+                                    </div>
+                                    <input type="text" class="form-control form-control-sm" placeholder="180"
+                                        style="font-size: 13px;" [formControl]="East">
+                                </div>
+                            </form>
+                            <div class="input-group input-group-sm mb-3" style="margin-left: 29%; max-width:32%; ">
+                                <div class="input-group-prepend ">
+                                    <span class="input-group-text" id="basic-addon1">S</span>
+                                </div>
+                                <input type="text" class="form-control form-control-sm" placeholder="-90"
+                                    style="font-size: 13px;" [formControl]="South">
+                            </div>
+                            <div role="group" aria-label="Basic example">
+                                <button type="button" class="buttongrid" (click)="get_raw_data();"
+                                    [disabled]="choosedataset.controls['raw'].value === 'tmd'"><i
+                                        class="fas fa-map-marked-alt"></i><br>Grid</button>
+                                <button type="button" class="buttongrid" (click)="get_difference()"
+                                    [disabled]="choosedataset.controls['raw'].value === 'tmd'"><i
+                                        class="fas fa-layer-group"></i><br>Different</button>
+                                <button type="button" class="buttongrid" id="station" (click)="station_thai()"
+                                    (change)="onChangeDataset($event.target.value)"><i
+                                        class="fas fa-map-marker-alt"></i><br>Station</button>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </li> -->
+            <!-- <li>
+                <a data-toggle="collapse" data-parent="#accordion" aria-expanded="false" class="dropdown-toggle">
+                    <i class="fas fa-map-marked-alt"></i>
+                    RCM
+                </a>
+                <ul class="collapse list-unstyled" id='rcm'>
+                    <li>
+                        <a>
+                            <div>
+                                <form [formGroup]="choosedataset">
+                                    <label
+                                        style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-seri; ">Datatset
+                                        :</label>
+                                    <select formControlName="rcp" class="form-control form-control-sm"
+                                        (change)="onchangedataset_rcp($event.target.value)">
+                                        <option [ngValue]="null" disabled>None</option>
+                                        <option *ngFor="let f of dataset_name_rcp" [value]="f.id">{{f.name}}
+                                        </option>
+                                    </select>
+                                </form>
+                            </div>
+                            <div>
+                                <form [formGroup]="chooseRCM">
+                                    <label
+                                        style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-seri;">Scenario
+                                        :</label>
+                                    <select formControlName="rcp" class="form-control form-control-sm">
+                                        <option [ngValue]="null" disabled>None</option>
+                                        <option *ngFor="let f of RCP" [value]="f.id">{{f.name}}</option>
+                                    </select>
+                                </form>
+                            </div>
+                            <div>
+                                <form [formGroup]="choose_m_y">
+                                    <label
+                                        style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">Month/Year
+                                        :</label>
+                                    <select formControlName="m_y" class="form-control form-control-sm"
+                                        (change)="onChangetype($event.target.value)">
+                                        <option [ngValue]="null" disabled>None</option>
+                                        <option *ngFor="let f of M_Y" [value]="f.id">{{f.name}}</option>
+                                    </select>
+                                </form>
+                            </div>
+                            <div>
+                                <form [formGroup]="chooseindex">
+                                    <label
+                                        style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">Indices
+                                        :</label>
+                                    <select formControlName="indices" class="form-control form-control-sm"
+                                        (change)="onChangeIndex($event.target.value)">
+                                        <option [ngValue]="null" disabled>None</option>
+                                        <option *ngFor="let f of indexrcp_name" [value]="f.index">{{f.name}}
+                                        </option>
+                                    </select>
+                                </form>
+                            </div>
+                            <div>
+                                <form [formGroup]='selectrange'>
+                                    <label
+                                        style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">From:
+                                    </label>
+                                    <div class="form-row" style="margin-left: 1px;">
+                                        <select formControlName="startmonth" class="form-control form-control-sm"
+                                            id='semonth' style="width: 43%;">
+                                            <option [ngValue]="null" disabled>Month</option>
+                                            <option *ngFor="let m of month; let i = index" [value]="i">{{m}}
+                                            </option>
+                                        </select>
+
+                                        <select formControlName="startyear" class="form-control form-control-sm"
+                                            style="width: 43%;">
+                                            <option [ngValue]="null" disabled>Year</option>
+                                            <option *ngFor='let i of counter(1970,2100) ;' [value]=i>{{i}}</option>
+                                        </select>
+                                    </div>
+                                </form>
+                            </div>
+                            <div>
+                                <form [formGroup]='selectrange'>
+                                    <label
+                                        style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">To:
+                                    </label>
+                                    <div class="form-row" style="margin-left: 1px;">
+                                        <select formControlName="stopmonth" class="form-control form-control-sm"
+                                            id='semonth1' style="width: 43%;">
+                                            <option [ngValue]="null" disabled>Month</option>
+                                            <option *ngFor="let m of month; let i = index" [value]="i">{{m}}
+                                            </option>
+                                        </select>
+
+                                        <select formControlName="stopyear" class="form-control form-control-sm"
+                                            style="width: 43%;">
+                                            <option [ngValue]="null" disabled>Year</option>
+                                            <option *ngFor='let i of counter(1970,2100) ;' [value]=i>{{i}}</option>
+                                        </select>
+                                    </div>
+                                </form>
+                            </div>
+                            <br>
+                            <div style="margin-left: 14%;" role="group" aria-label="Basic example">
+                                <button type="button" class="buttongrid" (click)="get_indicesData();"
+                                    [disabled]="choosedataset.controls['raw'].value === 'tmd'"><i
+                                        class="fas fa-map-marked-alt"></i><br>Grid</button>
+                                <button type="button" class="buttongrid" (click)="getrcp_difference()"
+                                    [disabled]="choosedataset.controls['raw'].value === 'tmd'"><i
+                                        class="fas fa-layer-group"></i><br>Different</button>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </li> -->
+            <!-- </ul> -->
+        <!-- </nav> -->
+        <nav id='body'>
         <div class="flex-column" style="margin-bottom: 5%; margin-left: 20px;">
             <div *ngIf="select == 'get_data'">
                 <!-- <div style="border-bottom: 2px;"> -->
@@ -314,30 +578,31 @@
         </div>
 
         <div style="display: flex;flex-direction: column;justify-content: center;">
-            <div style="flex-direction: row; display: flex; flex-wrap: wrap;justify-content: space-between;height: 800px;width: 1150px;" >
+            <div
+                style="flex-direction: row; display: flex; flex-wrap: wrap;justify-content: space-between;height: 800px;width: 1150px;">
 
-                <div style="flex-direction: column; display: flex;width: 502px;height: 800px;" *ngIf="select == 'station'">
-                    <app-map  >
+                <div style="flex-direction: column; display: flex;width: 502px;height: 800px;"
+                    *ngIf="select == 'station'">
+                    <app-map>
                     </app-map>
                 </div>
-                <div style="flex-direction: column; display: flex;width: 610px;height: 800px;"  *ngIf="select == 'station'">
-                    <app-boxplot    [file]="chooseindex.controls['index'].value" 
-                                    [startyear]="this.fromDate.year"
-                                    [stopyear]="this.toDate.year"
-                                    [startmonth]="this.fromDate.month"
-                                    [stopmonth]="this.toDate.month"
-                                    [startday]="this.fromDate.day"
-                                    [stopday]="this.toDate.day">
+                <div style="flex-direction: column; display: flex;width: 610px;height: 800px;"
+                    *ngIf="select == 'station'">
+                    <app-boxplot [file]="chooseindex.controls['index'].value" [startyear]="this.fromDate.year"
+                        [stopyear]="this.toDate.year" [startmonth]="this.fromDate.month" [stopmonth]="this.toDate.month"
+                        [startday]="this.fromDate.day" [stopday]="this.toDate.day">
                     </app-boxplot>
                 </div>
             </div>
             <div *ngIf="select == 'station'" style="justify-content: center; width: 1155px;">
-                <app-missingvalue [file]="chooseindex.controls['index'].value" >
+                <app-missingvalue [file]="chooseindex.controls['index'].value">
                 </app-missingvalue>
             </div>
         </div>
         <router-outlet></router-outlet>
+        </nav>
     </div>
+
 
 
     <!-- jQuery CDN - Slim version (=without AJAX) -->
