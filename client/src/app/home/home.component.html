@@ -2,186 +2,347 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"> -->
 
-    <title>Collapsible sidebar using Bootstrap 4</title>
+  <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous"> -->
 
-    <!-- Bootstrap CSS CDN -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
-    <!-- Our Custom CSS -->
-    <!-- <link rel="stylesheet" href="style4.css"> -->
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+    integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+    crossorigin="anonymous"></script>
+  <!-- Bootstrap CSS CDN -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"
+    integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+  <!-- Our Custom CSS -->
+  <!-- <link rel="stylesheet" href="style4.css"> -->
 
-    <!-- Font Awesome JS -->
-    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
-    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js" integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY" crossorigin="anonymous"></script>
-    <script>
-        $('button').on('click', function() {
-            $('button').removeClass('active');
-            $(this).addClass('active');
-        });
-    </script>
+  <!-- Font Awesome JS -->
+  <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js"
+    integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ"
+    crossorigin="anonymous"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js"
+    integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY"
+    crossorigin="anonymous"></script>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
 
-    <!-- input -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
-        integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- input -->
+  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" /> -->
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
+  <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+    integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
 
 </head>
 
+
 <body>
-    <div class="wrapper">   
-        <!-- Sidebar  -->
-        <nav id="sidebar">
-            <ul class="list-unstyled components">
-                <li>
-                    <div >
-                        <div class="leftworld">
-                            <a data-toggle="collapse" aria-expanded="false"  role="button"  style="font-size: 23px;font-family: 'Open Sans', sans-serif;color: #0a61a3;font-weight: 600;">
-                                Climate <br> Visualization  
-                            </a>   
-                        </div>
-                        <div class="rightworld" style="font-size: 20px;font-family: 'Open Sans', sans-serif;color: #0a61a3;font-weight: 600;">
-                            <i class="fas fa-globe-americas fa-3x"></i>
-                        </div>
+  <div class="wrapper">
+    <nav id="sidebar">
+      <ul class="list-unstyled components" >
+
+        <div class="header" >
+          <div class="block-3"
+            style="margin-top: 23px; font-size: 23px;font-family: 'Open Sans', sans-serif;color: #0a61a3;font-weight: 600;  font-variant-position: left;">
+            Climate <br> Visualization
+          </div>
+          <div class="block-4" style="margin-top: 25px; color: #0a61a3;">
+            <i class="fas fa-globe-americas fa-4x"></i>
+          </div>
+        </div>
+
+        <div class="line"></div>
+
+        
+
+        <div style="margin: 10px 0 10px 0; width: 250px;" class="scroll-x">
+          <ngb-tabset #tabset="ngbTabset" [orientation]="currentOrientation" type="pills">
+            <ngb-tab id="one">
+              <ng-template ngbTabTitle>
+                <li (click)="selectDataTab=1;"> <i class="fas fa-globe-americas fa-1x" style="margin-left: 3px;"></i> Reanalysis Data &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; <i class="fas fa-angle-down fa-1x"></i></li>
+              </ng-template>
+              <ng-template ngbTabContent *ngIf="selectDataTab==1">
+                <li style="margin-left: 20px;">
+                  <a>
+                    <div>
+                      <form [formGroup]="choosedataset">
+                        <label
+                          style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-seri; text-align: left; ">Datatset
+                          :</label>
+                        <select formControlName="raw" class="form-control form-control-sm"
+                          (change)="onChange($event.target.value)">
+                          <option [ngValue]="null" disabled>None</option>
+                          <option *ngFor="let f of dataset_name" [value]="f.id">{{f.name}}</option>
+                        </select>
+                      </form>
                     </div>
                     <div>
-                        <form [formGroup]="choosedataset">
-                            <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-seri;" >Datatset :</label>
-                            <select formControlName="set" class="form-control" (change)="onChange($event.target.value)" style="margin-left: 1.5ex;" >
-                                <option [ngValue]="null" disabled>None</option>
-                                <option *ngFor="let f of dataset_name" [value]="f.id">{{f.name}}</option>
-                            </select> 
-                        </form>      
-                        <form [formGroup]="chooseindex">
-                            <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">Index :</label>           
-                            <select formControlName="file" class="form-control" (change)="onChangeIndex($event.target.value)" style="margin-left: 1.5ex;">
-                                <option [ngValue]="null" disabled>None</option>
-                                <option *ngFor="let f of index_name" [value]="f.index">{{f.name}}</option>
-                            </select>
-                        </form>
-                        <div class="form-group hidden" >
-                            <div class="input-group">
-                                <input name="datepicker" id="datepicker" class="form-control1" ngbDatepicker #datepicker="ngbDatepicker"
-                                    [autoClose]="'outside'" (dateSelect)="onDateSelection($event)" [displayMonths]="2" [dayTemplate]="t"
-                                    outsideDays="hidden" [minDate]="start_date" [maxDate]="stop_date">
-                                <ng-template #t let-date let-focused="focused">
-                                    <span class="custom-day" [class.focused]="focused" [class.range]="isRange(date)"
-                                        [class.faded]="isHovered(date) || isInside(date)" (mouseenter)="hoveredDate = date"
-                                        (mouseleave)="hoveredDate = null">
-                                        {{ date.day }}
-                                    </span>
-                                </ng-template>
-                            </div>
+                      <form [formGroup]="chooseindex">
+                        <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">Indices
+                          :</label>
+                        <select formControlName="index" class="form-control form-control-sm"
+                          (change)="onChangeIndex($event.target.value)">
+                          <option [ngValue]="null" disabled>None</option>
+                          <option *ngFor="let f of index_name" [value]="f.index">{{f.name}}</option>
+                        </select>
+                      </form>
+                    </div>
+                    <div class="form-group hidden">
+                      <div class="input-group">
+                        <input name="datepicker" id="datepicker" class="form-control1 " ngbDatepicker
+                          #datepicker="ngbDatepicker" [autoClose]="'outside'" (dateSelect)="onDateSelection($event)"
+                          [displayMonths]="2" [dayTemplate]="t" outsideDays="hidden" [minDate]="start_date"
+                          [maxDate]="stop_date">
+                        <ng-template #t let-date let-focused="focused">
+                          <span class="custom-day" [class.focused]="focused" [class.range]="isRange(date)"
+                            [class.faded]="isHovered(date) || isInside(date)" (mouseenter)="hoveredDate = date"
+                            (mouseleave)="hoveredDate = null">
+                            {{ date.day }}
+                          </span>
+                        </ng-template>
+                      </div>
+                    </div>
+                    <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">From :
+                    </label>
+                    <div class="input-group" style="width: 90%;">
+                      <input #dpFromDate class="form-control form-control-sm" placeholder="yyyy-mm-dd" name="dpFromDate"
+                        [value]="formatter.format(fromDate)"
+                        (input)="fromDate = validateInput(fromDate, dpFromDate.value)">
+                      <div class="input-group-append">
+                        <button class="btn btn-outline-secondary calendar  btn-sm" (click)="datepicker.toggle(); "
+                          type="button" style="background-color: rgb(255, 255, 255);"><i class="far fa-calendar-alt"
+                            style="size: 2px;"></i></button>
+                      </div>
+                    </div>
+                    <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">to
+                      :</label>
+                    <div class="input-group" style="width: 90%;">
+                      <input #dpToDate class="form-control form-control-sm" placeholder="yyyy-mm-dd" name="dpToDate"
+                        [value]="formatter.format(toDate)" (input)="toDate = validateInput(toDate, dpToDate.value)">
+                      <div class="input-group-append">
+                        <button class="btn btn-outline-secondary calendar  btn-sm" (click)="datepicker.toggle()"
+                          type="button" style="background-color: rgb(255, 255, 255);"><i
+                            class="far fa-calendar-alt"></i></button>
+                      </div>
+                    </div>
+                    <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">Select
+                      Region :</label>
+                    <div class="input-group input-group-sm mb-3" style="margin-left: 29%; max-width:32%; ">
+                      <div class="input-group-prepend ">
+                        <span class="input-group-text" id="basic-addon1">N</span>
+                      </div>
+                      <input type="text" class="form-control form-control-sm" placeholder="90" style="font-size: 13px;"
+                        [formControl]="North">
+                    </div>
+                    <form class="form-inline">
+                      <div class="input-group input-group-sm mb-3" style="width: 32%;">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text" id="basic-addon1">W</span>
                         </div>
-                        <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">start : </label>
-                        <div class="input-group" style="width: 93%;">
-                            <input #dpFromDate class="form-control" placeholder="yyyy-mm-dd" name="dpFromDate"
-                                [value]="formatter.format(fromDate)"
-                                (input)="fromDate = validateInput(fromDate, dpFromDate.value)" style="margin-left: 1.5ex;">
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-secondary calendar  btn-sm" (click)="datepicker.toggle(); "
-                                    type="button" style="background-color: rgb(255, 255, 255);"><i class="far fa-calendar-alt" style="size: 2px;"></i></button>
-                            </div>
+                        <input type="text" class="form-control form-control-sm" placeholder="-180"
+                          style="font-size: 13px;" [formControl]="West">
+                      </div>
+                      <span class="input-group input-group-sm mb-3" style="margin-left: 10%;"><i
+                          class="fas fa-compass"></i></span>
+                      <div class="input-group input-group-sm mb-3" style="margin-left: 9%; width: 32%;">
+                        <div class="input-group-prepend ">
+                          <span class="input-group-text" id="basic-addon1">E</span>
                         </div>
-                        <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">stop :</label>
-                        <div class="input-group" style="width: 93%;">
-                            <input #dpToDate class="form-control" placeholder="yyyy-mm-dd" name="dpToDate"
-                                [value]="formatter.format(toDate)" 
-                                (input)="toDate = validateInput(toDate, dpToDate.value)" style="margin-left: 1.5ex;">
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-secondary calendar  btn-sm" (click)="datepicker.toggle()"
-                                    type="button" style="background-color: rgb(255, 255, 255);"><i class="far fa-calendar-alt"></i></button>
-                            </div>
-                        </div>
-                        <br>
-                        <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">Select Region :</label>
-                        <div class="input-group input-group-sm mb-3" style="margin-left: 33%; max-width:35%; ">
-                            <div class="input-group-prepend ">
-                              <span class="input-group-text" id="basic-addon1">N</span>
-                            </div>
-                            <input type="text" class="form-control" placeholder="90" [formControl]="North">
-                        </div>
-                        <form class="form-inline">
-                            <div class="input-group input-group-sm mb-3" style="margin-left: 5%; width: 35%;">
-                                <div class="input-group-prepend" >
-                                    <span class="input-group-text" id="basic-addon1">W</span>
-                                </div>
-                                <input type="text" class="form-control" placeholder="-180" [formControl]="West">
-                            </div> 
-                            <span class="input-group input-group mb-3" style="margin-left: 8%;"><i class="fas fa-compass"></i></span> 
-                            <div class="input-group input-group-sm mb-3" style="margin-left: 8%; width: 35%;">
-                                <div class="input-group-prepend ">
-                                    <span class="input-group-text" id="basic-addon1">E</span>
-                                </div>
-                                <input type="text" class="form-control" placeholder="180" [formControl]="East" >
-                            </div>
-                        </form>
-                        <div class="input-group input-group-sm mb-3" style="margin-left: 33%; max-width:35%; ">
-                            <div class="input-group-prepend ">
-                              <span class="input-group-text" id="basic-addon1">S</span>
-                            </div>
-                            <input type="text" class="form-control" placeholder="-90" [formControl]="South">
-                        </div>
-                        
-                        <div style="margin-left: 3px;" role="group" aria-label="Basic example">
-                            <button type="button" class="buttongrid" (click)="check_data();" [disabled]="choosedataset.controls['set'].value === 'tmd'"><i class="fas fa-map-marked-alt"></i><br>Grid</button>
-                            <button type="button" class="buttongrid" (click)="get_difference()" [disabled]="choosedataset.controls['set'].value === 'tmd'"><i class="fas fa-layer-group"></i><br>Different</button>
-                            <button type="button" class="buttongrid" id="station" (click)="station_thai()" (change)="onChange($event.target.value)" ><i class="fas fa-map-marker-alt"></i><br>Station</button>
-
-                        </div> 
-                    </div>   
+                        <input type="text" class="form-control form-control-sm" placeholder="180"
+                          style="font-size: 13px;" [formControl]="East">
+                      </div>
+                    </form>
+                    <div class="input-group input-group-sm mb-3" style="margin-left: 29%; max-width:32%; ">
+                      <div class="input-group-prepend ">
+                        <span class="input-group-text" id="basic-addon1">S</span>
+                      </div>
+                      <input type="text" class="form-control form-control-sm" placeholder="-90" style="font-size: 13px;"
+                        [formControl]="South">
+                    </div>
+                    <div role="group" aria-label="Basic example">
+                      <button type="button" class="buttongrid" (click)="get_raw_data();"
+                        [disabled]="choosedataset.controls['raw'].value === 'tmd'"><i
+                          class="fas fa-map-marked-alt"></i><br>Grid</button>
+                      <button type="button" class="buttongrid" (click)="get_difference()"
+                        [disabled]="choosedataset.controls['raw'].value === 'tmd'"><i
+                          class="fas fa-layer-group"></i><br>Different</button>
+                      <button type="button" class="buttongrid" id="station" (click)="station_thai()"
+                        (change)="onChange($event.target.value)"><i
+                          class="fas fa-map-marker-alt"></i><br>Station</button>
+                    </div>
+                  </a>
                 </li>
-            </ul>
-        </nav>
-        <div class="flex-column" style="margin-bottom: 5%;margin-left: 10%;">
-            <div *ngIf="select == 'get_data'">
-                <!-- <div style="border-bottom: 2px;"> -->
-                    <app-netcdf [index]="chooseindex.controls['file'].value" ></app-netcdf>
-                <!-- </div> -->
-                <div style="margin-top: 10px;">
-                <app-graph [data]="choosedataset.controls['set'].value"
-                           [file]="chooseindex.controls['file'].value" 
-                           [startyear]="this.fromDate.year"
-                           [stopyear]="this.toDate.year"
-                           [startmonth]="this.fromDate.month"
-                           [stopmonth]="this.toDate.month"></app-graph>
-                        </div>
-            </div>
-        </div>
+              </ng-template>
+            </ngb-tab>
+          </ngb-tabset>
+          <ngb-tabset #tabset="ngbTabset" [orientation]="currentOrientation" type="pills">
+            <ngb-tab id="two">
+              <ng-template ngbTabTitle>
+                <li (click)="selectDataTab=2;"><i class="fas fa-map-marked-alt"></i>
+                  RCM &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <i class="fas fa-angle-down fa-1x"></i></li>
+              </ng-template>
+              <ng-template ngbTabContent *ngIf="selectDataTab=='2'">
+                <li style="margin-left: 20px;">
+                  <a>
+                    <div>
+                      <form [formGroup]="choosedataset">
+                        <label
+                          style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-seri; ">Datatset
+                          :</label>
+                        <select formControlName="rcp" class="form-control form-control-sm"
+                          (change)="onchangedataset_rcp($event.target.value)">
+                          <option [ngValue]="null" disabled>None</option>
+                          <option *ngFor="let f of dataset_name_rcp" [value]="f.id">{{f.name}}</option>
+                        </select>
+                      </form>
+                    </div>
+                    <div>
+                      <form [formGroup]="chooseRCM">
+                        <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-seri;">Scenario
+                          :</label>
+                        <select formControlName="rcp" class="form-control form-control-sm"
+                          (change)="onChangetype($event.target.value)">
+                          <option [ngValue]="null" disabled>None</option>
+                          <option *ngFor="let f of RCP" [value]="f.id">{{f.name}}</option>
+                        </select>
+                      </form>
+                    </div>
+                    <div>
+                      <form [formGroup]="choose_m_y">
+                        <label
+                          style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">Month/Year
+                          :</label>
+                        <select formControlName="m_y" class="form-control form-control-sm"
+                          (change)="onChangetype($event.target.value)">
+                          <option [ngValue]="null" disabled>None</option>
+                          <option *ngFor="let f of M_Y" [value]="f.id">{{f.name}}</option>
+                        </select>
+                      </form>
+                    </div>
+                    <div>
+                      <form [formGroup]="chooseindex">
+                        <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">Indices
+                          :</label>
+                        <select formControlName="indices" class="form-control form-control-sm"
+                          (change)="onChangeIndex($event.target.value)">
+                          <option [ngValue]="null" disabled>None</option>
+                          <option *ngFor="let f of indexrcp_name" [value]="f.index">{{f.name}}</option>
+                        </select>
+                      </form>
+                    </div>
+                    <div>
+                      <form [formGroup]='selectrange'>
+                        <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">From:
+                        </label>
+                        <div class="form-row" style="margin-left: 1px;">
+                          <select formControlName="startmonth" class="form-control form-control-sm" id='semonth'
+                            style="width: 43%;">
+                            <option [ngValue]="null" disabled>Month</option>
+                            <option *ngFor="let m of month; let i = index" [value]="i">{{m}}</option>
+                          </select>
 
-        <div class="flex-column" style="margin-bottom: 5%;margin-left: 20%;">
-            <div *ngIf="select == 'get_dif'">
-                <app-difference></app-difference>
-            </div>
+                          <select formControlName="startyear" class="form-control form-control-sm" style="width: 43%;">
+                            <option [ngValue]="null" disabled>Year</option>
+                            <option *ngFor='let i of counter(1970,2100) ;' [value]=i>{{i}}</option>
+                          </select>
+                        </div>
+                      </form>
+                    </div>
+                    <div>
+                      <form [formGroup]='selectrange'>
+                        <label style="color: midnightblue;font-size: 15px;font-family: 'Open Sans', sans-serif;">To:
+                        </label>
+                        <div class="form-row" style="margin-left: 1px;">
+                          <select formControlName="stopmonth" class="form-control form-control-sm" id='semonth1'
+                            style="width: 43%;">
+                            <option [ngValue]="null" disabled>Month</option>
+                            <option *ngFor="let m of month; let i = index" [value]="i">{{m}}</option>
+                          </select>
+
+                          <select formControlName="stopyear" class="form-control form-control-sm" style="width: 43%;">
+                            <option [ngValue]="null" disabled>Year</option>
+                            <option *ngFor='let i of counter(1970,2100) ;' [value]=i>{{i}}</option>
+                          </select>
+                        </div>
+                      </form>
+                    </div>
+
+                    <br>
+                    <div style="margin-left: 14%;" role="group" aria-label="Basic example">
+                      <button type="button" class="buttongrid" (click)="get_indicesData();"
+                        [disabled]="choosedataset.controls['raw'].value === 'tmd'"><i
+                          class="fas fa-map-marked-alt"></i><br>Grid</button>
+                      <button type="button" class="buttongrid" (click)="getrcp_difference()"
+                        [disabled]="choosedataset.controls['raw'].value === 'tmd'"><i
+                          class="fas fa-layer-group"></i><br>Different</button>
+                    </div>
+                  </a>
+                </li>
+              </ng-template>
+            </ngb-tab>
+          </ngb-tabset>
         </div>
-       
-        <div *ngIf="select == 'station'">
-                <app-map  [file]="chooseindex.controls['file'].value"
-                        [startyear]="this.fromDate.year"
-                        [stopyear]="this.toDate.year"
-                        [startmonth]="this.fromDate.month"
-                        [stopmonth]="this.toDate.month" ></app-map>
+      </ul>
+    </nav>
+
+    <nav id='body'>
+    <div class="flex-column" style="margin-bottom: 5%; margin-left: 30px;">
+      <div *ngIf="select == 'get_data'">
+        <!-- <div style="border-bottom: 2px;"> -->
+        <app-netcdf></app-netcdf>
+        <!-- </div> -->
+        <div style="margin-top: 10px;">
+          <app-graph>
+          </app-graph>
         </div>
-        <router-outlet ></router-outlet>           
+      </div>
     </div>
 
+    <div class="flex-column" style="margin-bottom: 5%; margin-left: 20px;">
+      <div *ngIf="select == 'get_dif'">
+        <app-difference></app-difference>
+      </div>
+    </div>
 
-    <!-- jQuery CDN - Slim version (=without AJAX) -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <!-- Popper.JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
-    <!-- Bootstrap JS -->
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+    <!-- <div class="flex-column" style="margin-bottom: 5%; "> -->
+    <div *ngIf="select == 'station'">
+      <app-map></app-map>
+      <!-- <app-map [file]="chooseindex.controls['file'].value" [startyear]="this.fromDate.year"
+        [stopyear]="this.toDate.year" [startmonth]="this.fromDate.month" [stopmonth]="this.toDate.month">
+      </app-map> -->
+    </div>
+
+    <router-outlet></router-outlet>
+    </nav>
+  </div>
+
+
+
+
+  <!-- jQuery CDN - Slim version (=without AJAX) -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <!-- Popper.JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"
+    integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ"
+    crossorigin="anonymous"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"
+    integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm"
+    crossorigin="anonymous"></script>
 
 </body>
 

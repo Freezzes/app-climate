@@ -6,6 +6,7 @@ from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 
 def _get_country_mask_arr(country, lats, lons):
+    start = time.time()
     with open('C:/Users/Mewkk/app-climate/client/src/assets/map/geo-medium.json') as json_file:
         jsondata = json.load(json_file)
         for c in jsondata['features']:
@@ -14,7 +15,8 @@ def _get_country_mask_arr(country, lats, lons):
                 break
 
     country_polygon = country_json['geometry']['coordinates']
-
+    coor = time.time()
+    # print("get coor",coor-start)
     lats = np.array(lats)
     lons = np.array(lons)
     lats_step = np.abs(lats[0] - lats[1])
@@ -23,8 +25,9 @@ def _get_country_mask_arr(country, lats, lons):
     grid_center_coor = np.transpose([np.tile(lons, len(lats)), np.repeat(lats, len(lons))])
     # create mask array
     mask_arr = np.zeros(len(lats) * len(lons))
-
+    print("get coor",coor-start)
     for i, coordinate in enumerate(grid_center_coor):
+        start1 = time.time()
         # center
         point1 = Point(coordinate)
         # edge
@@ -32,7 +35,8 @@ def _get_country_mask_arr(country, lats, lons):
         point3 = Point([coordinate[0] - lons_step / 2, coordinate[1] + lons_step / 2])
         point4 = Point([coordinate[0] + lons_step / 2, coordinate[1] - lons_step / 2])
         point5 = Point([coordinate[0] + lons_step / 2, coordinate[1] + lons_step / 2])
-
+        cen = time.time()
+       
         for p in country_polygon:
             try:
                 p = np.squeeze(p, axis=0)
@@ -43,9 +47,14 @@ def _get_country_mask_arr(country, lats, lons):
                     point4) or polygon.contains(point5):
                 mask_arr[i] = 1
                 break
-
+        
+            end1 = time.time()
+    print("end for",end1-cen)
+    print("infor",cen-start1)
     mask_arr = mask_arr.reshape(len(lats), len(lons))
-
+    end = time.time()
+    print("for mask",end-coor)
+    print("Time get mask",end-start)
     return mask_arr
 
 def _get_continent_mask_arr(continent, lats, lons):

@@ -89,3 +89,7 @@ body {
 .ol-popup-closer:after {
   content: "x";
 }
+
+.top{
+  margin-top: 50%;
+}

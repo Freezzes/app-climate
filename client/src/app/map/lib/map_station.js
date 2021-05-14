@@ -40,6 +40,7 @@ export function draw_map(target) {
         zoom: 5.5,
         minZoom: 5.5,
         maxZoom: 12,
+        extent: [101,13,101,13]
       })
   
     });
@@ -104,7 +105,8 @@ export function add_data(loca) {
       ]
     }
     var vectorSource = new ol.source.Vector({
-        features: features
+        features: features,
+        extent: [101,13,101,13]
       });
     
     var vectorLayer = new ol.layer.Vector({
@@ -143,13 +145,41 @@ export function popup(map){
      /**
      * Add a click handler to the map to render the popup.
      */
-    // map.on('singleclick', function(evt) {
+    map.on('singleclick', function(evt) {
+        var names = map.forEachFeatureAtPixel(evt.pixel, function(feature) {
+            return feature.get('names');
+        })
+        console.log("name",names)
+        var _id = map.forEachFeatureAtPixel(evt.pixel, function(feature) {
+            return feature.get('_id');
+        })
+        var value = map.forEachFeatureAtPixel(evt.pixel, function(feature) {
+            return feature.get('value');
+        })
+        // station_id = _id;
+        console.log("id",_id)
+        if (names) {
+            container.style.display = "block";
+            var coordinate = evt.coordinate;
+                content.innerHTML = names + "(" + _id + ")" + '<br/>' + value;
+                overlay.setPosition(coordinate);
+        } 
+        // else if(_id){
+        //     container.style.display = "block";
+        //     var coordinate = evt.coordinate;
+        //         content.innerHTML = _id;
+        //         overlay.setPosition(coordinate);
+        // }
+        // else {
+        //     container.style.display = "none";
+        // }
+    });
     map.on('pointermove', function (evt) {
-        map.getTargetElement().style.cursor = map.hasFeatureAtPixel(evt.pixel) ? 'pointer' : '';
+        // map.getTargetElement().style.cursor = map.hasFeatureAtPixel(evt.pixel) ? 'pointer' : '';
         var names = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
             return feature.get('names');
         })
-        console.log("name", names)
+        // console.log("name", names)
         var _id = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
             return feature.get('_id');
         })
@@ -157,21 +187,22 @@ export function popup(map){
         var value = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
             return feature.get('value');
         })
-        console.log("id", _id)
+        // console.log("id", _id)
         if (names) {
             container.style.display = "block";
             var coordinate = evt.coordinate;
             content.innerHTML = names + "(" + _id + ")" + '<br/>' + value;
             overlay.setPosition(coordinate);
-        } else if (_id) {
-            container.style.display = "block";
-            var coordinate = evt.coordinate;
-            content.innerHTML = _id;
-            overlay.setPosition(coordinate);
-        }
-        else {
-            container.style.display = "none";
-        }
+        } 
+        // else if (_id) {
+        //     container.style.display = "block";
+        //     var coordinate = evt.coordinate;
+        //     content.innerHTML = _id;
+        //     overlay.setPosition(coordinate);
+        // }
+        // else {
+        //     container.style.display = "none";
+        // }
     });
 
   

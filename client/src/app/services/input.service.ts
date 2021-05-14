@@ -67,6 +67,24 @@ export class InputService {
     this.graphcountryAvg.next(value);
   }
 
+  private nc_anomaly = new BehaviorSubject<any>(undefined);
+  anomalyservice = this.nc_anomaly.asObservable();
+  async sendanomaly(value:any){
+    this.nc_anomaly.next(value);
+  }
+
+  private mapstation = new BehaviorSubject<any>(undefined);
+  Mapstationservice = this.mapstation.asObservable();
+  async sendstation(value:any){
+    this.mapstation.next(value);
+  }
+
+  private dataset = new BehaviorSubject<any>(undefined);
+  datasetservice = this.dataset.asObservable();
+  async senddataset(value:any){
+    this.dataset.next(value);
+  }
+  
   constructor(){}
   
 

@@ -14,7 +14,7 @@
     height: 50vh;
   }
   .map{
-    width: 52vw;
+    width: 40vw;
     height: 60vh;
     /* border-style: solid; */
     background-color: #ffffff;
@@ -39,24 +39,26 @@
 .showmap{
   margin-top: 50px;
 }
-  .dat{
-    margin-left: 30px;
-  }
-  canvas {
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
-  }
-  .chart-wrapper {
-    width: 500px;
-    height: 500px;
-    position: relative;
-  }
+.dat{
+  margin-left: 30px;
+}
+/* canvas {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+} */
+.chart-wrapper {
+  width: 500px;
+  height: 500px;
+  position: relative;
+}
 
 /* p{
   padding-inline-end: 200px;
 } */
-
+.card-header{
+  background-color: #d5e4f3;
+}
   select{
     font-size: 18px;
     display: block;
@@ -84,6 +86,9 @@
     display: none;
   }
 
+  .flex-column{
+    flex-direction: column;
+  }
   .main-content{
     height: 100%;
     width: 100%;

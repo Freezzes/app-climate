@@ -3,25 +3,11 @@ import * as ol from 'openlayers';
 
 import * as d3 from 'C:/Users/Mewkk/app-climate/client/src/assets/d3/d3.js';
 import * as $ from 'jquery'
-import Polygon from 'ol/geom/Polygon';
-import {platformModifierKeyOnly} from 'ol/events/condition';
-import GeoJSON from 'ol/format/GeoJSON';
-import Map from 'ol/Map';
-import View from 'ol/View';
-import {DragBox, Select} from 'ol/interaction';
-import {OSM, Vector as VectorSource} from 'ol/source';
-import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
-import { legendColor } from 'd3-svg-legend'
-import legend from 'd3-svg-legend'
-import {transformExtent} from 'ol/proj';
-import { extend } from 'ol/extent';
-
-function transform(extent) {
-  return transformExtent(extent, 'EPSG:4326', 'EPSG:3857');
-}
 
 export function draw_map(target) {
-  
+
+  console.log("draw")
+
   var style = new ol.style.Style({
     fill: new ol.style.Fill({
       color: 'rgba(255, 255, 255, 0)'
@@ -32,7 +18,6 @@ export function draw_map(target) {
     }),
   });
 
-  
   var vectorLayer = new ol.layer.Vector({
     name: "baseLayer",
     source: new ol.source.Vector({
@@ -43,77 +28,62 @@ export function draw_map(target) {
       // minZoom: 2,
       // maxZoom: 12  
     }),
-    style: function(feature) {
+    style: function (feature) {
       return style;
     }
   });
 
-  const  map = new ol.Map({
+  const map = new ol.Map({
     target: target,
     layers: [
       vectorLayer
     ],
     view: new ol.View({
       projection: 'EPSG:4326',
-      center: [0, 0],
-      // zoom: 4,
-      zoom: 1.7,
-      minZoom: 1.7,
-      // maxZoom:12,
-      extent: [-180, -90, 180, 90],
+      // center: [0, 0],
+      // zoom: 1.7,
+      // minszoom: 1.7,
+      // maxZoom: 12,
+      // zoom: 2.6,
+      minZoom: 2.6,
+      // extent: [20, -10, 180, 85], 
+      zoom: 2.6,
+      center: [100, 38]
     })
-    
+
   });
 
-  console.log("Mapppppppppppppppppp",map.getView())
-  // var zoomh = document.getElementById('zoomh');
-  // zoomh.addEventListener(
-  //   'click',
-  //   function () {
-  //     var feature = source.getFeatures()[0];
-  //     var polygon = feature.getGeometry();
-  //     view.fit(polygon, {padding: [0, 50, 30, 150]});
-  //   },
-  //   false
-  // );
-
-  // function onMoveEnd(evt) {
-  //   console.log("workkkkkkkkk")
-  //   var map = evt.map;
-  //   var extent = map.getView().calculateExtent(map.getSize());
-  //   console.log("extent",extent)
-  // }
-  
-  // map.on('moveend', onMoveEnd);
-  
   return map
 }
-
-export function hightre(map){
-  function onMoveEnd(evt) {
-    console.log("workkkkkkkkk")
-    var map = evt.map;
-    var extent = map.getView().calculateExtent(map.getSize());
-    console.log("extent",extent)
-    console.log(extent[0]-extent[2])
-  }
-  
-  map.on('moveend', onMoveEnd);
-
-}
-
 //-----------------------Select Country----------------------------------
-export function select_country(targetMap, mode) {
-  var features, baselayer ;
-  targetMap.getLayers().forEach(function(layers) {
+export function select_country(targetMap, unit) {
+  var features, baselayer;
+
+  var name = ''
+  var value = ''
+  var min = ''
+  var max = ''
+  var avg = ''
+  var sum = '' 
+  $("#selectedCountryName").text(name);
+  $("#selectedCountryValue").text(value);
+  $("#selectedCountryMin").text(min);
+  $("#selectedCountryMax").text(max);
+  $("#selectedCountryAvg").text(avg);
+  $("#selectedCountrySum").text(sum);
+
+  targetMap.getLayers().forEach(function (layers) {
+    console.log("name layer", layers.get('name'))
     if (layers.get('name') === 'lowres_data') {
       features = layers.getSource().getFeatures()
-      console.log("fea",features)
-    } else if (layers.get('name') === 'datalayer'){
-      features = layers.getSource().getFeatures()
+      console.log("1111",features)
+      console.log("leng",features.length)
+      if (layers.get('name') === 'hires_data') {
+        console.log("select high")
+        features = layers.getSource().getFeatures()
+      }
     } else if (layers.get('name') === 'baseLayer') {
       baselayer = layers
-      console.log("base",baselayer)
     }
   })
   var selectedStyle = new ol.style.Style({
@@ -124,69 +94,146 @@ export function select_country(targetMap, mode) {
   });
 
   var select = new ol.interaction.Select({
-    layers:[baselayer],
+    layers: [baselayer],
     style: selectedStyle
   });
-  // var features ;
-  // targetMap.getLayers().forEach(function(layers) {
-  //   if (layers.get('name') === 'dataLayer') {
-  //     features = layers.getSource().getFeatures()
-  //     // console.log(layers.getSource().getFeatures());
-  //   }
-  // })
-
 
   targetMap.addInteraction(select);
 
-  select.on('select', function(e) {
-    var selectedCountry = e.selected[0];
-    var poly = e.selected[0].getGeometry()
-    console.log("geometry",poly)
-    var valueArr = [];
+  select.on('select', function (e) {
+    if (e.selected.length != 0) {
+      var selectedCountry = e.selected[0];
+      var poly = e.selected[0].getGeometry()
+      console.log("geometry", poly)
+      // console.log(poly.a())
+      console.log("select", selectedCountry)
+      var valueArr = [];
 
-    if (selectedCountry != undefined){
-      var name = selectedCountry.get('name');
-      var value = selectedCountry.get('value')
-      $("#selectedCountryName").text(name);
-      $("#selectedCountryValue").text(value);
-    }
-    else{
-      $("#selectedCountryName").text("None");
-      $("#selectedCountryValue").text("-");
-    }
-    for (var i = 0; i < features.length; i++) {
-      if (poly.intersectsExtent(features[i].getGeometry().getExtent())) {
-        var obj = features[i].getProperties()
-        valueArr.push(obj.value)
+      if (selectedCountry != undefined) {
+        var name = selectedCountry.get('name');
+        var value = selectedCountry.get('value')
+        $("#selectedCountryName").text(name);
+        $("#selectedCountryValue").text(value);
       }
-    }
-    console.log(valueArr)
-    var min = Math.round(Math.min.apply(null, valueArr)*100)/100;
-    var max = Math.round(Math.max.apply(null, valueArr)*100)/100;
-    // var mean = Math.round(Math.mean.apply(null, valueArr));
+      else {
+        $("#selectedCountryName").text("None");
+        $("#selectedCountryValue").text("-");
+      }
 
-    $("#selectedCountryMin").text(min);
-    $("#selectedCountryMax").text(max);
-    // $("#selectedCountryMean").text(mean);
+      for (var i = 0; i < features.length; i++) {
+        
+        if (poly.intersectsExtent(features[i].getGeometry().getExtent())) {
+          console.log("3")
+          console.log("******", features[i].getProperties().value)
+          valueArr.push(features[i].getProperties().value);
+          // valueArr.push(obj.value)
+        }
+      }
+      console.log("value",valueArr)
+      var min = Math.round(Math.min.apply(null, valueArr) * 100) / 100;
+      var max = Math.round(Math.max.apply(null, valueArr) * 100) / 100;
+      var avg = Math.round(valueArr.reduce((a, b) => a + b, 0) / valueArr.length * 100) / 100
+      var sum = Math.round(valueArr.reduce((a, b) => a + b, 0))
+
+      $("#selectedCountryMin").text(min);
+      $("#selectedCountryMax").text(max);
+      $("#selectedCountryAvg").text(avg);
+      $("#selectedCountrySum").text(sum);
+    }
+    else if  (e.selected.length == 0){
+      $("#selectedCountryName").text('');
+      $("#selectedCountryValue").text('');
+      $("#selectedCountryMin").text('');
+      $("#selectedCountryMax").text('');
+      $("#selectedCountryAvg").text('');
+      $("#selectedCountrySum").text('');
+    }
+  })
+  return select
+}
+
+export function select_country_h(targetMap, unit) {
+  var features, baselayer;
+  targetMap.getLayers().forEach(function (layers) {
+    console.log("name layer", layers.get('name'))
+    if (layers.get('name') === 'hires_data') {
+      features = layers.getSource().getFeatures()
+      // if(layers.get('name') === 'lowres_data'){
+      //   features = layers.getSource().getFeatures()
+      // }
+    } else if (layers.get('name') === 'baseLayer') {
+      baselayer = layers
+    }
+  })
+  var selectedStyle = new ol.style.Style({
+    stroke: new ol.style.Stroke({
+      color: '#2196f3',
+      width: 2
+    })
   });
 
+  var select = new ol.interaction.Select({
+    layers: [baselayer],
+    style: selectedStyle
+  });
+
+  targetMap.addInteraction(select);
+
+  select.on('select', function (e) {
+    if (e.selected.length != 0) {
+      var selectedCountry = e.selected[0];
+      var poly = e.selected[0].getGeometry()
+      console.log("geometry", poly)
+      // console.log(poly.a())
+      console.log("select", selectedCountry)
+      var valueArr = [];
+
+      if (selectedCountry != undefined) {
+        var name = selectedCountry.get('name');
+        var value = selectedCountry.get('value')
+        $("#selectedCountryName").text(name);
+        $("#selectedCountryValue").text(value);
+      }
+      else {
+        $("#selectedCountryName").text("None");
+        $("#selectedCountryValue").text("-");
+      }
+
+      for (var i = 0; i < features.length; i++) {
+        if (poly.intersectsExtent(features[i].getGeometry().getExtent())) {
+          valueArr.push(features[i].getProperties().value);
+          // valueArr.push(obj.value)
+        }
+      }
+      console.log("value",valueArr)
+      var min = Math.round(Math.min.apply(null, valueArr) * 100) / 100;
+      var max = Math.round(Math.max.apply(null, valueArr) * 100) / 100;
+      var avg = Math.round(valueArr.reduce((a, b) => a + b, 0) / valueArr.length * 100) / 100
+      var sum = Math.round(valueArr.reduce((a, b) => a + b, 0))
+
+      $("#selectedCountryMin").text(min);
+      $("#selectedCountryMax").text(max);
+      $("#selectedCountryAvg").text(avg);
+      $("#selectedCountrySum").text(sum);
+    }
+  })
   return select
 }
 
 //-------------------------grid-----------------------------------------------------------------------
-export function add_graticule_layer(target) {  
+export function add_graticule_layer(target) {
   const minor_gratucule = new ol.Graticule({
-        // the style to use for the lines, optional.
+    // the style to use for the lines, optional.
     maxLines: 200,
     intervals: [5, 5],
     targetSize: 40,
     strokeStyle: new ol.style.Stroke({
-    color: 'rgba(0,88,212,0.25)',
-    width: 0.5,
+      color: 'rgba(0,88,212,0.25)',
+      width: 0.5,
     }),
   });
   minor_gratucule.setMap(target);
-    
+
   const major_graticule = new ol.Graticule({
     maxLines: 100,
     intervals: [20, 20],
@@ -213,40 +260,65 @@ export function add_graticule_layer(target) {
 }
 
 //-------------------------Gen grid-----------------------------
-export function genGridData(geojson, min, max, color_map, lon_step, lat_step, type, layername = '',name) {
+export function genGridData(geojson, min, max, color_map,unit, lon_step, lat_step, type, layername = '',name,long_name) {
   var colors = []; var colorScale; var title; var tickformat;
 
+  console.log("color",color_map)
   if (color_map == 'cool_warm') {
+    colors = ['#bd1726', '#d42d27', '#e34933', '#f16640', '#f7844e', '#fca55d', '#fdbf71', '#fed687', '#fee99d', '#fff7b3', '#f7fcce', '#e9f6e8', '#d6eef5', '#bde2ee', '#a3d3e6', '#87bdd9', '#6ea6ce', '#588cc0', '#4471b2', '#3a54a4'].reverse()
     if (type == 'main') {
-      title = 'tempurature (°C)'
-      colors = ['#bd1726', '#d42d27', '#e34933', '#f16640', '#f7844e', '#fca55d', '#fdbf71', '#fed687', '#fee99d', '#fff7b3', '#f7fcce', '#e9f6e8', '#d6eef5', '#bde2ee', '#a3d3e6', '#87bdd9', '#6ea6ce', '#588cc0', '#4471b2', '#3a54a4'].reverse()
+      // title = 'tempurature (°C)'
       colorScale = d3.scaleQuantile([min, 0, max], colors)
     } else if (type == 'per') {
       title = 'tempurature (%)'
-      colors = ['#bd1726', '#d42d27', '#e34933', '#f16640', '#f7844e', '#fca55d', '#fdbf71', '#fed687', '#fee99d', '#fff7b3', '#f7fcce', '#e9f6e8', '#d6eef5', '#bde2ee', '#a3d3e6', '#87bdd9', '#6ea6ce', '#588cc0', '#4471b2', '#3a54a4'].reverse()
-      // colors = ['#bd1726', '#f16640',  '#fdbf71', '#fff7b3', '#d6eef5', '#87bdd9', '#3a54a4'].reverse()
+      colorScale = d3.scaleQuantile([min, 0, max], colors)
+    }
+  }else if (color_map=='warm_cool') {
+    colors = ["#a50026", "#d73027", "#f46d43", "#fdae61", "#fee090", "#ffffbf", "#e0f3f8", "#abd9e9", "#74add1", "#4575b4", "#313695"]  //d3.schemeRdYlBu[11]
+    if(type == 'main'){
+      // title = 'tempurature (°C)'
+      colorScale = d3.scaleQuantile([min, max], colors)
+    }else if (type == 'per') {
+      title = 'tempurature (%)'
       colorScale = d3.scaleQuantile([min, 0, max], colors)
     }
   }
   else if (color_map == 'dry_wet') {
-    title = 'precipitation (mm)'
-    colors = ['#8c510a', '#9e5c0b', '#bf812d', '#d49a4b', '#dfc27d', '#eedfba', '#f6e8c3', '#f5f5f5', '#c7eae5', '#80cdc1', '#35978f', '#2b7a74', '#01665e', '#005040', '#003c30', '#002820']
-    // colors = ['#6e4007', '#a16518', '#ca9849', '#e7cf94', '#f6ecd1', '#f5f2e8', '#edf2f5', '#dbeaf2', '#c5dfec', '#a7d0e4', '#87beda', '#5fa5cd', '#3f8ec0', '#2f79b5', '#1f63a8', '#124984']
-    // colors = ["#f7fcf0", "#e0f3db", "#ccebc5", "#a8ddb5", "#7bccc4", "#4eb3d3", "#2b8cbe", "#0868ac", "#084081"]
-    colorScale = d3.scaleQuantile([0,max], colors)
+    colors = ['#8c510a', '#9e5c0b', '#bf812d', '#d49a4b', '#dfc27d', '#eedfba', '#fcf4e1','#f5f5f5', '#d6eef5', '#bde2ee', '#a3d3e6', '#87bdd9', '#6ea6ce', '#588cc0', '#4471b2', '#3a54a4']
+    if (type == 'main'){
+      // title = 'precipitation (mm)'
+      // colors = ['#8c510a', '#9e5c0b', '#bf812d', '#d49a4b', '#dfc27d', '#eedfba', '#f6e8c3', '#f5f5f5', '#c7eae5', '#80cdc1', '#35978f', '#2b7a74', '#01665e', '#005040', '#003c30', '#002820']
+      // colors = ['#6e4007', '#a16518', '#ca9849', '#e7cf94', '#f6ecd1', '#f5f2e8', '#edf2f5', '#dbeaf2', '#c5dfec', '#a7d0e4', '#87beda', '#5fa5cd', '#3f8ec0', '#2f79b5', '#1f63a8', '#124984']
+      // colors = ["#f7fcf0", "#e0f3db", "#ccebc5", "#a8ddb5", "#7bccc4", "#4eb3d3", "#2b8cbe", "#0868ac", "#084081"]
+      colorScale = d3.scaleQuantile([0,max], colors)
+    } else if (type == 'per'){
+      title = 'precipitation (%)'
+      colorScale = d3.scaleQuantile([min, 0, max], colors)
+    }
   }
-  tickformat = ".2f"
-  if(name == 'map1' || name == 'map2'){ tickformat = ".0f"}
+  else if (color_map=='wet_dry') {
 
+    colors = ['#714108', '#8d520b', '#a96c1e', '#c28633', '#d3aa5f', '#e2c787', '#efdcad', '#f6ebcd', '#f5f2e8'].reverse()
+    if(type == 'main'){
+      // color = ['#714108', '#8d520b', '#a96c1e', '#c28633', '#d3aa5f', '#e2c787', '#efdcad', '#f6ebcd', '#f5f2e8'].reverse()
+      colorScale = d3.scaleQuantile([0, max], colors)
+    } else if(type == 'per'){
+      title = 'precipitation (%)'
+      // color = ["#a6611a", "#dfc27d", "#f5f5f5", "#80cdc1", "#018571"].reverse()
+      colorScale = d3.scaleQuantile([min, 0, max], colors)
+    }
+  } 
+  // tickformat = ".2f"
+  // if(name == 'map1' || name == 'map2'){ tickformat = ".0f"}
+  var title = long_name
   legend({
     color: colorScale,
-    title: title,
-    tickFormat: tickformat,
+    title: title+" "+unit,
+    tickFormat: ".2f",
     target: name
   })
 
   var gridStyle = function (feature) {
-
     var coordinate = feature.getGeometry().getCoordinates(),
       x = coordinate[0] - lon_step / 2,
       y = coordinate[1] - lat_step / 2,
@@ -275,7 +347,7 @@ export function genGridData(geojson, min, max, color_map, lon_step, lat_step, ty
 
   var grid = new ol.source.Vector({
     wrapX: false,
-    extent: [-180, -90, 180, 90],
+    // extent: [-180, -90, 180, 90],
     features: (new ol.format.GeoJSON()).readFeatures(geojson)
   });
 
@@ -285,7 +357,8 @@ export function genGridData(geojson, min, max, color_map, lon_step, lat_step, ty
     style: gridStyle
   });
   // map.addLayer(gridLayer);
-  
+  console.log("grid",gridLayer)
+
   return gridLayer
 }
 
@@ -360,120 +433,179 @@ function legend({
   return svg.node();
 }
 
-
 //--------------------------Convert Data------------------------------
-export function convert_to_geojson(data,lon,lat){
+export function convert_to_geojson(data, lon, lat) {
   // console.log("lonnnnnnnnnnnnnnn",lon)
+  console.log("234",data.length)
   var geojsondata = {
-        type: 'FeatureCollection',
-        features: []
+    type: 'FeatureCollection',
+    features: []
   };
-  for (var i =0; i< data.length ;i++) {
+  for (var i = 0; i < data.length; i++) {
     geojsondata.features.push({
-          type: 'Feature',
-          // properties: { "value": data[i]},
-          geometry: {
-              type: 'Point',
-              coordinates: [lon[i], lat[i]]
-          }
-        })
+      type: 'Feature',
+      properties: { "value": data[i]},
+      geometry: {
+        type: 'Point',
+        coordinates: [lon[i], lat[i]]
+      }
+    })
   }
   console.log("geo",geojsondata)
   console.log('Create Geojson Done')
   return geojsondata
 }
 
-export function merge_data_to_geojson(lon,lat, data,North,South,West,East){
-  // var tempData = data.flat();
-  var geojsondata = {
-    type: 'FeatureCollection',
-    features: []
-  };
-  for (var i =0; i< data.length ;i++) {
-  geojsondata.features.push({
-        type: 'Feature',
-        // properties: { "value": data[i]},
-        geometry: {
-            type: 'Point',
-            coordinates: [lon[i], lat[i]]
-        }
-      })
+export function merge_data_to_geojson(geojsondata, data, North, South, West, East) {
+  var temp = data
+  console.log("ffff",temp)
+  console.log("RR",North,South,West,East)
+  console.log(geojsondata.features.length)
+  for (let i = 0; i < geojsondata.features.length; i++) {
+    if (geojsondata['features'][i]['geometry']['coordinates'][0] >= West &&
+      geojsondata['features'][i]['geometry']['coordinates'][0] <= East &&
+      geojsondata['features'][i]['geometry']['coordinates'][1] >= South &&
+      geojsondata['features'][i]['geometry']['coordinates'][1] <= North) {
+        geojsondata["features"][i]["properties"] = { "value": temp[i] }
+    }
+    else{
+      geojsondata["features"][i]["properties"] = { "value": null }
+    }
   }
 
-  var temp = data
-  // var grids = geojsondata
-  console.log("merge",geojsondata)
-  for(let i=0; i<geojsondata.features.length; i++) {
-    // grids["features"][i]["properties"] = {"value": temp[i]}
-    if (  geojsondata['features'][i]['geometry']['coordinates'][0] >= West && 
-          geojsondata['features'][i]['geometry']['coordinates'][0] <= East && 
-          geojsondata['features'][i]['geometry']['coordinates'][1] >= South && 
-          geojsondata['features'][i]['geometry']['coordinates'][1] <= North)
-          {
-            geojsondata["features"][i]["properties"] = {"value": temp[i]}
-          }
-  }
+  console.log("merge", geojsondata)
 
   return geojsondata
 }
-//-------------------------Clear Layers----------------------------
-export function clearLayers(map){
-  // console.log("old layer",map.getLayers())
-  const layers = map.getLayers().getArray()
 
-  for(var i=layers.length; i>=1; i--) {
-    map.removeLayer(layers[i]);
-    console.log(i,layers[i])
-    console.log("last",layers)
+export function merge_datatrend_to_geojson(geojsondata, data, North, South, West, East, type) {
+
+  var data = data
+  var trend = "";
+
+  for (let i = 0; i < geojsondata.features.length; i++) {
+    // grids["features"][i]["properties"] = {"value": temp[i]}
+    if (geojsondata['features'][i]['geometry']['coordinates'][0] >= West &&
+      geojsondata['features'][i]['geometry']['coordinates'][0] <= East &&
+      geojsondata['features'][i]['geometry']['coordinates'][1] >= South &&
+      geojsondata['features'][i]['geometry']['coordinates'][1] <= North) {
+      if (temp[i] == 0) { trend = "" }
+      else if (temp[i] == 1) { trend = "+" }
+      else if (temp[i] == -1) { trend = "-" }
+      geojsondata["features"][i]["properties"] = { "trend": trend }
+    }
   }
+
+  console.log("merge", geojsondata)
+
+  return geojsondata
 }
 
-export function setResolution(map,North,South, West, East){
+//-------------------------Clear Layers----------------------------
+export function clearLayers(map) {
+  const layers = map.getLayers().getArray()
+  console.log("layer re", layers)
+  var layersToRemove = [];
+  map.getLayers().forEach(function (layer) {
+    if (layer.get('name') == 'lowres_data' || layer.get('name') == 'hires_data') {
+      layersToRemove.push(layer);
+      console.log("layer :", layersToRemove)
+    }
+  });
+
+  for (var i = 0; i < layersToRemove.length; i++) {
+    console.log(">>>>>> Clear <<<<<<<")
+    map.removeLayer(layersToRemove[i]);
+  }
+  console.log("length layerRemove2", layersToRemove.length)
+}
+
+export function setResolution(map,North,South,West,East) {
   function onMoveEnd(evt) {
     var map = evt.map;
     var extent = map.getView().calculateExtent(map.getSize());
+    console.log("Extent", extent)
     map.getLayers().forEach(function (layer) {
       if (layer.get('name') == 'lowres_data') {
         console.log("<<<<<<<Low>>>>>>>>>>")
         layer.set('minZoom', 2)
         layer.set('maxZoom', 6)
-        layer.set('extent', [0,-90,180,90])
-        if (extent[0]-extent[2] > -150){
+        // layer.set('extent', [0, -90, 180, 90])
+        if (extent[0] - extent[2] > -100) {
           console.log(">150")
-          layer.set('extent', [0,0,0,0])
+          layer.set('extent', [0, 0, 0, 0])
         }
-        else if (extent[0]-extent[2] < -150){
-          layer.set('extent', [extent[0],extent[1],extent[2],extent[3]])
+        else if (extent[0] - extent[2] < -100) {
+          layer.set('extent', [extent[0], extent[1], extent[2], extent[3]])
         }
       }
       else if (layer.get('name') == 'hires_data') {
         console.log("<<<<<<<Hight>>>>>>>>>>")
         layer.set('minZoom', 6)
         layer.set('maxZoom', 12)
-        if (extent[0]-extent[2] > -150){
+        if (extent[0] - extent[2] > -100) {
           console.log(">100")
-          layer.set('extent', [-180,-90,180,90])
-        }else if (extent[0]-extent[2] < -150){
-          layer.set('extent', [0,0,0,0])
+          layer.set('extent', [extent[0], extent[1], extent[2], extent[3]])
+        } else if (extent[0] - extent[2] < -100) {
+          layer.set('extent', [0, 0, 0, 0])
         }
       }
     })
   }
-  
+
   map.on('moveend', onMoveEnd);
 }
 
-export function setzoom(map){
+export function setzoom(map) {
+  var extent = map.getView().calculateExtent(map.getSize());
+  console.log("EXENT", extent)
   map.getLayers().forEach(function (layer) {
-    if (layer.get('name') == 'lowres_data') {
-      console.log("<<<<<<<Low>>>>>>>>>>")
-      layer.set('minZoom', 0.001)
-      layer.set('zoom',0.001)
-      layer.set('maxZoom', 4)
-      map.getView().setZoom(1);
-    }
-
+    console.log("<<<<<<<SET>>>>>>>>>>")
+    // layer.set('minZoom', 0.001)
+    // layer.set('zoom',0.001)
+    // layer.set('maxZoom', 4)
+    // map.getView().setZoom(1);
   });
+}
+
+export function setzoom_center(map, North, South, West, East) {
+  var extent = map.getView().calculateExtent(map.getSize());
+  console.log("EXENT", extent)
+  console.log("Regionnnnn", North, South, West, East)
+  if (North == 85 && South == -10 && West == 20 && East == 180) {
+    console.log("Asiaaaaaaaa")
+    map.getView().setZoom(2.6)
+    map.getView().setCenter(ol.proj.transform([100, 38], 'EPSG:4326', 'EPSG:3857'))
+    // map.zoomToExtent(new ol.Bounds(West, South, East, North))
+    // map.getLayers().forEach(function (layer) {
+    //   console.log("<<<<<<<SET>>>>>>>>>>")
+    //   // layer.set('center', [0, 0])
+    //   // layer.set('zoom', 0.1)
+    // });
+  }
+  // if (North == 90 && South == -90 && West == -180 && East == 180) {
+  //   console.log("Wolddd")
+  //   map.getView().setZoom(1)
+  //   map.getView().setCenter(ol.proj.transform([0, 0], 'EPSG:4326', 'EPSG:3857'))
+  //   map.zoomToExtent(new ol.Bounds(West, South, East, North))
+  //   // map.getLayers().forEach(function (layer) {
+  //   //   console.log("<<<<<<<SET>>>>>>>>>>")
+  //   //   // layer.set('center', [0, 0])
+  //   //   // layer.set('zoom', 0.1)
+  //   // });
+  // }
+  // else if (North == 85 && South == -10 && West == 20 && East == 180) {
+  //   console.log("Asiaaaaaaaa")
+  //   map.getView().setZoom(2.6)
+  //   map.getView().setCenter(ol.proj.transform([100, 38], 'EPSG:4326', 'EPSG:3857'))
+  //   // map.zoomToExtent(new ol.Bounds(West, South, East, North))
+  //   // map.getLayers().forEach(function (layer) {
+  //   //   console.log("<<<<<<<SET>>>>>>>>>>")
+  //   //   // layer.set('center', [0, 0])
+  //   //   // layer.set('zoom', 0.1)
+  //   // });
+  // }
+
 }
 
 
