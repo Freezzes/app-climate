@@ -1,62 +1,214 @@
 <head>
-    <title>Box Selection</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
-    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" /> -->
-    <!-- <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css"> -->
-    <!-- <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script> -->
-    <!-- <script src="https://openlayers.org/en/v4.6.5/build/ol.js"></script> -->
-    <!-- <style>
-      .ol-dragbox {
-        background-color: rgba(255,255,255,0.4);
-        border-color: rgba(100,150,0,1);
-      }
-    </style> -->
-  </head>
-  
-  <div class="selectzone">
-    <h3> World map </h3>
-  <div class="form-group hidden">
-    <div class="input-group" style="margin-top: 1em;">
-        <label >Select Date : </label>
-        <input name="datepicker" id="datepicker" class="form-control1" ngbDatepicker #datepicker="ngbDatepicker"
-            [autoClose]="'outside'" (dateSelect)="onDateSelection($event)" [displayMonths]="2" [dayTemplate]="t"
-            outsideDays="hidden" [minDate]="{year: 1901, month: 1, day: 1}" [startDate]="fromDate!">
-        <ng-template #t let-date let-focused="focused">
-            <span class="custom-day" [class.focused]="focused" [class.range]="isRange(date)"
-                [class.faded]="isHovered(date) || isInside(date)" (mouseenter)="hoveredDate = date"
-                (mouseleave)="hoveredDate = null">
-                {{ date.day }}
-            </span>
-        </ng-template>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
+  <script src="https://unpkg.com/elm-pep"></script>
+  <script src="http://openlayers.org/en/v3.14.1/build/ol.js"></script>
+
+  <script src="https://d3js.org/d3.v4.js"></script>
+  <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.13.0/d3-legend.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+  <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/d3-legend/1.1.0/d3-legend.js"></script> -->
+  <script src="colorbrewer.min.js"></script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
+</head>
+
+<!-- <div class="container"> -->
+  <div class="row" >
+    <div class="col-12 col-sm-8">
+      <div class="card" style="margin-top: 1em; ">
+        <!-- map -->
+        <div class="card-header">
+          <i class="fas fa-globe-americas"></i>
+          World Map
+          <br>
+        </div>
+        <div class="card-body" style="background-color: rgb(255, 255, 255);">
+
+          <div id="map" class="map"></div>
+          <div class="info" style="opacity: 0.8;">
+            <svg class="main legend" width="600" height="60" style="margin-top: 1em;"></svg>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-4">
+      <div class="flex-column">
+
+        <div class="card" style="margin-top: 1em; width: 350px;">
+          <div class="card-header"><i class="fas fa-info"></i>
+            Dataset & Index Detials
+          </div>
+          <div class="card-body">
+            <h6><B>Dataset &nbsp; &nbsp; &nbsp; &nbsp; :</B>{{dataset_name}}</h6>
+            <h6><B>long name &nbsp;&nbsp; :</B> {{long_name}}</h6>
+            <h6><B>description &nbsp; :</B> {{difinition}}</h6>
+            <h6><B>unit &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :</B> {{unit}}</h6>
+            <h6><B>Year &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;:</B> {{year}}</h6>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 1em; width: 350px;">
+          <div class="card-header"><i class="fas fa-info"></i>
+            Selected Country Details
+          </div>
+          <div class="card-body">
+            <div class="h6 mb-0 text-warning">Country:
+              <span class="small text-muted" id="selectedCountryName"
+                style="color:rgb(255, 168, 7);font-weight:bold"></span>
+            </div>
+            <div class="h6 mb-0 text-success">Minimum :
+              <span id="selectedCountryMin" style="color:blue;font-weight:bold"></span>
+            </div>
+            <div class="h6 mb-0 text-success">Maximum :
+              <span id="selectedCountryMax" style="color:red;font-weight:bold"></span>
+            </div>
+            <div class="h6 mb-0 text-success">Average :
+              <span id="selectedCountryAvg" style="color:rgb(20, 126, 99);font-weight:bold"></span>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-top: 1em; width: 350px;">
+          <div class="card-header"><i class="fas fa-info"></i>
+            TREND
+          </div>
+          <div class="card-body" style="height: 130px;">
+            <div
+            style="display: flex;flex-direction: row; justify-content: flex-start;align-items: center; height: 100px;">
+            <div
+              style="display: flex;flex-direction: column; justify-content: center;align-items: flex-start; height: 100px; width: 200px;">
+              <h6>
+                {{decresing}}
+              </h6>
+              <h6>
+                {{incresing}}
+              </h6>
+            </div>
+            <button type="button" class="btn btn-primary" style="background-color: #27689b;color: rgb(231, 239, 245);  font-size: 20px; height: max-content;
+            font-weight: 400;font-family:'Open Sans', sans-serif;" (click)="Trand()">
+            <i class="fas fa-chart-line"></i>
+            Plot trend
+          </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <form class="form-inline">
-    
-    <div class="form-group">
-        <div class="input-group">
-            <input #dpFromDate class="form-control" placeholder="yyyy-mm-dd" name="dpFromDate"
-                [value]="formatter.format(fromDate)" (input)="fromDate = validateInput(fromDate, dpFromDate.value)">
-            <div class="input-group-append">
-                <button class="btn btn-outline-secondary calendar" (click)="datepicker.toggle()" type="button"></button>
+<!-- </div> -->
+
+<!-- <body>
+  <div style="display: flex;flex-direction: row;">
+    <div style="display: flex; flex-wrap: nowrap;align-items: stretch;justify-content: flex-start;width: 900px;">
+      <div class="col-mb-12" style="width: 850px;">
+        <div class="card" style="margin-top: 1em;">
+          <div class="card-header">
+            <i class="fas fa-globe-americas"></i>
+            World Map
+          </div>
+
+          <div class="card-body" style="background-color: rgb(255, 255, 255);">
+            <div id="map" class="map" style="flex-direction: column; display: flex;"></div>
+            <div class="info" style="opacity: 0.8;">
+              <svg class="main legend" width="850" height="60" style="margin-top: 1em;"></svg>
             </div>
+          </div>
         </div>
+      </div>
     </div>
-    <div class="form-group ml-2">
-        <div class="input-group">
-            <input #dpToDate class="form-control" placeholder="yyyy-mm-dd" name="dpToDate"
-                [value]="formatter.format(toDate)" (input)="toDate = validateInput(toDate, dpToDate.value)">
-            <div class="input-group-append">
-                <button class="btn btn-outline-secondary calendar" (click)="datepicker.toggle()" type="button"></button>
+
+    <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" type="ball-spin-clockwise">
+      <p style="color: white">Please Wait. </p>
+    </ngx-spinner>
+
+    <div style="display: flex;flex-direction: column;">
+      <div style="display: flex;flex-direction: column;flex-wrap: nowrap;justify-content: flex-start;">
+        <div style="flex-direction: column; display: flex;flex-wrap: nowrap;width: 30vw;">
+          <div class="col-mb-12">
+            <div class="card" style="margin-top: 1em;">
+              <div class="card-header"><i class="fas fa-info"></i>
+                Dataset & Index Detials
+              </div>
+              <div class="card-body">
+                <h6><B>Dataset &nbsp; &nbsp; &nbsp; &nbsp; :</B>{{dataset_name}}</h6>
+                <h6><B>long name &nbsp;&nbsp; :</B> {{long_name}}</h6>
+                <h6><B>description &nbsp; :</B> {{difinition}}</h6>
+                <h6><B>unit &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :</B> {{unit}}</h6>
+                <h6><B>Year &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;:</B> {{year}}</h6>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
+
+      <div style="flex-direction: column; display: flex;flex-wrap: nowrap;justify-content: flex-end;">
+        <div class="col-mb-12">
+          <div class="card" style="margin-top: 1em;">
+            <div class="card-header"><i class="fas fa-info"></i>
+              Selected Country Details
+            </div>
+            <div class="card-body">
+              <div class="h6 mb-0 text-dark">Country:
+                <span class="small text-muted" id="selectedCountryName" style="font-weight:bold"></span>
+              </div>
+              <div class="h6 mb-0 text-dark">Minimum :
+                <span id="selectedCountryMin" style="color:blue;font-weight:bold"></span>
+              </div>
+
+              <div class="h6 mb-0 text-dark">Maximum :
+                <span id="selectedCountryMax" style="color:red;font-weight:bold"></span>
+              </div>
+              <div *ngIf="index=='pr'">
+                <div class="h6 mb-0 text-dark">Cumulative rainfall :
+                  <span id="selectedCountrySum" style="color:rgb(20, 126, 99);font-weight:bold"></span>
+                </div>
+              </div>
+              <div class="h6 mb-0 text-dark">Average :
+                <span id="selectedCountryAvg" style="color:rgb(20, 126, 99);font-weight:bold"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex-direction: column; display: flex;flex-wrap: nowrap;justify-content: flex-end;">
+        <div class="col-mb-12">
+          <div class="card" style="margin-top: 1em;">
+            <div class="card-header">
+              <i class="fas fa-info"></i>
+              TREND
+            </div>
+            <div class="card-body">
+              <div
+                style="display: flex;flex-direction: row; justify-content: flex-start;align-items: center; height: 100px;">
+                <div
+                  style="display: flex;flex-direction: column; justify-content: center;align-items: flex-start; height: 100px; width: 200px;">
+                  <h6>
+                    {{decresing}}
+                  </h6>
+                  <h6>
+                    {{incresing}}
+                  </h6>
+                </div>
+                <button type="button" class="btn btn-primary" style="background-color: #27689b;color: rgb(231, 239, 245);  font-size: 20px; height: max-content;
+                  font-weight: 400;font-family:'Open Sans', sans-serif;" (click)="Trand()">
+                  <i class="fas fa-chart-line"></i>
+                  Plot trend
+                </button>
+                <div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </form>
-  
-    <button type="button" (click)="plotmap() ">plot</button>
-   
   </div>
-  
-  
-  <div id="map" class="map" ></div>
-  
-  
+</body> -->
