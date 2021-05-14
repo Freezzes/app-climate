@@ -107,19 +107,19 @@ getDataLayer(data, North, South, West, East, layername, name_legend, type, color
   async ngOnInit() {
 
 
-    this.selectedItems = [];
-    this.dropdownSettings = {
-        singleSelection: false,
-        idField: 'id',
-        textField: 'name',
-        selectAllText: 'Select All',
-        unSelectAllText: 'UnSelect All',
-        itemsShowLimit: 12,
-        allowSearchFilter: this.ShowFilter
-    };
-    this.myForm = this.fb.group({
-        city: [this.selectedItems]
-    });
+    // this.selectedItems = [];
+    // this.dropdownSettings = {
+    //     singleSelection: false,
+    //     idField: 'id',
+    //     textField: 'name',
+    //     selectAllText: 'Select All',
+    //     unSelectAllText: 'UnSelect All',
+    //     itemsShowLimit: 12,
+    //     allowSearchFilter: this.ShowFilter
+    // };
+    // this.myForm = this.fb.group({
+    //     city: [this.selectedItems]
+    // });
 
     this.map1 = MapLib.draw_map('map1')
     this.map2 = MapLib.draw_map('map2')
@@ -147,6 +147,19 @@ getDataLayer(data, North, South, West, East, layername, name_legend, type, color
           fromyear2: null,
           toyear2: null
         })
+        this.selectedItems = [];
+        this.dropdownSettings = {
+            singleSelection: false,
+            idField: 'id',
+            textField: 'name',
+            selectAllText: 'Select All',
+            unSelectAllText: 'UnSelect All',
+            itemsShowLimit: 12,
+            allowSearchFilter: this.ShowFilter
+        };
+        this.myForm = this.fb.group({
+            city: [this.selectedItems]
+        });
       }
     })
 
@@ -154,16 +167,12 @@ getDataLayer(data, North, South, West, East, layername, name_legend, type, color
     await this.sharedData.difservice.subscribe(data => {
       if (data) {
         console.log("input dif", data)
-        
-        
-        
         if(data[0].types == 'y'){
           console.log("type year",data[0].types)
           this.disabled = true
+        }else{
+          this.disabled = false
         }
-
-        // this.dataset = data[0]
-        // this.index = data[1]
       }
     })
 
@@ -181,6 +190,7 @@ getDataLayer(data, North, South, West, East, layername, name_legend, type, color
       if (data) {
         console.log("input dif", data)
         this.Input = data[0]
+        this.dataset = data[0].dataset
       }
     })
   }
@@ -349,11 +359,13 @@ getDataLayer(data, North, South, West, East, layername, name_legend, type, color
   }
 
   async map_range1month(){
+    this.display = 'show'
     this.monthsel = this.monthselect //[0,1,2,3]
     this.start1 = this.chooseyear1.controls['fromyear1'].value
     this.stop1 = this.chooseyear1.controls['toyear1'].value
     this.Ranges = 'Year ' + this.start1 + '-' + this.stop1
     console.log("map month dataset >>>",this.dataset)
+    console.log("month >> ",this.monthsel)
 
     await this.tempService.map_range1month(this.Input.dataset, this.Input.index, this.start1, this.stop1,this.monthsel,this.Input.rcp, this.Input.types).then(data => data.subscribe(
       (res => { 
@@ -364,8 +376,6 @@ getDataLayer(data, North, South, West, East, layername, name_legend, type, color
         const data_dif = this.getDataLayer(resp, this.North, this.South, this.West, this.East, 'lowres_data', 'map1', 'main', this.color_map, this.unit,this.long_name)
         MapLib.clearLayers(this.map1);
         this.map1.getLayers().insertAt(0, data_dif);
-        MapLib.select_country(this.map1)
-        MapLib.setzoom(this.map1)
 
       }
       )))

@@ -1,48 +1,60 @@
-<div style="display: flex;flex-direction: row;justify-content: center;height: 500px;">
+<!-- <div style="display: flex;flex-direction: row;justify-content: center;height: 500px;">
   <div style="display: flex; flex-wrap: nowrap;align-items: stretch;justify-content: flex-start;">
-<!-- <div style="display: flex;flex-direction: row; justify-content: space-around;align-items: center;"> -->
+    <div class="col-mb-6">
+      <div class="card" style="width: 700px">
+        <div class="card-header">
+          <i class="fas fa-map-marker-alt"></i> Area averange time series
+        </div>
 
-  <!-- <div style="flex-direction: row;display: flex;flex-wrap: nowrap;width: 600px;justify-content: flex-start;">  -->
-        <div class="col-mb-6">
-          <div class="card" style="width: 700px">
-            <!-- <div class="card"> -->
-            <div class="card-header">
-              <i class="fas fa-map-marker-alt"></i> Area averange time series
-            </div>
+        <div class="card-body" style="background-color: rgb(255, 255, 255);width: 610px;justify-content: flex-start;">
+          <div id="chartContainer" style="height: 400px; width: 600px;">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-mb-6">
+      <div class="card" style="width: 700px">
 
-            <div class="card-body" style="background-color: rgb(255, 255, 255);width: 610px;justify-content: flex-start;">
-              <div id="chartContainer" style="height: 400px; width: 600px;">
-              </div>
+        <div class="card-header">
+          <i class="fas fa-map-marker-alt"></i> Anomaly
+        </div>
+        <div class="card-body" style="background-color: rgb(255, 255, 255);">
+          <div style="height: 400px; width: 610px;justify-content: center;">
+            <div id="anomaly" style="height: 400px; width: 600px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+
+
+<div class="main-content">
+  <div class="container" style="height: inherit;">
+    <div class="row">
+      <div class="col-6 ">
+        <div class="card" style="width: 550px;">
+          <div class="card-header">
+            <i class="fas fa-map-marker-alt"></i> Area averange time series
+          </div>
+
+          <div class="card-body" style="background-color: rgb(255, 255, 255);justify-content: flex-start;">
+            <div id="chartContainer" style="height: 400px; width: auto">
             </div>
           </div>
         </div>
-  <!-- </div> -->
-
-  <!-- <div style="flex-direction: row;display: flex;flex-wrap: nowrap;width: 610px;">  -->
-    <!-- <div class="main-content"> -->
-      <!-- <div class="container-fluid"> -->
-        <div class="col-mb-6">
-          <div class="card" style="width: 700px">
-
-            <div class="card-header">
-              <i class="fas fa-map-marker-alt"></i> Anomaly
-            </div>
-            <div class="card-body" style="background-color: rgb(255, 255, 255);">
-              <div style="height: 400px; width: 610px;justify-content: center;">
-                <div id="anomaly" style="height: 400px; width: 600px;"></div>
-                <!-- <highcharts-chart
-                  [Highcharts]="highchartsbar" 
-                  [options] = "chartOptionsbar"
-                  style = "width: 600px; height: 400px; display: block;" >
-                </highcharts-chart> -->
-              </div>
-            </div>
+      </div>
+      <div class="col-6">
+        <div class="card" style="width: 550px;">
+          <div class="card-header">
+            <i class="fas fa-map-marker-alt"></i> Anomaly
+          </div>
+          <div class="card-body" style="background-color: rgb(255, 255, 255);">
+            <div id="anomaly" style="height: 400px; width: auto;"></div>
           </div>
         </div>
-      <!-- </disv> -->
-    <!-- </div> -->
-  <!-- </div> -->
-
-<!-- </div> -->
+      </div>
+    </div>
   </div>
 </div>

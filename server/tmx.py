@@ -24,7 +24,7 @@ from lib.country import mask_inside_country_npz
 app = Flask(__name__)
 
 CORS(app)
-
+# curDir = Path("C:/Users/ice/app-climate/server")
 curDir = Path("")
 dataDir = curDir / "climate"
 

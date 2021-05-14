@@ -230,7 +230,7 @@ export function genGridData(geojson, min, max, color_map,unit, lon_step, lat_ste
       // title = 'tempurature (°C)'
       colorScale = d3.scaleQuantile([min, 0, max], colors)
     } else if (type == 'per') {
-      title = 'tempurature (%)'
+      // title = 'tempurature (%)'
       colorScale = d3.scaleQuantile([min, 0, max], colors)
     }
   }else if (color_map=='warm_cool') {
@@ -239,7 +239,7 @@ export function genGridData(geojson, min, max, color_map,unit, lon_step, lat_ste
       // title = 'tempurature (°C)'
       colorScale = d3.scaleQuantile([min, max], colors)
     }else if (type == 'per') {
-      title = 'tempurature (%)'
+      // title = 'tempurature (%)'
       colorScale = d3.scaleQuantile([min, 0, max], colors)
     }
   }
@@ -263,11 +263,15 @@ export function genGridData(geojson, min, max, color_map,unit, lon_step, lat_ste
       // color = ['#714108', '#8d520b', '#a96c1e', '#c28633', '#d3aa5f', '#e2c787', '#efdcad', '#f6ebcd', '#f5f2e8'].reverse()
       colorScale = d3.scaleQuantile([0, max], colors)
     } else if(type == 'per'){
-      title = 'precipitation (%)'
+      // title = 'precipitation (%)'
       // color = ["#a6611a", "#dfc27d", "#f5f5f5", "#80cdc1", "#018571"].reverse()
       colorScale = d3.scaleQuantile([min, 0, max], colors)
     }
   } 
+
+  if(type == 'per'){
+    unit = '%'
+  }
 
   var title = long_name
   legend({

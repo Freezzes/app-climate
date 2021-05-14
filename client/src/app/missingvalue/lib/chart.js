@@ -9,7 +9,7 @@ export function missing_chart(percentplot){
       chart: {
           type: 'heatmap',
           marginTop: 40,
-          marginBottom: 80,
+         //  marginBottom: 80,
           plotBorderWidth: 1
       },
       title: {
@@ -33,7 +33,7 @@ export function missing_chart(percentplot){
               rotation: -90,
              step:1,
               style: {
-                  fontSize:'7px'
+                  fontSize:'8px'
                }
             },
             title: {
@@ -51,23 +51,33 @@ export function missing_chart(percentplot){
       colorAxis: {
          min: 0,
          max:100,
-         minColor: '#0661CC',
-         maxColor: '#E3F2FD',
+         minColor: '#E3F2FD',
+         maxColor: '#0661CC',
          dataClasses: [{
             from: null,
             to: null,
             name: "Don't Collect data",
             color: "#000000"
-         },{ from: 0,   to: 10
-         },{ from: 10,  to: 20
-         },{ from: 20,  to: 30
-         },{ from: 30,  to: 40
-         },{ from: 40,  to: 50
-         },{ from: 50,  to: 60
-         },{ from: 60,  to: 70
-         },{ from: 70,  to: 80
-         },{ from: 80,  to: 90
-         },{ from: 90,  to: 100
+         },{ from: 0,   to: 10,
+            // color: '#3949AB'
+         },{ from: 10,  to: 20,
+            // color: '#7986CB'
+         },{ from: 20,  to: 30,
+            // color: '#8C65D3'                         
+         },{ from: 30,  to: 40,
+            // color: '#B39DDB'                                   
+         },{ from: 40,  to: 50,
+            // color: '#42A5F5'                          
+         },{ from: 50,  to: 60,
+            // color: '#1976D2'                           
+         },{ from: 60,  to: 70,
+            // color: '#00838F'                          //   '#8C9EFF '
+         },{ from: 70,  to: 80,
+            // color: '#00ACC1'                       
+         },{ from: 80,  to: 90,
+            // color : '#B3E5FC'
+         },{ from: 90,  to: 100,
+            // color: '#E3F2FD'
          }
       ],
      },
@@ -75,19 +85,20 @@ export function missing_chart(percentplot){
             title: {
                   text: 'Percent Missing Value',
                   style: {
-                     fontSize:'20px'
+                     fontSize:'10px'
                   }
             },
             padding: 15,
-            borderColor: '#0661CC',
-            borderRadius: 5,
-            borderWidth: 1,
+            marginTop:25,
+            // borderColor: '#0661CC',
+            // borderRadius: 5,
+            // borderWidth: 1,
             verticalAlign: 'bottom',
-            align: 'right',
-            layout: 'vertical',
-            margin: 1,
+            align: 'center',
+            layout: 'horizontal',
+            // margin: 1,
             valueDecimals: 0,
-            verticalAlign: 'top',
+            // verticalAlign: 'top',
             y: 25,
             symbolRadius: 0,
             symbolHeight: 14,

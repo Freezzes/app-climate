@@ -186,18 +186,13 @@ export class NetcdfComponent implements OnInit {
       }
     })
     console.log("444444444444444444444444444444444", this.dataset_type)
-    // await this.sharedData.regionservice.subscribe(data => {
-    //   console.log("input region",data)
-    //   this.North = data[0]
-    //   this.South = data[1]
-    //   this.West = data[2]
-    //   this.East = data[3]
-    // })
+
 
     await this.sharedData.inputhomeservice.subscribe(data => {
       if (data) {
         console.log("input2222222222", data)
         this.plot_trend = data.plottrend
+        this.dataset_name = data.dataset
         // this.plotTrand(this.plot_trend)
       }
     })

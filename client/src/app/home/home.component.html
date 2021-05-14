@@ -197,7 +197,7 @@
                             <ng-template ngbTabTitle>
                                 <li (click)="selectDataTab=2;"><i class="fas fa-map-marked-alt"></i>
                                     RCM &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                                    &nbsp; &nbsp; <i class="fas fa-angle-down fa-1x"></i></li>
+                                    &nbsp; &nbsp; &nbsp; <i class="fas fa-angle-down fa-1x"></i></li>
                             </ng-template>
                             <ng-template ngbTabContent *ngIf="selectDataTab=='2'">
                                 <li style="margin-left: 20px;">
@@ -318,7 +318,7 @@
 
 
 
-            <!-- <li>
+        <!-- <li>
                 <a data-toggle="collapse" data-parent="#accordion" aria-expanded="false" role="button"
                     class="dropdown-toggle">
                     <i class="fas fa-globe-americas"></i>
@@ -444,7 +444,7 @@
                     </li>
                 </ul>
             </li> -->
-            <!-- <li>
+        <!-- <li>
                 <a data-toggle="collapse" data-parent="#accordion" aria-expanded="false" class="dropdown-toggle">
                     <i class="fas fa-map-marked-alt"></i>
                     RCM
@@ -556,50 +556,50 @@
                     </li>
                 </ul>
             </li> -->
-            <!-- </ul> -->
+        <!-- </ul> -->
         <!-- </nav> -->
         <nav id='body'>
-        <div class="flex-column" style="margin-bottom: 5%; margin-left: 20px;">
-            <div *ngIf="select == 'get_data'">
-                <!-- <div style="border-bottom: 2px;"> -->
-                <app-netcdf></app-netcdf>
-                <!-- </div> -->
-                <div style="margin-top: 10px;">
-                    <app-netcdfgraph>
-                    </app-netcdfgraph>
+            <div class="flex-column" style="margin-bottom: 5%; margin-left: 20px; margin-top: 10px;">
+                <div *ngIf="select == 'get_data'">
+                    <!-- <div style="border-bottom: 2px;"> -->
+                    <app-netcdf></app-netcdf>
+                    <!-- </div> -->
+                    <div style="margin-top: 10px;">
+                        <app-netcdfgraph>
+                        </app-netcdfgraph>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="flex-column" style="margin-bottom: 5%; margin-left: 20px;">
-            <div *ngIf="select == 'get_dif'">
-                <app-difference></app-difference>
-            </div>
-        </div>
-
-        <div style="display: flex;flex-direction: column;justify-content: center;">
-            <div
-                style="flex-direction: row; display: flex; flex-wrap: wrap;justify-content: space-between;height: 800px;width: 1150px;">
-
-                <div style="flex-direction: column; display: flex;width: 502px;height: 800px;"
-                    *ngIf="select == 'station'">
-                    <app-map>
-                    </app-map>
-                </div>
-                <div style="flex-direction: column; display: flex;width: 610px;height: 800px;"
-                    *ngIf="select == 'station'">
-                    <app-boxplot [file]="chooseindex.controls['index'].value" [startyear]="this.fromDate.year"
-                        [stopyear]="this.toDate.year" [startmonth]="this.fromDate.month" [stopmonth]="this.toDate.month"
-                        [startday]="this.fromDate.day" [stopday]="this.toDate.day">
-                    </app-boxplot>
+            <div class="flex-column" style="margin-bottom: 5%; margin-left: 20px;">
+                <div *ngIf="select == 'get_dif'">
+                    <app-difference></app-difference>
                 </div>
             </div>
-            <div *ngIf="select == 'station'" style="justify-content: center; width: 1155px;">
-                <app-missingvalue [file]="chooseindex.controls['index'].value">
-                </app-missingvalue>
+
+            <div style="display: flex;flex-direction: column;justify-content: center; margin-left: 20px;">
+                <div
+                    style="flex-direction: row; display: flex; flex-wrap: wrap;justify-content: space-between;height: 800px;width: 1150px;">
+
+                    <div style="flex-direction: column; display: flex;width: 502px;height: 800px;"
+                        *ngIf="select == 'station'">
+                        <app-map>
+                        </app-map>
+                    </div>
+                    <div style="flex-direction: column; display: flex;width: 610px;height: 800px;"
+                        *ngIf="select == 'station'">
+                        <app-boxplot [file]="chooseindex.controls['index'].value" [startyear]="this.fromDate.year"
+                            [stopyear]="this.toDate.year" [startmonth]="this.fromDate.month"
+                            [stopmonth]="this.toDate.month" [startday]="this.fromDate.day" [stopday]="this.toDate.day">
+                        </app-boxplot>
+                    </div>
+                </div>
+                <div *ngIf="select == 'station'" style="justify-content: center; width: 1155px;">
+                    <app-missingvalue [file]="chooseindex.controls['index'].value">
+                    </app-missingvalue>
+                </div>
             </div>
-        </div>
-        <router-outlet></router-outlet>
+            <router-outlet></router-outlet>
         </nav>
     </div>
 

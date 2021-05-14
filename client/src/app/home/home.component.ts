@@ -330,6 +330,7 @@ export class HomeComponent implements OnInit {
     await this.inputservice.sendRegion(region)
     var clear = 'clear'
     var sent = [{'dataset':dataset,'index': index,'rcp':rcp,'types':types,'clear':clear}]
+
     // var sent = [dataset, index, clear]
     this.inputservice.senddif(sent)
   }

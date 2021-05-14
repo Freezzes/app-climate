@@ -20,8 +20,91 @@
   <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
 </head>
 
+<!-- <div class="container"> -->
+  <div class="row" >
+    <div class="col-12 col-sm-8">
+      <div class="card" style="margin-top: 1em; ">
+        <!-- map -->
+        <div class="card-header">
+          <i class="fas fa-globe-americas"></i>
+          World Map
+          <br>
+        </div>
+        <div class="card-body" style="background-color: rgb(255, 255, 255);">
 
-<body>
+          <div id="map" class="map"></div>
+          <div class="info" style="opacity: 0.8;">
+            <svg class="main legend" width="600" height="60" style="margin-top: 1em;"></svg>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-4">
+      <div class="flex-column">
+
+        <div class="card" style="margin-top: 1em; width: 350px;">
+          <div class="card-header"><i class="fas fa-info"></i>
+            Dataset & Index Detials
+          </div>
+          <div class="card-body">
+            <h6><B>Dataset &nbsp; &nbsp; &nbsp; &nbsp; :</B>{{dataset_name}}</h6>
+            <h6><B>long name &nbsp;&nbsp; :</B> {{long_name}}</h6>
+            <h6><B>description &nbsp; :</B> {{difinition}}</h6>
+            <h6><B>unit &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :</B> {{unit}}</h6>
+            <h6><B>Year &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;:</B> {{year}}</h6>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 1em; width: 350px;">
+          <div class="card-header"><i class="fas fa-info"></i>
+            Selected Country Details
+          </div>
+          <div class="card-body">
+            <div class="h6 mb-0 text-warning">Country:
+              <span class="small text-muted" id="selectedCountryName"
+                style="color:rgb(255, 168, 7);font-weight:bold"></span>
+            </div>
+            <div class="h6 mb-0 text-success">Minimum :
+              <span id="selectedCountryMin" style="color:blue;font-weight:bold"></span>
+            </div>
+            <div class="h6 mb-0 text-success">Maximum :
+              <span id="selectedCountryMax" style="color:red;font-weight:bold"></span>
+            </div>
+            <div class="h6 mb-0 text-success">Average :
+              <span id="selectedCountryAvg" style="color:rgb(20, 126, 99);font-weight:bold"></span>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-top: 1em; width: 350px;">
+          <div class="card-header"><i class="fas fa-info"></i>
+            TREND
+          </div>
+          <div class="card-body" style="height: 130px;">
+            <div
+            style="display: flex;flex-direction: row; justify-content: flex-start;align-items: center; height: 100px;">
+            <div
+              style="display: flex;flex-direction: column; justify-content: center;align-items: flex-start; height: 100px; width: 200px;">
+              <h6>
+                {{decresing}}
+              </h6>
+              <h6>
+                {{incresing}}
+              </h6>
+            </div>
+            <button type="button" class="btn btn-primary" style="background-color: #27689b;color: rgb(231, 239, 245);  font-size: 20px; height: max-content;
+            font-weight: 400;font-family:'Open Sans', sans-serif;" (click)="Trand()">
+            <i class="fas fa-chart-line"></i>
+            Plot trend
+          </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- </div> -->
+
+<!-- <body>
   <div style="display: flex;flex-direction: row;">
     <div style="display: flex; flex-wrap: nowrap;align-items: stretch;justify-content: flex-start;width: 900px;">
       <div class="col-mb-12" style="width: 850px;">
@@ -73,8 +156,7 @@
             </div>
             <div class="card-body">
               <div class="h6 mb-0 text-dark">Country:
-                <span class="small text-muted" id="selectedCountryName"
-                  style="font-weight:bold"></span>
+                <span class="small text-muted" id="selectedCountryName" style="font-weight:bold"></span>
               </div>
               <div class="h6 mb-0 text-dark">Minimum :
                 <span id="selectedCountryMin" style="color:blue;font-weight:bold"></span>
@@ -129,4 +211,4 @@
       </div>
     </div>
   </div>
-</body>
+</body> -->
