@@ -6,6 +6,7 @@ from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 from pathlib import Path
 
+# curDir = Path("C:/Users/ice/app-climate/server")
 curDir = Path("")
 dataDir = curDir / "mask_country"
 

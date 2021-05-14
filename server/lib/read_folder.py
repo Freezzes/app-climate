@@ -2,7 +2,7 @@ import numpy as np
 import os
 import pandas as pd
 from pathlib import Path
-
+# curDir = Path("C:/Users/ice/app-climate/server")
 curDir = Path("")
 dataDir = curDir / "managenc"
 csvDir = curDir / "climate"
