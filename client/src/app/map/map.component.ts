@@ -1,81 +1,60 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
 import { TempService } from '../services/temp.service';
 import { HttpClient, HttpClientModule } from '@angular/common/http'
-import * as L from 'leaflet';
-import { latLng, MapOptions, tileLayer, Map, Marker, icon } from 'leaflet';
-import { MarkerService } from '../services/markers.service';
+import 'ol/ol.css';
+import * as MapLib from './lib/map_station.js';
+import { Circle, Fill, Style } from 'ol/style';
+import { Feature, Map, Overlay, View } from 'ol/index';
+import { OSM, Vector as VectorSource } from 'ol/source';
+import { Point } from 'ol/geom';
+import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
+import { useGeographic } from 'ol/proj';
+import * as $ from 'jquery'
+import { Router, ActivatedRoute } from '@angular/router';
+import { InputService } from 'src/app/services/input.service';
 
-// const iconRetinaUrl = 'assets/marker-icon-2x.png';
-const iconUrl = 'assets/marker-icon.png';
-const shadowUrl = 'assets/marker-shadow.png';
-const iconDefault = L.icon({
-  // iconRetinaUrl,
-  iconUrl,
-  // shadowUrl,
-  iconSize: [18, 25],
-  // iconAnchor: [12, 41],
-  // popupAnchor: [1, -34],
-  // tooltipAnchor: [16, -28],
-  // shadowSize: [41, 41]
-});
-L.Marker.prototype.options.icon = iconDefault;
+useGeographic();
 
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css'],
-  providers: [TempService, MarkerService]
+  providers: [TempService]
 })
 
 export class MapComponent implements OnInit {
 
-  map: Map;
-  mapOptions: MapOptions;
-  namesta = 'กรุงเทพ'
+  map: any;
+  popup: any;
+  datas = ''
+  public checkplot = '';
 
-  constructor(
-    private markerService: MarkerService,
-    private http: HttpClient) {
+  @Input() file: string;
+  @Input() start_date: String;
+  @Input() stop_date: String;
+
+
+  constructor(private tempService: TempService, private router: Router,private sharedData: InputService,) {
   }
 
   capitals: string = '../../assets/station_input.geojson';
 
-  ngOnInit() {
-    this.initializeMapOptions();
-    // this.addSampleMarker();
-    // this.markerService.makeCapitalMarkers(this.map);
-  }
-  onMapReady(map: Map) {
-    this.map = map;
-    this.addSampleMarker();
-    //this.markerdata();
-  }
+  async ngOnInit() {
+    console.log("on")
+    console.log("file : ", this.file)
+    console.log("DATE : ", this.start_date, this.stop_date)
+    this.map = MapLib.draw_map('map')
 
-  private initializeMapOptions() {
-    console.log("m")
-    this.mapOptions = {
-      center: latLng(20, 100),
-      zoom: 4,
-      layers: [
-        L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=XpLRMwelrHFF0ZLB1h8m',{
-            attribution:'<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
-        })
-      ],
-    };
-  }
-
-
-  private addSampleMarker() {
-    console.log("Mark")
-    this.http.get(this.capitals).subscribe((res: any) => {
-      for (const c of res.features) {
-        const lat = c.geometry.coordinates[0];
-        const lon = c.geometry.coordinates[1];
-        const latlng = L.latLng(lon, lat)
-        const mark = L.marker(latlng).addTo(this.map)
+    await this.sharedData.Mapstationservice.subscribe(data => {
+      console.log("map station :",data)
+      if(data){
+        var icon = MapLib.add_data(data)
+        MapLib.clearLayers(this.map)
+        this.map.addLayer(icon)
+        MapLib.popup(this.map)
+        console.log("pop up",icon)
       }
-    });
-    console.log("k")
+    })
   }
 
 }

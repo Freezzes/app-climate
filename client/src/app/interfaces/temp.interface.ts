@@ -190,3 +190,53 @@ export interface NC_csv{
     year : any
     month : any
 }
+
+export interface Boxplotval{
+    station : any
+    value : any
+    outliers : any
+}
+export interface NC_csv{
+    lat : any
+    lon : any
+    temp : any
+    year : any
+    month : any
+}
+export interface NC_Avg{
+    lat : any
+    lon : any
+    temp : any
+    year : any
+    month : any
+}
+export interface NC_ec{
+    lat : any
+    lon : any
+    temp : any
+    year : any
+    month : any
+}
+
+export interface data_test{
+    name : string
+    values : number
+}
+
+export interface data_db{
+    values : any
+}
+
+export interface data_sta{
+    _id : number
+    name : string
+    lat : number
+    lon: number
+}
+
+export interface grid{
+    geo : any
+    lon : number
+    lat : number
+    size: number
+}
