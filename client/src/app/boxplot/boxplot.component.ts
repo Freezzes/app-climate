@@ -12,7 +12,7 @@ import { Chart,ChartData } from 'chart.js';
 import Plotly from 'plotly.js-dist'
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import * as MapLib2 from '../map/lib/map_station';
-import * as ChartLib from './lib/chart.js'
+import * as ChartLib from '../boxplot/lib/chart.js'
 HighchartsMore(Highcharts);
 
 @Component({
