@@ -245,102 +245,32 @@ export class NetcdfComponent implements OnInit {
               console.log("RCPPPPPPPPPP")
               that.tempService.getCountry_rcp(data.input.dataset, data.input.index, data.input.startyear, data.input.stopyear, data.input.startmonth, data.input.stopmonth, selectedCountry, data.input.rcp, data.input.type).subscribe(
                 (res: any) => {
-                  var value = Number(data.input.stopyear) - Number(data.input.startyear)
-                  var start = Number(data.input.startyear)
-                  for (var i = 0; i <= value; i++) {
-                    Data.dataPoints.push(
-                      { x: new Date(start, 0), y: res[0][i] },
-                    )
-                    start += 1
-                  }
-                  console.log("point", Data.dataPoints)
-                  var sent = [Data.dataPoints, res[1], res[2], selectedCountry]
+                  var sent = {'data':res['data'],'year':res['year'],'country':selectedCountry}
                   that.sharedData.sendGraphAvg(sent)
                 })  
                 
               that.tempService.anomalyCountry_rcp(data.input.dataset, data.input.index,  selectedCountry, data.input.rcp, data.input.type).subscribe(
                 (res:any) => {
                   console.log("rcp country ano res >>> ",res)
-                  this.anomalydata = res[0].anomaly
-                  this.anomaly_year = res[1].year
-                  this.anomaly_name = res[2].name
-                  var unit = res[3]
-                  var Data = {
-                    dataPoints: []
-                  }
-                  for (var i = 0; i < this.anomalydata.length; i++) {
-                    if (this.anomalydata[i] > 0) {
-                      Data.dataPoints.push(
-                        { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'red' }
-                      )
-                    }
-                    else if (this.anomalydata[i] <= 0) {
-                      Data.dataPoints.push(
-                        { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'blue' }
-                      )
-                    }
-                    else if (String(this.anomalydata[i]) == String("-")) {
-                      this.Data.dataPoints.push(
-                        { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'blue' }
-                      )
-                    }
-                    var send = [Data.dataPoints, this.anomaly_name, unit,selectedCountry]
-  
-                    that.sharedData.sendAnomaly(send)
-                  }
+                  var sent = {'data': res.anomaly, 'year': res.year,'country':selectedCountry,'scope':res.scope}
+                  console.log("AA",sent)
+                  console.log("AA",res['anomaly'])
+                  that.sharedData.sendAnomaly(sent)
                 })
             }
             else if (that.dataset_type == 'raw') {
               that.tempService.anomalyCountry(data.input.dataset, data.input.index, selectedCountry).subscribe(
                 (res: any) => {
-                  console.log("anoooooo",res)
-                  console.log("anooooo country >", selectedCountry)
-                  this.anomalydata = res[0].anomaly
-                  this.anomaly_year = res[1].year
-                  this.anomaly_name = res[2].name
-                  var unit = res[3]
-                  var Data = {
-                    dataPoints: []
-                  }
-                  for (var i = 0; i < this.anomalydata.length; i++) {
-                    if (this.anomalydata[i] > 0) {
-                      Data.dataPoints.push(
-                        { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'red' }
-                      )
-                    }
-                    else if (this.anomalydata[i] < 0) {
-                      Data.dataPoints.push(
-                        { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'blue' }
-                      )
-                    }
-                  }
-                  var send = [Data.dataPoints, this.anomaly_name, unit,selectedCountry]
-                  console.log("ano net :", send)
-  
-                  that.sharedData.sendAnomaly(send)
+                  var sent = {'data': res.anomaly, 'year': res.year,'country':selectedCountry,'scope':res.scope}
+                  // var sent = {'data':res.anomaly,'year':res.year,'name':res.name,'country':selectedCountry}
+                  that.sharedData.sendAnomaly(sent)
                 })
 
               that.tempService.getCountry(data.input.dataset, data.input.index, data.input.startyear, data.input.stopyear, data.input.startmonth, data.input.stopmonth, selectedCountry).subscribe(
                 (res: any) => {
-                  var value = Number(data.input.stopyear) - Number(data.input.startyear)
-                  var start = Number(data.input.startyear)
-                  for (var i = 0; i <= value; i++) {
-                    Data.dataPoints.push(
-                      { x: new Date(start, 0), y: res[0][i] },
-                    )
-                    start += 1
-                  }
-                  console.log("point", Data.dataPoints)
-                  var sent = [Data.dataPoints, res[1], res[2], selectedCountry]
-                  // this.inputservice.sendGraph(sent)
+                  var sent = {'data':res['data'],'year':res['year'],'country':selectedCountry}
                   that.sharedData.sendGraphAvg(sent)
-                  // console.log("graph country",sent)
-                  // that.sharedData.sendcountry(res)
                 })
-            }
-            var Data = {
-              // value:[],
-              dataPoints: []
             }
           }
         });

@@ -3,7 +3,6 @@ import HighchartsMore from 'highcharts/highcharts-more';
 HighchartsMore(Highcharts);
 
 export function box_chart(boxval,nameval,outval,ts,colorplot,colorline){
-   console.log("data plot box >>>")
    Highcharts.chart('box-container', {
       chart: {
         type: 'boxplot',
@@ -27,6 +26,7 @@ export function box_chart(boxval,nameval,outval,ts,colorplot,colorline){
         title: {
             text: 'Observations'
         },
+        min: 0
       },
       series: [{
         name: 'Observations',
@@ -53,4 +53,37 @@ export function box_chart(boxval,nameval,outval,ts,colorplot,colorline){
             enabled: false
         }
       });   
+}
+
+export function bar_chart(anomalyyear,anomaly_name,anomalydata){
+  Highcharts.chart('bar-container', {
+    chart: {
+        type: 'column'
+    },
+    title: {
+        text: 'Anomaly'
+     },
+     xAxis:{
+        categories: anomalyyear
+     },  
+     yAxis: {
+       min: -2,
+       max: 2,
+      //  startOnTick: false,
+     },   
+     series: [{
+           name: anomaly_name,
+           data: anomalydata,
+           zones: [{
+               value: -0,
+               color: '#306EFF'
+           }, {
+               color: '#E42217'
+           }]
+        }
+     ],
+     credits: {
+       enabled: false
+   }
+  })
 }

@@ -23,11 +23,6 @@
                 </div>
                   <div style="flex-direction:row;display: flex;flex-wrap: nowrap;height: 300px;align-items: center;justify-content: center;">
                     <div class="ui-g-12" id="box-container" style=" width: 580px; height: 250px;"></div>
-                      <!-- <highcharts-chart
-                        [Highcharts]="highcharts" 
-                        [options] = "chartOptions"
-                        style = "width: 580px; height: 250px;">
-                      </highcharts-chart> -->
                   </div>          
           </div>
       </div>
@@ -40,12 +35,8 @@
         </div>
         <div class="card-body" style="width: 615px;height: 300px;">
           <div style="flex-direction: column; display: flex;flex-wrap: wrap;align-items: stretch;width: 600px;">
-                <div style="flex-direction:row;display: flex;flex-wrap: nowrap;align-items: center;height: 280px;justify-content: center;" *ngIf="checkbar=='check'">
-                  <highcharts-chart
-                    [Highcharts]="highchartsbar" 
-                    [options] = "chartOptionsbar"
-                    style = "width: 580px; height: 280px;">
-                  </highcharts-chart>
+                <div style="flex-direction:row;display: flex;flex-wrap: nowrap;align-items: center;height: 280px;justify-content: center;">
+                  <div id="bar-container" style=" width: 580px; height: 280px;"></div>
                 </div>            
         </div>
 

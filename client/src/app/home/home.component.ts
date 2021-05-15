@@ -25,8 +25,6 @@ export const ROUTES: RouteInfo[] = [
 })
 export class HomeComponent implements OnInit {
 
-  menuItems: any[];
-
   hoveredDate: NgbDate | null = null;
   fromDate: NgbDate;
   toDate: NgbDate | null = null;
@@ -40,10 +38,7 @@ export class HomeComponent implements OnInit {
   public stopmonth;
   public lenght_y;
   public verb;
-  infile = '';
-  model: any;
-  filename = [];
-  public test;
+
   dataset_name;
   index_name;
   index;
@@ -61,12 +56,7 @@ export class HomeComponent implements OnInit {
   indexrcp_name;
   dataset_rgm;
 
-  public anomaly_year
-  public anomaly_name
-  public anomalydata
   anomaly: any;
-  public anomalyyear
-  public fileanomaly
   plot_trend;
   public Data;
   dataset_name_rcp;
@@ -99,8 +89,8 @@ export class HomeComponent implements OnInit {
     { id: 'm', name: 'month' },
     { id: 'y', name: 'year' },
   ];
-  
-  month = ['Jan','Fab', 'Mach','April','May','June','July','Aug','Sep','Oct', 'Nov','Dec']
+
+  month = ['Jan', 'Fab', 'Mach', 'April', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
   choosedataset = new FormGroup({
     raw: new FormControl(),
@@ -126,7 +116,6 @@ export class HomeComponent implements OnInit {
     startmonth: new FormControl(),
     stopmonth: new FormControl()
   })
-
   counter(start: number, stop: number) {
     var result = [];
     for (var i = start; 1 > 0 ? i < stop : i > stop; i += 1) {
@@ -134,7 +123,6 @@ export class HomeComponent implements OnInit {
     }
     return result;
   }
-
   async onChangetype(newValue) {
     console.log("type", newValue)
     this.tempService.get_index_rcp(newValue).then(data => data.subscribe(
@@ -153,10 +141,10 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  async onchangedataset_rcp(newvalue){
-    this.dataset_rgm= newvalue
+  async onchangedataset_rcp(newvalue) {
+    this.dataset_rgm = newvalue
     this.choosedataset.patchValue({
-      raw:null
+      raw: null
     })
     this.chooseindex.patchValue({
       index: null
@@ -164,9 +152,9 @@ export class HomeComponent implements OnInit {
   }
   async onChangeDataset(newValue) {
     this.dataset = newValue
-    
+
     this.choosedataset.patchValue({
-      rcp:null
+      rcp: null
     })
     this.chooseindex.patchValue({
       index: null,
@@ -179,34 +167,13 @@ export class HomeComponent implements OnInit {
       m_y: null
     })
 
-    if (newValue != 'tmd'){
+    if (newValue != 'tmd') {
       (document.getElementById("station") as any).disabled = true;
     }
-    else{
+    else {
       (document.getElementById("station") as any).disabled = false;
     }
-    // await this.tempService.detail(this.dataset, this.index).then(data => data.subscribe(
-    //   res => {
-    //     console.log("qqqqq",res.year)
-    //     var year = String(res.year).split("-")
-    //     this.start_date = {year: Number(year[0]), month: 1, day: 1}
-    //     this.stop_date = {year: Number(year[1]), month: 11, day: 1}
-    //     var detail = [res, this.dataset,this.index]
-    //     this.inputservice.sendDetail(detail)
-    //   }
-    // ))
 
-    // await this.tempService.detail_rcp(this.dataset, newValue, this.choose_m_y.controls['m_y'].value).then(data => data.subscribe(
-    //   res => {
-    //     console.log("detail", res)
-    //     var year = String(res.year).split("-")
-    //     this.start_date = { year: Number(year[0]), month: 1, day: 1 }
-    //     this.stop_date = { year: Number(year[1]), month: 11, day: 1 }
-    //     var sent = [res, this.dataset, this.index]
-    //     this.inputservice.sendDetail(sent)
-    //   }
-    // ))
-    
     this.tempService.get_index(this.dataset).then(data => data.subscribe(
       res => {
         this.index_name = res
@@ -215,68 +182,51 @@ export class HomeComponent implements OnInit {
 
   }
 
-  async onChangeIndex(newvalue){
-    console.log("index",this.dataset)
+  async onChangeIndex(newvalue) {
+    console.log("index", this.dataset)
     this.index = newvalue
     if (this.index == 'tas' || this.index == 'tasmin' || this.index == 'tasmax' || this.index == 'pr') {
-    await this.tempService.detail(this.dataset, this.index).then(data => data.subscribe(
-      res => {
-        // console.log("qqqqq",res.year)
-        var year = String(res.year).split("-")
-        this.start_date = {year: Number(year[0]), month: 1, day: 1}
-        this.stop_date = {year: Number(year[1]), month: 11, day: 1}
-        var detail = [res, this.dataset,this.index]
-        this.inputservice.sendDetail(detail)
-      }
-    ))
-    var sent = [{ 'dataset': this.dataset, 'index': this.index, 'rcp': 'None', 'types': 'None', 'clear': 'clear' }]
-    // var sent = [dataset, index, clear]
-    this.inputservice.senddif(sent)
+      await this.tempService.detail(this.dataset, this.index).then(data => data.subscribe(
+        res => {
+          var year = String(res.year).split("-")
+          this.start_date = { year: Number(year[0]), month: 1, day: 1 }
+          this.stop_date = { year: Number(year[1]), month: 11, day: 1 }
+          var detail = [res, this.dataset, this.index]
+          this.inputservice.sendDetail(detail)
+        }
+      ))
+      var sent = [{ 'dataset': this.dataset, 'index': this.index, 'rcp': 'None', 'types': 'None', 'clear': 'clear' }]
+      this.inputservice.senddif(sent)
     }
-    else{
-    await this.tempService.detail_rcp(this.dataset, newvalue, this.choose_m_y.controls['m_y'].value).then(data => data.subscribe(
-      res => {
-        console.log("detail", res)
-        var year = String(res.year).split("-")
-        this.start_date = { year: Number(year[0]), month: 1, day: 1 }
-        this.stop_date = { year: Number(year[1]), month: 11, day: 1 }
-        var sent = [res, this.dataset, this.index]
-        this.inputservice.sendDetail(sent)
-      }
-    ))
-    var sent_rcp = [{ 'dataset': this.dataset_rgm, 'index': this.index, 'rcp': this.chooseRCM.controls['rcp'].value, 'types': this.choose_m_y.controls['m_y'].value, 'clear': 'clear' }]
-    // var sent = [dataset, index, clear]
-    this.inputservice.senddif(sent_rcp)
+    else {
+      await this.tempService.detail_rcp(this.dataset, newvalue, this.choose_m_y.controls['m_y'].value).then(data => data.subscribe(
+        res => {
+          console.log("detail", res)
+          var year = String(res.year).split("-")
+          this.start_date = { year: Number(year[0]), month: 1, day: 1 }
+          this.stop_date = { year: Number(year[1]), month: 11, day: 1 }
+          var sent = [res, this.dataset, this.index]
+          this.inputservice.sendDetail(sent)
+        }
+      ))
+      var sent_rcp = [{ 'dataset': this.dataset_rgm, 'index': this.index, 'rcp': this.chooseRCM.controls['rcp'].value, 'types': this.choose_m_y.controls['m_y'].value, 'clear': 'clear' }]
+      this.inputservice.senddif(sent_rcp)
     }
   }
-
-
-  // North = new FormControl('90', Validators.required);
-  // South = new FormControl('-90', Validators.required);
-  // West = new FormControl('-180', Validators.required);
-  // East = new FormControl('180', Validators.required);
-  
-
-  // public anomaly_year = []
-  // public anomaly_name = [];
-  // public anomalydata = []
-  // public anomaly = []
-  // public anomalyyear = []
-  // public fileanomaly = [];
 
   async ngOnInit() {
     var dropdown = document.getElementsByClassName("dropdown-toggle");
     var i;
-  
+
     for (i = 0; i < dropdown.length; i++) {
-      dropdown[i].addEventListener("click", function() {
-      this.classList.toggle("active");
-      var dropdownContent = this.nextElementSibling;
-      if (dropdownContent.style.display === "block") {
-      dropdownContent.style.display = "none";
-      } else {
-      dropdownContent.style.display = "block";
-      }
+      dropdown[i].addEventListener("click", function () {
+        this.classList.toggle("active");
+        var dropdownContent = this.nextElementSibling;
+        if (dropdownContent.style.display === "block") {
+          dropdownContent.style.display = "none";
+        } else {
+          dropdownContent.style.display = "block";
+        }
       });
     }
     this.tempService.get_dataset().then(data => data.subscribe(
@@ -291,45 +241,17 @@ export class HomeComponent implements OnInit {
     )
   }
 
-  // clearSelect() {
-  //   this.select = "";
-  // }
-
-
-  // async check_data() {
-  //   this.dataset = this.choosedataset.controls['set'].value
-  //   var index = this.choosefile.controls['file'].value
-  //   var startyear = String(this.fromDate.year)
-  //   var stopyear = String(this.toDate.year)
-  //   await this.tempService.check_data(this.dataset, index, startyear, stopyear).then(data => data.subscribe(
-  //     res => {
-  //       let resp = JSON.parse(res)
-  //       if (resp['check'] == 'no data') {
-  //         this.errors(resp['year'])
-  //       }
-  //       else if (resp['check'] == 'have data') {
-  //         this.get_raw_data()
-  //       }
-  //     }
-  //   ))
-  // }
-
-  // async errors(year) {
-  //   this.select = 'NoData'
-  //   this.year = year
-  // }
-
   async get_difference() {
     this.select = 'get_dif'
     var dataset = this.choosedataset.controls['raw'].value
     var index = this.chooseindex.controls['index'].value
-    var rcp ='None'
+    var rcp = 'None'
     var types = 'None'
 
     var region = [this.North.value, this.South.value, this.West.value, this.East.value]
     await this.inputservice.sendRegion(region)
     var clear = 'clear'
-    var sent = [{'dataset':dataset,'index': index,'rcp':rcp,'types':types,'clear':clear}]
+    var sent = [{ 'dataset': dataset, 'index': index, 'rcp': rcp, 'types': types, 'clear': clear }]
 
     // var sent = [dataset, index, clear]
     this.inputservice.senddif(sent)
@@ -345,7 +267,7 @@ export class HomeComponent implements OnInit {
     var region = [90, -90, -180, 180]
     await this.inputservice.sendRegion(region)
     var clear = 'clear'
-    var sent = [{'dataset':dataset,'index': index,'rcp':rcp,'types':types,'clear':clear}]
+    var sent = [{ 'dataset': dataset, 'index': index, 'rcp': rcp, 'types': types, 'clear': clear }]
     this.inputservice.senddif(sent)
   }
 
@@ -360,7 +282,7 @@ export class HomeComponent implements OnInit {
     var startyear = this.selectrange.controls['startyear'].value
     var stopyear = this.selectrange.controls['stopyear'].value
     var startmonth = this.selectrange.controls['startmonth'].value + 1
-    console.log("dataset",dataset)
+    console.log("dataset", dataset)
     var stopmonth = this.selectrange.controls['stopmonth'].value
     var region = [90, -90, -180, 180, 'rcp']
     var inputs = { 'dataset': dataset, 'index': index, 'startyear': startyear, 'stopyear': stopyear, 'startmonth': startmonth, 'stopmonth': stopmonth, 'plottrend': this.plot_trend, 'rcp': rcp, 'type': types }
@@ -373,106 +295,36 @@ export class HomeComponent implements OnInit {
     }
 
     await this.tempService.getanomaly_global_rcp(dataset, index, types, rcp)
-    .then(datas =>
-        datas.subscribe(res =>{
-          console.log("rcp await home res >>> ",res)
-          this.anomalydata = res[0].anomaly
-          this.anomaly_year = res[1].year
-          this.anomaly_name = res[2].name
-          var unit = res[3]
-          this.Data = {
-            dataPoints: []
-          }
-          for (var i = 0; i < this.anomalydata.length; i++) {
-            if (this.anomalydata[i] > 0) {
-              this.Data.dataPoints.push(
-                { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'red' }
-              )
-            }
-            else if (this.anomalydata[i] <= 0) {
-              this.Data.dataPoints.push(
-                { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'blue' }
-              )
-            }
-            else if (String(this.anomalydata[i]) == String("-")) {
-              this.Data.dataPoints.push(
-                { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'blue' }
-              )
-            }
-          }
-          this.anomaly = [this.Data.dataPoints, this.anomaly_name, unit, 'Global']
-          console.log("ano home :",this.anomaly)      
-
-          // this.inputservice.sendAnomaly(this.anomaly)
+      .then(datas =>
+        datas.subscribe(res => {
+          console.log("rcp await home res >>> ", res)
+          this.anomaly = {'data': res['anomaly'], 'year': res['year'],'country':'global','scope':res['scope']}
         }))
 
     await this.tempService.get_lowres_rcp(dataset, index, startyear, stopyear, startmonth, stopmonth, rcp, types)
       .then(data => data.subscribe(
         (res => {
-          // console.log("check dataaaaaa",res)
           let resp = JSON.parse(res)
-          console.log("datarcp", resp)
           var inputs = { 'dataset': dataset, 'index': index, 'startyear': startyear, 'stopyear': stopyear, 'startmonth': startmonth, 'stopmonth': stopmonth, 'plottrend': this.plot_trend, 'rcp': rcp, 'type': types }
-          var sent = { 'map': resp.low, 'input': inputs }
-          // this.inputservice.sendLowRes(sent)
           this.inputservice.sendHiRes(resp.high)
-          // var sent = { 'map': resp.low, 'input': inputs }
-          // this.inputservice.sendLowRes(sent)
           this.tempService.global_avg_rcp(dataset, index, startyear, startmonth, stopyear, stopmonth, rcp, types)
             .then(datas => datas.subscribe(res => {
-              var data = Number(stopyear) - Number(startyear)
-              console.log("dddddd in", data)
-              var start = Number(startyear)
-              for (var i = 0; i <= data; i++) {
-                Data.dataPoints.push(
-                  { x: new Date(start, 0), y: res[0][i] },
-                )
-                start += 1
-              }
-              console.log("point", Data.dataPoints)
-              this.chart = [Data.dataPoints, res[1], res[2], 'Golbal']
-              var sent = { 'chart': this.chart, 'map': resp.low, 'input': inputs ,'anomaly':this.anomaly}
+              this.chart = { 'data': res['data'], 'year': res['year'], 'country': 'global' }
+              var sent = { 'chart': this.chart, 'map': resp.low, 'input': inputs, 'anomaly': this.anomaly }
               this.inputservice.sendLowRes(sent)
-
             }))
-          
         })
       ))
 
-    
-    // await this.tempService.global_avg_rcp(dataset, index, startyear, startmonth, stopyear, stopmonth, rcp, types)
-    //   .then(datas => datas.subscribe(res => {
-    //     var data = Number(stopyear) - Number(startyear)
-    //     console.log("dddddd out", data)
-    //     var start = Number(startyear)
-    //     for (var i = 0; i <= data; i++) {
-    //       Data.dataPoints.push(
-    //         { x: new Date(start, 0), y: res[0][i] },
-    //       )
-    //       start += 1
-    //     }
-    //     console.log("point", Data.dataPoints)
-    //     this.chart = [Data.dataPoints, res[1], res[2], 'Golbal']
-    //     // var sent = { 'chart': this.chart,'input': inputs }
-    //     this.inputservice.sendGraphAvg(this.chart)
-
-    //   }))
-
-    var Data = {
-      dataPoints: []
-    }
-
     await this.tempService.get_rcptrend(dataset, index, types, rcp, startyear, stopyear, startmonth, stopmonth)
-    .then(data => data.subscribe(
-      res => {
-        console.log("trend rcp result finish")
-        
-        let resp = JSON.parse(res)
-        console.log("sent trend rcp",resp)
-        this.inputservice.sendtrend(resp)
-      }
-    ))
-}
+      .then(data => data.subscribe(
+        res => {
+          let resp = JSON.parse(res)
+          console.log("sent trend rcp", resp)
+          this.inputservice.sendtrend(resp)
+        }
+      ))
+  }
 
   async get_raw_data() {
     this.plot_trend = false
@@ -495,10 +347,8 @@ export class HomeComponent implements OnInit {
     await this.tempService.get_Avgcsvtrend(this.dataset, index, startyear, stopyear, startmonth, stopmonth)
       .then(data => data.subscribe(
         res => {
-          console.log("trend result finish")
-          
           let resp = JSON.parse(res)
-          console.log("sent trend",resp)
+          console.log("sent trend", resp)
           this.inputservice.sendtrend(resp)
         }
       ))
@@ -507,111 +357,24 @@ export class HomeComponent implements OnInit {
       .then(data => data.subscribe(
         res => {
           console.log("ano home res:", res)
-          this.anomalydata = res[0].anomaly
-          this.anomaly_year = res[1].year
-          this.anomaly_name = res[2].name
-          var unit = res[3]
-          this.Data = {
-            dataPoints: []
-          }
-          for (var i = 0; i < this.anomalydata.length; i++) {
-            if (this.anomalydata[i] > 0) {
-              this.Data.dataPoints.push(
-                { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'red' }
-              )
-            }
-            else if (this.anomalydata[i] < 0) {
-              this.Data.dataPoints.push(
-                { y: this.anomalydata[i], label: this.anomaly_year[i], color: 'blue' }
-              )
-            }
-          }
-          this.anomaly = [this.Data.dataPoints, this.anomaly_name, unit, 'Global']
-          // console.log("ano home :",send)      
-
-          // this.inputservice.sendAnomaly(this.anomaly)
+          this.anomaly = {'data': res['anomaly'], 'year': res['year'],'country':'global','scope':res['scope']}
         }))
 
     await this.tempService.get_Avgcsv(this.dataset, index, startyear, stopyear, startmonth, stopmonth)
       .then(data => data.subscribe(
         (res => {
           let resp = JSON.parse(res)
-          // this.inputservice.sendLowRes(resp)
           this.inputservice.sendHiRes(resp.high)
           var inputs = { 'dataset': this.dataset, 'index': index, 'startyear': startyear, 'stopyear': stopyear, 'startmonth': startmonth, 'stopmonth': stopmonth }
-          // var sent = { 'map': resp.low, 'input': inputs, 'anomaly': this.anomaly }
-          // this.inputservice.sendLowRes(sent)
           this.tempService.global_avg(this.dataset, index, startyear, startmonth, stopyear, stopmonth)
             .then(data => data.subscribe(res => {
-              var Data = {
-                dataPoints: []
-              }
-              var data = Number(stopyear) - Number(startyear)
-              var start = Number(startyear)
-              for (var i = 0; i <= data; i++) {
-                Data.dataPoints.push(
-                  { x: new Date(start, 0), y: res[0][i] },
-                )
-                start += 1
-              }
-              console.log("point", Data.dataPoints)
-              this.chart = [Data.dataPoints, res[1], res[2], 'Global']
+              this.chart = { 'data': res['data'], 'year': res['year'], 'country': 'global' }
               var sent = { 'chart': this.chart, 'map': resp.low, 'input': inputs, 'anomaly': this.anomaly }
               this.inputservice.sendLowRes(sent)
-              // console.log("hi graph", sent)
             })
             )
         })
       ))
-
-    // await this.tempService.get_hire(this.dataset, index, startyear, stopyear, startmonth, stopmonth)
-    //   .then(data => data.subscribe(
-    //     (res => {
-    //       let resp = JSON.parse(res)
-    //       var inputs = { 'dataset': this.dataset, 'index': index, 'startyear': startyear, 'stopyear': stopyear, 'startmonth': startmonth, 'stopmonth': stopmonth }
-    //       this.tempService.global_avg(this.dataset, index, startyear, startmonth, stopyear, stopmonth)
-    //         .then(data => data.subscribe(res => {
-    //           var Data = {
-    //             dataPoints: []
-    //           }
-    //           var data = Number(stopyear) - Number(startyear)
-    //           var start = Number(startyear)
-    //           for (var i = 0; i <= data; i++) {
-    //             Data.dataPoints.push(
-    //               { x: new Date(start, 0), y: res[0][i] },
-    //             )
-    //             start += 1
-    //           }
-    //           console.log("point", Data.dataPoints)
-    //           this.chart = [Data.dataPoints, res[1], res[2], 'Global']
-    //           var sent = { 'chart': this.chart, 'map': resp, 'input': inputs, 'anomaly': this.anomaly }
-    //           this.inputservice.sendHiRes(sent)
-    //           console.log("hi graph", sent)
-    //         })
-    //         )
-    //       // var sent = { 'chart': this.chart, 'map': resp, 'input': inputs, 'anomaly': this.anomaly }
-    //       // this.inputservice.sendHiRes(sent)
-    //     })
-    //   ))
-
-  // await this.tempService.global_avg(this.dataset, index, startyear, startmonth, stopyear, stopmonth)
-  //   .then(data => data.subscribe(res => {
-  //     var Data = {
-  //       dataPoints: []
-  //     }
-  //     var data = Number(stopyear) - Number(startyear)
-  //     var start = Number(startyear)
-  //     for (var i = 0; i <= data; i++) {
-  //       Data.dataPoints.push(
-  //         { x: new Date(start, 0), y: res[0][i] },
-  //       )
-  //       start += 1
-  //     }
-  //     console.log("point", Data.dataPoints)
-  //     this.chart = [Data.dataPoints, res[1], res[2], 'Global']
-  //     // var sent = { 'chart': this.chart, 'map': resp, 'input': inputs, 'anomaly': this.anomaly }
-  //     this.inputservice.sendGraphAvg(this.chart)
-  //   }))
   }
 
   async station_thai() {
@@ -626,7 +389,7 @@ export class HomeComponent implements OnInit {
     let stopday = String(this.toDate.day)
     this.dataset = this.choosedataset.controls['raw'].value
     var index = this.chooseindex.controls['index'].value
-  
+
     if (startday.length == 1) {
       startday = '0' + startday
     }
@@ -642,41 +405,43 @@ export class HomeComponent implements OnInit {
     }
     this.stop_date = String(stopyear + '-' + stopmonth + '-' + stopday)
 
-    await this.tempService.getdata_sta(index,String(this.start_date),String(this.stop_date)).then(res => {
+    await this.tempService.getdata_sta(index, String(this.start_date), String(this.stop_date)).then(res => {
       res.subscribe(datas => {
-        console.log("send sta : ",datas)
+        console.log("send sta : ", datas)
         this.inputservice.sendstation(datas)
         // this.map = MapLib2.map_sta(datas)
       })
     })
 
-    await this.tempService.getmissing(index).then(res =>{
+    await this.tempService.getmissing(index).then(res => {
       res.subscribe(datas => {
+        // this.percentplot = [];
         this.missdata = [];
         this.missdata.push(datas)
-        console.log("missdata home: ",this.missdata)
-        this.missdata.map(u => { 
+        console.log("missdata home: ", this.missdata)
+        this.missdata.map(u => {
           let val = []
           const a = {}
           let count = 0
-          u.map(v =>{
-            for (let n in v.value){   
-              if (String(v.value[n]) == String("-") ){
-                 v.value = null
-              }else{
-                 v.value = v.value
-           }
-        }
-        val.push(v.x,v.y,v.value)
-        a[count] = val
-        count += 1
-        val = []
+          u.map(v => {
+            for (let n in v.value) {
+              if (String(v.value[n]) == String("-")) {
+                v.value = null
+              } else {
+                v.value = v.value
+              }
+            }
+            val.push(v.x, v.y, v.value)
+            a[count] = val
+            count += 1
+            val = []
           })
-          for (let i in a){
+          this.percentplot = [];
+          for (let i in a) {
             this.percentplot.push(a[i])
-         }
+          }
         })
-        console.log("percent home plot >>>",this.percentplot)
+        console.log("percent home plot >>>", this.percentplot)
         this.inputservice.sendMissedvalue(this.percentplot)
       })
     })

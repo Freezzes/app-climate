@@ -37,7 +37,7 @@ export class NetcdfgraphComponent implements OnInit {
   public testa: any;
   public get;
   public Data;
-  
+
   public value;
   public year;
   public name;
@@ -48,7 +48,10 @@ export class NetcdfgraphComponent implements OnInit {
   difinition;
   unit;
 
-  
+  lineChart: Chart;
+  barChart: Chart;
+  color: any = [];
+
   constructor(
     private tempService: TempService,
     private sharedData: InputService
@@ -66,81 +69,114 @@ export class NetcdfgraphComponent implements OnInit {
       }
 
     })
-    const start = new Date();
+
     this.sharedData.graphAvgservice.subscribe(data => {
       if (data) {
-        console.log("graph", data)
-        this.plotMean(data[0], data[1], this.unit,this.long_name,data[3])
+        this.plot_chart(data.data, data.year, data.country, this.unit)
       }
     })
-     this.sharedData.anomalyservice.subscribe(data => {
-      if(data){
-        this.value = data[0]
-        this.name = data[1]
-        var unit = data[2]
-        var country = data[3]
-        console.log("countryyy",data[3])
-        this.plot_anomaly(this.value,this.name,this.unit,country)
+    this.sharedData.anomalyservice.subscribe(data => {
+      if (data) {
+        var datas = data.data
+        this.color = []
+        for (var i = 0; i < datas.length; i++) {
+          if (datas[i] > 0) {
+            this.color.push(
+              'rgba(255, 0, 0, 1)'
+            )
+          }
+          else if (datas[i] <= 0) {
+            this.color.push(
+              'rgba(0, 82, 207, 0.8)'
+            )
+          }
+          else if (String(datas[i]) == String('-')) {
+            this.color.push(
+              'rgba(0, 82, 207, 0.8)'
+            )
+          }
+        }
+        this.chart_anomaly(data.data, data.year, data.country, this.unit,data.scope)
       }
     })
   }
 
-  
-  async plot_anomaly(value,name,unit,country){
-    console.log("unittttttt",unit)
-    var chart = new CanvasJS.Chart("anomaly", {
-      animationEnabled: true,
-      
-      title:{
-        text:name +' of '+country,
-        fontSize: 25,
-        fontFamily: "Open Sans",
-      },
-      axisX:{
-        title : 'Year',
-        fontSize: 12,
-      },
-      axisX2:{
-        gridColor: "rgba(1,77,101,.1)",
-      },
-      axisY:{
-        title : name,
-        suffix: unit,
-        fontSize: 12
-       },
-      data: [{
-        yValueFormatString: "#.# " + unit,
-        type: "column",
-        dataPoints: value
-      }]
-    });
-    chart.render();
-  }
-
-  async plotMean(Data, Avg, unit,name,country) {
-    var chart = new CanvasJS.Chart("chartContainer", {
-      animationEnabled: true,
-      title: {
-        text: "Averange " + name +' of '+country,
-        fontSize: 25,
-        fontFamily: "Open Sans", 
-      },
-      axisY: {
-        title: name,
-        suffix: unit,
-        fontSize: 12,
-        stripLines: [{
-          value: Avg,
-          label: "Average"
+  async plot_chart(data, year, country, unit) {
+    if (this.lineChart) this.lineChart.destroy();
+    this.lineChart = new Chart('lineChart', {
+      type: 'line',
+      data: {
+        labels: year,
+        datasets: [{
+          data: data,
+          fill: false,
+          lineTension: 0.2,
+          borderColor: "midnightblue",
+          borderWidth: 1
         }]
       },
-      data: [{
-        yValueFormatString: "#.### " + unit,
-        xValueFormatString: "YYYY",
-        type: "line",
-        dataPoints: Data
-      }]
-    });
-    chart.render();
+      options: {
+        legend: {
+          display: false
+        },
+        title: {
+          text: 'Yearly average of' + " " + country,
+          fontSize: 20,
+          display: true
+        },
+        scales: {
+          yAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: 'Averange'+" " + "(" + unit + ")"
+            },
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        }
+      }
+
+    })
+  }
+
+
+  async chart_anomaly(data, year, country, unit,max) {
+    if (this.barChart) this.barChart.destroy();
+    this.barChart = new Chart('barChart', {
+      type: 'bar',
+      data: {
+        labels: year,
+        datasets: [{
+          data: data,
+          backgroundColor: this.color,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        title: {
+          text: 'Yearly average of' + " " + country,
+          fontSize: 20,
+          display: true
+        },
+        legend: {
+          display: false
+        },
+        scales: {
+          yAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: unit
+            },
+            ticks: {
+              min: -max,
+              max: max,
+              stepSize: max/4            }
+          }],
+
+        }
+      }
+
+    })
   }
 }

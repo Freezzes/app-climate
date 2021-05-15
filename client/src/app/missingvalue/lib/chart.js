@@ -5,6 +5,13 @@ highheat(Highcharts);
 
 export function missing_chart(percentplot){
    console.log("data >>>", percentplot)
+   var year_value = [];
+   for (var i = 0; i < percentplot.length; i++) { 
+      if (percentplot[i]==0){
+         year_value.push(percentplot[i][1])
+      }
+   }
+   console.log("list year > ",year_value)
    Highcharts.chart('container', {
       chart: {
           type: 'heatmap',
@@ -41,9 +48,10 @@ export function missing_chart(percentplot){
             }
          },
          yAxis : {
-           categories: [1951,1952,1953,1954,1955,1956,1957,1958,1959,1960,1961,1962,1963,1964,1965,1966,1967,1968,1969,1970,1971,1972,1973,1974,
-            1975,1976,1977,1978,1979,1980,1981,1982,1983,1984,1985,1986,1987,1988,1989,1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,
-            2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015],
+           categories: year_value,
+         //   [1951,1952,1953,1954,1955,1956,1957,1958,1959,1960,1961,1962,1963,1964,1965,1966,1967,1968,1969,1970,1971,1972,1973,1974,
+         //    1975,1976,1977,1978,1979,1980,1981,1982,1983,1984,1985,1986,1987,1988,1989,1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,
+         //    2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015],
             title: {
                text: 'Year'
             }
@@ -51,33 +59,34 @@ export function missing_chart(percentplot){
       colorAxis: {
          min: 0,
          max:100,
-         minColor: '#E3F2FD',
-         maxColor: '#0661CC',
+         minColor:'#0661CC', //4 '#2196F3', //3 '#0277BD', // 2 '#2a5a91',
+         maxColor:'#E3F2FD', 
+         //original '#0661CC','#E3F2FD',
          dataClasses: [{
             from: null,
             to: null,
             name: "Don't Collect data",
-            color: "#000000"
-         },{ from: 0,   to: 10,
-            // color: '#3949AB'
-         },{ from: 10,  to: 20,
-            // color: '#7986CB'
-         },{ from: 20,  to: 30,
-            // color: '#8C65D3'                         
-         },{ from: 30,  to: 40,
-            // color: '#B39DDB'                                   
-         },{ from: 40,  to: 50,
-            // color: '#42A5F5'                          
-         },{ from: 50,  to: 60,
-            // color: '#1976D2'                           
-         },{ from: 60,  to: 70,
-            // color: '#00838F'                          //   '#8C9EFF '
-         },{ from: 70,  to: 80,
-            // color: '#00ACC1'                       
-         },{ from: 80,  to: 90,
-            // color : '#B3E5FC'
-         },{ from: 90,  to: 100,
-            // color: '#E3F2FD'
+            color: "#b7b7b7"
+         },{ from: 0,   to: 20,
+            // color: '#ffe8f1'//'#fff2f7'//'#f4cccc'
+         },{ from: 21,  to: 40,
+            // color: '#ea9999'
+         },{ from: 41,  to: 60,
+            // color: '#f6b26b'                  
+         },{ from: 61,  to: 80,
+            // color: '#ffd966'//  '#ffd966'                                    
+         },{ from: 81,  to: 100,
+            // color: '#93c47d'                           
+         // },{ from: 51,  to: 60,
+         //    // color: '#76a5af'                          
+         // },{ from: 61,  to: 70,
+         //    // color: '#6fa8dc'                             
+         // },{ from: 71,  to: 80,
+         //    // color: '#6d9eeb'                        
+         // },{ from: 81,  to: 90,
+         //    // color : '#1155cc'
+         // },{ from: 91,  to: 100,
+            // color: '#0b5394'//'#351c75'
          }
       ],
      },
@@ -112,6 +121,7 @@ export function missing_chart(percentplot){
         },
         tooltip: {
          formatter: function () { 
+            console.log("Y value :: ", this.point.y," --- ",this.series.y)
            return 'Station <b>'  + this.series.xAxis.categories[this.point.x] +  '</b> <br> Missing <b>' +
              this.point.value + '% </b><br> in year<b>' + this.point.y + '</b>';
          }
@@ -121,7 +131,7 @@ export function missing_chart(percentplot){
            borderWidth: 1,
            turboThreshold:0,
            borderColor:'#FFFFFF',
-           nullColor:'#000000',
+           nullColor:'#b7b7b7',
            data: percentplot,       
            dataLabels: {
               enabled: false,

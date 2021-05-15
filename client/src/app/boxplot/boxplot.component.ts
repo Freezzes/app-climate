@@ -39,7 +39,6 @@ export class BoxplotComponent implements OnInit {
   public stationyear;
   public start_date;
   public end_date;
-  public stationselected;
   public plotbox = [];
   public plotout = [];
   public plotname = [];
@@ -49,18 +48,11 @@ export class BoxplotComponent implements OnInit {
   public anomalydata = []
   public anomaly = []
   public anomalyyear = []
-  public checkbar = ''
   public st;
   public stationan = [];
-  checkbox = "";
-  checkmiss = "";
   dat:any;
   co:any;
   public colorlist = ['#CCFFFF', '#dec183', '#0661CC', '#614215']
-  yearList = [1951,1952,1953,1954,1955,1956,1957,1958,1959,1960,1961,1962,1963,1964,1965,1966,1967,1968,1969,1970,1971,1972,1973,1974,
-    1975,1976,1977,1978,1979,1980,1981,1982,1983,1984,1985,1986,1987,1988,1989,1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,
-    2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018]
-
 
   typename = [{id:'season',name:'รายฤดู'},
     {id:'year',name:'รายปี'},
@@ -75,23 +67,11 @@ export class BoxplotComponent implements OnInit {
   public selectstationid = [];
   public colorplot :any;
   public colorline : any;
-  constructor(private calendar: NgbCalendar, public formatter:NgbDateParserFormatter, private tempService: TempService, private fb: FormBuilder) {
-  }
-  onDateSelection(date: NgbDate) {
-    if (!this.fromDate && !this.toDate) {
-      this.fromDate = date;
-    } else if (this.fromDate && !this.toDate && date.after(this.fromDate)) {
-      this.toDate = date;
-    } else {
-      this.toDate = null;
-      this.fromDate = date;
-    }
+  constructor( public formatter:NgbDateParserFormatter, private tempService: TempService, private fb: FormBuilder) {
   }
 
   async ngOnInit() {  
     }
-
-
 
     choosetype = new FormGroup({
       type:new FormControl('',Validators.required)
@@ -124,14 +104,13 @@ export class BoxplotComponent implements OnInit {
       for (let v of Object.values(typeshow)){
         if(String(v) == String('รายเดือน')){
            ts = 'month'
-        }
-        else if(String(v) == String('รายฤดู')){
+        }else if(String(v) == String('รายฤดู')){
           ts = 'season'
-       }else if(String(v) == String('รายปี')){
+        }else if(String(v) == String('รายปี')){
          ts = 'year'
-       }else if(String(v) == String('ราย 10 ปี')){
+        }else if(String(v) == String('ราย 10 ปี')){
         ts = 'era'
-      }
+        }
       }
       this.dat = this.testdata1(this.st,fil,ts)
       return this.dat
@@ -139,7 +118,6 @@ export class BoxplotComponent implements OnInit {
 
   
     async testdata1(st,fil,ts){
-      this.checkbox = ''
       if(this.startday.length == 1){
         this.startday = '0'+this.startday
       }
@@ -175,14 +153,12 @@ export class BoxplotComponent implements OnInit {
               }
           }
           this.boxval.push(v)
-          this.checkbox = 'check';          
           })
         })
         this.plotname.map(v=>{
           for(let i of v){
             this.nameval.push(i)
           }
-          this.checkbox = 'check';
          })
   
          this.plotout.map(u=>{
@@ -209,19 +185,16 @@ export class BoxplotComponent implements OnInit {
          }
          console.log("color plot >>> ",this.colorplot)
           ChartLib.box_chart(this.boxval,this.nameval,this.outval,ts,this.colorplot, this.colorline)
-          this.checkbox = 'check';
         })
       })
       }))
       return this.boxval
     }
   
-     // bar plot anomaly data
      public anomaly_year = []
      public anomaly_name = [];
      
      async plotbar(){
-        this.checkbar = ''
         this.st = String(MapLib2.station_id)
         let fil = this.file
         if(fil == String('Average Temperature')){
@@ -267,7 +240,8 @@ export class BoxplotComponent implements OnInit {
               }
             }
           })
-          this.checkbar = 'check'
+          ChartLib.bar_chart(this.anomalyyear,this.anomaly_name,this.anomalydata)
+
         }))
 
      }
@@ -282,7 +256,12 @@ export class BoxplotComponent implements OnInit {
       },
       xAxis:{
          categories: this.anomalyyear
-      },     
+      },  
+      yAxis: {
+        min: -10,
+        max: 10,
+        startOnTick: false,
+      },   
       series: [
          {
             name: this.anomaly_name,
@@ -294,7 +273,10 @@ export class BoxplotComponent implements OnInit {
                 color: '#E42217'
             }]
          }
-      ]
+      ],
+      credits: {
+        enabled: false
+    }
    };
   
 

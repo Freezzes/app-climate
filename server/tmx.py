@@ -117,7 +117,6 @@ def selectboxplot2():
 
     return jsonify(b)
 
-#-----------------------------------------------------------------------------------
 # ------- LINE ANOMALY -------------------------------------------------------------
 #------------------------- STATION -------------------------------------------------
 @app.route('/api/line',methods=["GET"])
@@ -158,14 +157,17 @@ def anamalymap():
     y = []
     for i in readfile['year']:
         y.append(i)
-    ano = {'anomaly':an}
-    year = {'year':y}
-    namefile = {'name':select}
-    if filename == 'pr':
-        unit = "mm"
-    else:
-        unit = "°C"
-    return jsonify(ano,year,namefile,unit)
+
+    l = []
+    for i in an:
+        if i <0:
+            i = i*(-1)
+            l.append(i)
+        else:
+            l.append(i)
+    scope = max(l)
+    data = {'anomaly':an,'year':y,'scope':scope}
+    return jsonify(data)
 
 #--------------------- anomaly rcp ------------------------------------------------------
 @app.route('/api/anomalyNC_rcp', methods=["GET"])
@@ -188,14 +190,16 @@ def anomaly_global_rcp():
     y = []
     for i in readfile['year']:
         y.append(i)
-    ano = {'anomaly':an}
-    year = {'year':y}
-    namefile = {'name':select}
-    if index == 'pr':
-        unit = "mm"
-    else:
-        unit = "°C"
-    return jsonify(ano,year,namefile,unit)
+    l = []
+    for i in an:
+        if i <0:
+            i = i*(-1)
+            l.append(i)
+        else:
+            l.append(i)
+    scope = max(l)
+    data = {'anomaly':an,'year':y,'scope':scope}
+    return jsonify(data)
 
 # ----------------------- Anomaly select country ---------------------------------------
 @app.route('/api/anomalycountry', methods=['GET'])
@@ -234,15 +238,17 @@ def country_anomaly():
     for i in avg_year:
         anom.append(round((i-baseline_sum),2))
 
-    ano = {'anomaly':anom}
-    year = {'year':list(range(startyear,stopyear+1))}
-    namefile = {'name':select}
-    if index == 'pr':
-        unit = "mm"
-    else:
-        unit = "°C"
-    return jsonify(ano, year, namefile, unit)
-
+    year = list(range(startyear,stopyear+1))
+    l = []
+    for i in anom:
+        if i <0:
+            i = i*(-1)
+            l.append(i)
+        else:
+            l.append(i)
+    scope = max(l)
+    data = {'anomaly':anom,'year':year,'scope':scope}
+    return jsonify(data)
 #--------------------- anomaly country rcp ---------------------------------------------
 @app.route('/api/anomalycountry_rcp', methods=['GET'])
 def country_anomaly_rcp():
@@ -284,14 +290,17 @@ def country_anomaly_rcp():
         else :
             anom.append(round((i-baseline_sum),2))
 
-    ano = {'anomaly':anom}
-    year = {'year':list(range(startyear,stopyear+1))}
-    namefile = {'name':select}
-    if index == 'pr':
-        unit = "mm"
-    else:
-        unit = "°C"
-    return jsonify(ano, year, namefile, unit)
+    year = list(range(startyear,stopyear+1))
+    l = []
+    for i in anom:
+        if i <0:
+            i = i*(-1)
+            l.append(i)
+        else:
+            l.append(i)
+    scope = max(l)
+    data = {'anomaly':anom,'year':year,'scope':scope}
+    return jsonify(data)
 
 # ----------------------------------map different-----------------------------------------
 @app.route("/map_range1", methods=["GET"])
@@ -745,14 +754,10 @@ def avg_global_year():
         # a = np.round(np.nanmean(i.flatten()),4),4
         avg_year.append(np.round(np.float64(np.nanmean(i.flatten())), 4))
 
-    avg = np.round(np.mean(avg_year), 4)
-    if index == 'pr':
-        unit = "mm"
-    else:
-        unit = "°C"
-    end = time.time()
-    print("time chart", end-start)
-    return jsonify(avg_year,np.round(np.float64(avg),4),unit)
+    year = list(range(startyear,stopyear+1))
+    # print(year)
+    data = {'data':avg_year,'year':year}
+    return jsonify(data)
 
 @app.route("/api/global_avg_rcp", methods=['GET'])
 def avg_global_year_rcp():
@@ -773,14 +778,11 @@ def avg_global_year_rcp():
     for i in get_data[0]:
         avg_year.append(np.round(np.float64(np.nanmean(i.flatten())), 4))
 
-    avg = np.round(np.mean(avg_year), 4)
-    print("avg",avg)
-    if index == 'pr':
-        unit = "mm"
-    else:
-        unit = "°C"
+    year = list(range(startyear,stopyear+1))
+    # print(year)
+    data = {'data':avg_year,'year':year}
 
-    return jsonify(avg_year,np.round(np.float64(avg),4),unit)
+    return jsonify(data)
 
 @app.route("/api/country_avg",methods=['GET'])
 def country_avg():
@@ -799,13 +801,11 @@ def country_avg():
     for i in data:
         avg_year.append(np.round(np.nanmean(i.flatten()),4))
   
-    avg = np.round(np.mean(avg_year), 4)
-    if index == 'pr':
-        unit = "mm"
-    else:
-        unit = "°C"
+    year = list(range(startyear,stopyear+1))
+    # print(year)
+    data = {'data':avg_year,'year':year}
 
-    return jsonify(avg_year, avg, unit)
+    return jsonify(data)
 
 @app.route("/api/country_avg_rcp", methods=['GET'])
 def country_avg_rcp():
@@ -827,13 +827,11 @@ def country_avg_rcp():
     avg_year = []
     for i in data:
         avg_year.append(np.round(np.nanmean(i.flatten()), 4))
-    avg = np.round(np.mean(avg_year), 4)
-    if index == 'pr':
-        unit = "mm"
-    else:
-        unit = "°C"
+    year = list(range(startyear,stopyear+1))
+    # print(year)
+    data = {'data':avg_year,'year':year}
 
-    return jsonify(avg_year, avg, unit)
+    return jsonify(data)
 
 #----------------------- Get detials ----------------------------------
 @app.route("/api/dataset", methods=["GET"])

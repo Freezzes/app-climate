@@ -18,6 +18,7 @@ import { InputService } from 'src/app/services/input.service';
 export class MissingvalueComponent implements OnInit {
 
    missed_chart: any;
+   year_value : any;
 
    constructor(private sharedData: InputService ) { 
   }
@@ -27,8 +28,9 @@ export class MissingvalueComponent implements OnInit {
    await this.sharedData.missedvalueservice.subscribe(data => {
       if(data){
          console.log("missing station :",data) //อันนี้ดึงมาทั้งก้อน
-         console.log("miss chart >>>", this.missed_chart)
       this.missed_chart = ChartLib.missing_chart(data)
+      console.log("miss chart >>>", data.length)
+      console.log("find Y : ", data[0][0], '---', data[0][1])
       console.log("miss chart >>>", this.missed_chart)
       }})
      
