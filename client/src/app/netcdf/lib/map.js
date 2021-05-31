@@ -166,9 +166,10 @@ export function genGridData(geojson, min, max, color_map,unit, lon_step, lat_ste
 
   console.log("color",color_map)
   if (color_map == 'cool_warm') {
-    colors = ['#bd1726', '#d42d27', '#e34933', '#f16640', '#f7844e', '#fca55d', '#fdbf71', '#fed687', '#fee99d', '#fff7b3', '#f7fcce', '#e9f6e8', '#d6eef5', '#bde2ee', '#a3d3e6', '#87bdd9', '#6ea6ce', '#588cc0', '#4471b2', '#3a54a4'].reverse()
+    colors = ['#bd1726', '#e34933', '#f16640', '#f7844e', '#fca55d', '#fdbf71', '#fed687', '#f7fcce', '#e9f6e8', '#d6eef5', '#bde2ee', '#a3d3e6', '#6ea6ce', '#588cc0', '#3a54a4'].reverse()
+    // colors = ['#bd1726', '#d42d27', '#e34933', '#f16640', '#f7844e', '#fca55d', '#fdbf71', '#fed687', '#fee99d', '#fff7b3', '#f7fcce', '#e9f6e8', '#d6eef5', '#bde2ee', '#a3d3e6', '#87bdd9', '#6ea6ce', '#588cc0', '#4471b2', '#3a54a4'].reverse()
     if (type == 'main') {
-      colorScale = d3.scaleQuantile([min, 0, max], colors)
+      colorScale = d3.scaleQuantile([min, max], colors)
     } else if (type == 'per') {
       colorScale = d3.scaleQuantile([min, 0, max], colors)
     }
@@ -181,7 +182,7 @@ export function genGridData(geojson, min, max, color_map,unit, lon_step, lat_ste
     }
   }
   else if (color_map == 'dry_wet') {
-    colors = ['#8c510a', '#9e5c0b', '#bf812d', '#d49a4b', '#dfc27d', '#eedfba', '#fcf4e1','#f5f5f5', '#d6eef5', '#bde2ee', '#a3d3e6', '#87bdd9', '#6ea6ce', '#588cc0', '#4471b2', '#3a54a4']
+    colors = ['#8c510a', '#9e5c0b', '#bf812d', '#d49a4b', '#dfc27d', '#eedfba', '#f5f5f5', '#d6eef5', '#bde2ee', '#a3d3e6', '#87bdd9', '#6ea6ce', '#4471b2', '#3a54a4']
     if (type == 'main'){
       colorScale = d3.scaleQuantile([0,max], colors)
     } 
@@ -226,10 +227,10 @@ export function genGridData(geojson, min, max, color_map,unit, lon_step, lat_ste
         fill: new ol.style.Fill({
           color: [rgb.r, rgb.g, rgb.b, 0.9]
         }),
-        stroke: new ol.style.Stroke({
-          color: [0, 0, 0, 0.8],
-          width: 0.1,
-        }),
+        // stroke: new ol.style.Stroke({
+        //   color: [255, 0, 255, 1],
+        //   width: 0.0,
+        // }),
         geometry: new ol.geom.Polygon([[
           [x, y], [x, y + lat_step], [x + lon_step, y + lat_step], [x + lon_step, y], [x, y]
         ]]),
@@ -292,7 +293,7 @@ export function setResolution(map, North, South, West, East) {
 function legend({
   color,
   title,
-  tickSize = 6,
+  tickSize = 8,
   width = 650, 
   height = 44 + tickSize,
   marginTop = 18,

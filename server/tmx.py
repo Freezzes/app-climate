@@ -269,7 +269,6 @@ def country_anomaly_rcp():
     f = read_folder_rcp(dataset, index, type_, rcp, startyear, stopyear, 'h')
     if type_ == 'y':
         data_date = select_data_fromdate_year(f)
-        print("shape",data_date[0][0])
     elif type_ == 'm':
         data_date = select_data_fromdate(f, startyear, stopyear, startmonth, stopmonth)
     data = mask_inside_country_npz(dataset+'_'+ rcp, country, data_date[1], data_date[2], data_date[0])
@@ -282,7 +281,6 @@ def country_anomaly_rcp():
     start_index = baseline_start - startyear
     end_index = baseline_end - startyear
     baseline_sum = np.mean(avg_year[start_index:end_index])
-    print(baseline_sum)
     anom = []
     for i in avg_year:
         if str(i) == str('nan'):
@@ -426,7 +424,6 @@ def map_range2month():
     start = int(request.args.get("start"))
     stop = int(request.args.get("stop"))
     month = str(request.args.get("month")) # "[0,1,2,3]"
-    print("month",month)
     res = month.strip('][').split(',') 
     selectmonth = []
     for i in res :
@@ -753,7 +750,6 @@ def avg_global_year():
         avg_year.append(np.round(np.float64(np.nanmean(i.flatten())), 4))
 
     year = list(range(startyear,stopyear+1))
-    # print(year)
     data = {'data':avg_year,'year':year}
     return jsonify(data)
 
@@ -777,7 +773,6 @@ def avg_global_year_rcp():
         avg_year.append(np.round(np.float64(np.nanmean(i.flatten())), 4))
 
     year = list(range(startyear,stopyear+1))
-    # print(year)
     data = {'data':avg_year,'year':year}
 
     return jsonify(data)
@@ -800,7 +795,6 @@ def country_avg():
         avg_year.append(np.round(np.nanmean(i.flatten()),4))
   
     year = list(range(startyear,stopyear+1))
-    # print(year)
     data = {'data':avg_year,'year':year}
 
     return jsonify(data)
@@ -826,7 +820,6 @@ def country_avg_rcp():
     for i in data:
         avg_year.append(np.round(np.nanmean(i.flatten()), 4))
     year = list(range(startyear,stopyear+1))
-    # print(year)
     data = {'data':avg_year,'year':year}
 
     return jsonify(data)
