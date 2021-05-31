@@ -14,7 +14,7 @@ from netCDF4 import Dataset
 import pymannkendall as mk
 from datetime import datetime
 import os
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
 from lib.function import *
 from lib.boxplotfunction import filter_by_station2, filter_ERA_by_station, filterseason_by_station, filteryear_by_station,boxplotera, boxplotseason,boxplotyear,byear
@@ -25,7 +25,7 @@ app = Flask(__name__)
 
 CORS(app)
 # curDir = Path("C:/Users/ice/app-climate/server")
-curDir = Path("")
+curDir = Path.cwd()
 dataDir = curDir / "climate"
 
 @app.route('/check_data', methods=['GET'])
@@ -184,7 +184,7 @@ def anomaly_global_rcp():
     an = []
     for i in readfile['value']:
         if str(i) == str('nan'):
-            an.append("-")
+            an.append(0)
         else :
             an.append(float("%.2f"% i))
     y = []
@@ -192,7 +192,7 @@ def anomaly_global_rcp():
         y.append(i)
     l = []
     for i in an:
-        if i <0:
+        if int(i) < 0:
             i = i*(-1)
             l.append(i)
         else:
@@ -693,22 +693,20 @@ def selectrcp_trend():
 #----------------------------map-------------------------------------
 @app.route('/nc_avg', methods=['GET'])
 def get_Avgmap():
-    dataset = str(request.args.get("ncfile"))
+    ncfile = str(request.args.get("ncfile"))
     index = str(request.args.get("df_f"))
     startyear = int(request.args.get("startyear"))
     stopyear = int(request.args.get("stopyear"))
     startmonth = int(request.args.get("startmonth"))
     stopmonth = int(request.args.get("stopmonth"))
-    f_l = read_folder(dataset, index, startyear, stopyear,'l')
-    f_h = read_folder(dataset, index, startyear, stopyear,'h')
+    f_l = read_folder(ncfile, index, startyear, stopyear,'l')
+    f_h = read_folder(ncfile, index, startyear, stopyear,'h')
     get_data_l = select_data_fromdate(f_l, startyear, stopyear, startmonth, stopmonth)    
     get_data_h = select_data_fromdate(f_h, startyear, stopyear, startmonth, stopmonth)    
 
     data_l = data_to_map(get_data_l)
     data_h = data_to_map(get_data_h)
     res = {'low' : data_l, 'high' : data_h}
-  
-    end = time.time()
     return jsonify(res)
 
 @app.route('/map_rcp', methods=['GET'])

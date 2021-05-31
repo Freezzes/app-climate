@@ -166,7 +166,7 @@ export class NetcdfgraphComponent implements OnInit {
           yAxes: [{
             scaleLabel: {
               display: true,
-              labelString: unit
+              labelString: 'Anomaly'+" " + "(" + unit + ")"
             },
             ticks: {
               min: -max,

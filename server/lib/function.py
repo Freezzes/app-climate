@@ -41,7 +41,7 @@ def data_to_map(get_data):
     Min, Max = range_boxplot(res)
     lat_lon_st = lat_lon(lat, lon)
 
-    return lat_lon_st.get('lon'), lat_lon_st.get('lat'), resp.tolist(), np.float64(Min), np.float64(Max), lat_lon_st.get('lon_step'), lat_lon_st.get('lat_step')
+    return lat_lon_st.get('lon'), lat_lon_st.get('lat'), resp.tolist(), np.float64(Min), np.float64(Max), np.float64(lat_lon_st.get('lon_step')), np.float64(lat_lon_st.get('lat_step'))
 
 def select_data_fromdate(f,startyear,stopyear,startmonth,stopmonth):
     V = []
@@ -77,7 +77,6 @@ def lat_lon(lat,lon):
     return {'lon':y.tolist(),'lat':x.tolist(),'lon_step':lon_step,'lat_step':lat_step}
 
 def select_data_fromdate_year(f):
-    print("f",f)
     V = []
     for i in range(len(f)):
         ds = np.load(f[i])
@@ -94,7 +93,6 @@ def select_data_fromdate_year_formk(f):
     return V,ds['lat'],ds['lon']
 
 def map_month(f):
-    print("month",len(f))
     V = []
     for i in range(len(f)):
         ds = np.load(f[i])
@@ -105,7 +103,6 @@ def map_month(f):
     return V,ds['lat'],ds['lon']
 
 def map_select_month(f,selectmonth):
-    print("month",len(f))
     V = []
     for i in range(len(f)):
         ds = np.load(f[i])
