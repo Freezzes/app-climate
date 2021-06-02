@@ -305,7 +305,7 @@ function legend({
   tickValues,
   target
 } = {}) {
-  if (target == 'map1' || target == 'map2'){width = 450}
+  if (target == 'map1' || target == 'map2'){width = 550}
   let tickAdjust = g => g.selectAll(".tick line").attr("y1", marginTop + marginBottom - height);
 
   const thresholds

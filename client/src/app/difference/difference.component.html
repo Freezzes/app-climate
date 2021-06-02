@@ -149,11 +149,11 @@
           {{Ranges}}
           <br>
         </div>
-        <div class="card-body" style="background-color: rgb(255, 255, 255); height: 12.5cm;">
+        <div class="card-body" style="background-color: rgb(255, 255, 255); height: 13cm;">
           <div class="row">
               <div id="map1" class="map_per"></div>
               <div class="info" style="opacity: 0.8;" *ngIf="display == 'show'">
-                <svg class="map1 legend" width="1000" height="60" style="margin-top: 1em;"></svg>
+                <svg class="map1 legend" width="1000" height="60" style="margin-top: 1em; margin-left:1em"></svg>
               </div>
           </div>
         </div>
@@ -178,11 +178,15 @@
     </div>
   </div>
   <br>
-  <div>
-    <button type="button" class="btn btn-secondary" (click)="per_different()"><i class="fas fa-map-marked-alt"></i>
-      Plot Per</button>
-    <button type="button" class="btn btn-secondary" (click)="raw_different()"><i class="fas fa-map-marked-alt"></i>
-      Plot Raw</button>
+  <div style="display: flex;flex-direction: row;">
+    <div style="margin-right: 10px;">
+      <button type="button" class="btn btn-secondary" (click)="per_different()"><i class="fas fa-map-marked-alt"></i>
+        Plot Per</button>
+    </div>
+    <div>
+      <button type="button" class="btn btn-secondary" (click)="raw_different()"><i class="fas fa-map-marked-alt"></i>
+        Plot Raw</button>
+    </div>
   </div>
   <br>
   <div class="row row-cols-1 row-cols-md-2">
