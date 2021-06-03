@@ -28,14 +28,6 @@ CORS(app)
 curDir = Path.cwd()
 dataDir = curDir / "climate"
 
-@app.route('/check_data', methods=['GET'])
-def check_data():
-    dataset = str(request.args.get("dataset"))
-    index = str(request.args.get("index"))
-    startyear = int(request.args.get("startyear"))
-    stopyear = int(request.args.get("stopyear"))
-    c = check_range(dataset, index, startyear, stopyear)
-    return c
 #----------- Missing Value ---------------------------------------------------------------------------
 def getmiss(startyear,stopyear,station,dff):
     mask = (dff['y'] >= startyear) & (dff['y'] <= stopyear)

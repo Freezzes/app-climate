@@ -270,8 +270,8 @@ export class TempService {
     }
 // -------------------------------------------------------------------------------------------------------
 
-    async check_data(dataset:string,index:string,startyear:string,stopyear:string): Promise<Observable<any>>{
-        return this.http.get('http://127.0.0.1:5000'+`/check_data?dataset=${dataset}&index=${index}&startyear=${startyear}&stopyear=${stopyear}`,{responseType:"text"})
-    }
+    // async check_data(dataset:string,index:string,startyear:string,stopyear:string): Promise<Observable<any>>{
+    //     return this.http.get('http://127.0.0.1:5000'+`/check_data?dataset=${dataset}&index=${index}&startyear=${startyear}&stopyear=${stopyear}`,{responseType:"text"})
+    // }
 
 }
